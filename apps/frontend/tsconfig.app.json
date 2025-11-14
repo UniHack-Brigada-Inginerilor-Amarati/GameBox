@@ -1,0 +1,39 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": []
+  },
+  "include": [
+    "src/main.ts",
+    "src/main.server.ts",
+    "src/app/app.config.ts",
+    "src/app/app.routes.ts",
+    "src/app/app.ts",
+    "src/app/**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "src/test-setup.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "vite.config.ts",
+    "vite.config.mts",
+    "vitest.config.ts",
+    "vitest.config.mts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.tsx",
+    "src/**/*.test.js",
+    "src/**/*.spec.js",
+    "src/**/*.test.jsx",
+    "src/**/*.spec.jsx",
+    "src/server.ts",
+    "src/environments/environment.prod.ts",
+    "src/app/admin/index.ts",
+    "src/app/shared/index.ts",
+    "src/app/auth/components/login.component.ts",
+    "src/app/auth/components/login.component.html",
+    "src/app/auth/components/login.component.css",
+    "src/app/games/games.module.ts"
+  ]
+}
