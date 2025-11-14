@@ -182,26 +182,39 @@ export class ProfileService {
 
     if (!query || query.trim().length < 2) {
       this.logger.warn('Search query too short', { query });
+      throw new BadRequestException('Search query must be at least 2 characters long');
     }
 
-    const searchTerm = `%${query.trim()}%`;
+    const trimmedQuery = query.trim();
+    const searchTerm = `%${trimmedQuery}%`;
 
-    const { data, error } = await this.db.supabase
+    // Use PostgREST filter syntax for .or() with ilike
+    // Format: column.operator.value where value can contain wildcards
+    // Search by username and email (not 'name' which doesn't exist)
+    const { data, error } = await this.db.supabaseAdmin
       .from('user_profiles')
       .select('*')
-      .or(`name.ilike.${searchTerm},email.ilike.${searchTerm}`)
+      .or(`username.ilike.${searchTerm},email.ilike.${searchTerm}`)
       .order('username', { ascending: true })
       .limit(limit);
 
     if (error) {
+      this.logger.error('Search error details', {
+        error: error.message,
+        errorCode: error.code,
+        query,
+        searchTerm,
+      });
       this.db.handleSupabaseError('searchUsers', error, { query, limit });
     }
 
     this.logger.debug('User search completed', { query, resultsCount: data?.length || 0 });
 
-    const userProfiles: UserProfileDTO[] = data.map((user) => this.mapUserProfileToDTO(user));
+    const userProfiles: UserProfileDTO[] = (data || []).map((user) =>
+      this.mapUserProfileToDTO(user),
+    );
 
-    return userProfiles || [];
+    return userProfiles;
   }
 
   async uploadFileToStorage(
