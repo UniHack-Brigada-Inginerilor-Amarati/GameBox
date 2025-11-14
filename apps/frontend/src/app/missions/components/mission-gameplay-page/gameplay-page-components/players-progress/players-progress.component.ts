@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { UserProfile, GameResult } from '@gamebox/shared';
+import { UserProfile, PlayerGameResult } from '@gamebox/shared';
 
 @Component({
   selector: 'app-players-progress',
@@ -12,14 +12,14 @@ import { UserProfile, GameResult } from '@gamebox/shared';
 })
 export class PlayersProgressComponent {
   @Input({ required: true }) players!: UserProfile[];
-  @Input({ required: true }) gameResults!: GameResult[];
+  @Input({ required: true }) gameResults!: PlayerGameResult[];
   @Input({ required: true }) currentGameIndex!: number;
   @Input({ required: true }) missionCompleted!: boolean;
 
   getPlayerTotalScore(playerName: string): number {
     return this.gameResults
       .filter((result) => result.player_name === playerName)
-      .reduce((total, result) => total + (result.game_result?.score || 0), 0);
+      .reduce((total, result) => total + (result.total_score || 0), 0);
   }
 
   isPlayerCompleted(playerName: string): boolean {

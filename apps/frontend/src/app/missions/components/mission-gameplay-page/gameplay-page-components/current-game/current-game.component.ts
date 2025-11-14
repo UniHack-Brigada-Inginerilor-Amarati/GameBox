@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { Game, UserProfile, MissionSession, GameResult } from '@gamebox/shared';
+import { Game, UserProfile, MissionSession, GameResult, PlayerGameResult } from '@gamebox/shared';
 import { SessionService } from '../../../../services/session.service';
 import { Router } from '@angular/router';
 
@@ -26,9 +26,9 @@ export class CurrentGameComponent {
   @Input({ required: true }) missionCompleted!: boolean;
   @Input({ required: true }) gameOrder!: string[];
   @Input({ required: true }) gameplayData!: { session: MissionSession; players: UserProfile[]; };
-  @Input({ required: true }) gameResults!: GameResult[];
+  @Input({ required: true }) gameResults!: PlayerGameResult[];
 
-  @Output() gameResultsUpdated = new EventEmitter<GameResult[]>();
+  @Output() gameResultsUpdated = new EventEmitter<PlayerGameResult[]>();
   @Output() gameCompletedUpdate = new EventEmitter<boolean>();
   @Output() loadingUpdate = new EventEmitter<boolean>();
   @Output() missionCompletedUpdate = new EventEmitter<boolean>();
@@ -61,10 +61,13 @@ export class CurrentGameComponent {
       )
       .subscribe({
         next: (savedResults: GameResult[]) => {
-          const updatedResults = [...this.gameResults, ...savedResults];
-          this.gameResultsUpdated.emit(updatedResults);
+          // After creating game results, reload them to get PlayerGameResult[]
+          // The parent component will handle reloading via gameResultsUpdated event
           this.gameCompletedUpdate.emit(true);
           this.loadingUpdate.emit(false);
+          
+          // Emit empty array to trigger parent reload
+          this.gameResultsUpdated.emit([]);
 
           this.snackBar.open(
             `Game "${this.currentGame?.name || 'Unknown'}" completed!`,
@@ -138,24 +141,24 @@ export class CurrentGameComponent {
 
   getAbilityIcon(ability: string): string {
     const icons: { [key: string]: string } = {
-      strengthEndurance: '💪',
-      agilitySpeed: '🏃',
-      aimPrecision: '🎯',
-      memoryAttention: '🧠',
-      communication: '💬',
-      logicProblemSolving: '🧩',
+      mentalFortitudeComposure: '🧠',
+      adaptabilityDecisionMaking: '🔄',
+      aimMechanicalSkill: '🎯',
+      gameSenseAwareness: '👁️',
+      teamworkCommunication: '💬',
+      strategy: '🧩',
     };
     return icons[ability] || '🎮';
   }
 
   getAbilityName(ability: string): string {
     const names: { [key: string]: string } = {
-      strengthEndurance: 'Strength & Endurance',
-      agilitySpeed: 'Agility & Speed',
-      aimPrecision: 'Aim & Precision',
-      memoryAttention: 'Memory & Attention',
-      communication: 'Communication',
-      logicProblemSolving: 'Logic & Problem Solving',
+      mentalFortitudeComposure: 'Mental Fortitude / Composure',
+      adaptabilityDecisionMaking: 'Adaptability / Decision Making',
+      aimMechanicalSkill: 'Aim / Mechanical Skill',
+      gameSenseAwareness: 'Game Sense / Awareness',
+      teamworkCommunication: 'Teamwork / Communication',
+      strategy: 'Strategy',
     };
     return names[ability] || ability;
   }

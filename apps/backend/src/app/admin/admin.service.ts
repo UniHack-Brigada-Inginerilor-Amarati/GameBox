@@ -221,7 +221,11 @@ export class AdminService {
         throw new Error(`Failed to fetch participants: ${error.message}`);
       }
 
-      this.logger.debug(`Successfully fetched ${participants?.length || 0} participants for reservation ${reservationId}`);
+      this.logger.debug(
+        `Successfully fetched ${
+          participants?.length || 0
+        } participants for reservation ${reservationId}`,
+      );
       return participants || [];
     } catch (error) {
       this.logger.error(`Exception fetching participants:`, error);

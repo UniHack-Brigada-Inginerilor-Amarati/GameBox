@@ -9,6 +9,7 @@ import { GameModule } from './games/game.module';
 import { PayloadModule } from './payload/payload.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ScratchCardModule } from './scratch-card/scratch-card.module';
+import { PlayerResultModule } from './player-results/player-result.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ScratchCardModule } from './scratch-card/scratch-card.module';
     ReservationModule,
     AdminModule,
     SessionModule,
+    PlayerResultModule,
   ],
   controllers: [],
   providers: [],

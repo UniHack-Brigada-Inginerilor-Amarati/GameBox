@@ -27,9 +27,7 @@ async function bootstrap() {
   const port = process.env.NEST_PORT || 3111;
   await app.listen(port);
 
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  );
+  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
   Logger.log(`🔧 Environment: ${process.env.NODE_ENV}`);
 }
 

@@ -270,29 +270,29 @@ export interface Mission {
   media?: (number | null) | Media;
   games: {
     /**
-     * Select a game that focuses on physical strength and endurance
+     * Select a game that focuses on mental fortitude and composure
      */
-    strengthEndurance: number | Game;
+    mentalFortitudeComposure: number | Game;
     /**
-     * Select a game that focuses on agility and speed
+     * Select a game that focuses on adaptability and decision making
      */
-    agilitySpeed: number | Game;
+    adaptabilityDecisionMaking: number | Game;
     /**
-     * Select a game that focuses on aim and precision
+     * Select a game that focuses on aim and mechanical skill
      */
-    aimPrecision: number | Game;
+    aimMechanicalSkill: number | Game;
     /**
-     * Select a game that focuses on memory and attention to detail
+     * Select a game that focuses on game sense and awareness
      */
-    memoryAttention: number | Game;
+    gameSenseAwareness: number | Game;
     /**
-     * Select a game that focuses on communication skills
+     * Select a game that focuses on teamwork and communication
      */
-    communication: number | Game;
+    teamworkCommunication: number | Game;
     /**
-     * Select a game that focuses on logic and problem solving
+     * Select a game that focuses on strategy
      */
-    logicProblemSolving: number | Game;
+    strategy: number | Game;
   };
   updatedAt: string;
   createdAt: string;
@@ -477,12 +477,12 @@ export interface MissionsSelect<T extends boolean = true> {
   games?:
     | T
     | {
-        strengthEndurance?: T;
-        agilitySpeed?: T;
-        aimPrecision?: T;
-        memoryAttention?: T;
-        communication?: T;
-        logicProblemSolving?: T;
+        mentalFortitudeComposure?: T;
+        adaptabilityDecisionMaking?: T;
+        aimMechanicalSkill?: T;
+        gameSenseAwareness?: T;
+        teamworkCommunication?: T;
+        strategy?: T;
       };
   updatedAt?: T;
   createdAt?: T;

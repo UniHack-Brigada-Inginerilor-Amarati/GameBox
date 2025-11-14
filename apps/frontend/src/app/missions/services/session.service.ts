@@ -4,6 +4,7 @@ import {
   MissionSession,
   SessionPlayer,
   GameResult,
+  PlayerGameResult,
   UserProfile,
 } from '@gamebox/shared';
 import { environment } from '../../../environments/environment';
@@ -84,8 +85,8 @@ export class SessionService {
     );
   }
 
-  getGameResults(sessionId: string): Observable<GameResult[]> {
-    return this.http.get<GameResult[]>(
+  getGameResults(sessionId: string): Observable<PlayerGameResult[]> {
+    return this.http.get<PlayerGameResult[]>(
       `${this.apiUrl}/sessions/${sessionId}/game-results`
     );
   }

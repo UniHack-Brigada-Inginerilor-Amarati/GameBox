@@ -1,5 +1,16 @@
-import { Ability } from './ability';
 import { Media } from './media';
+
+export interface GameAbility {
+  slug: string;
+  name: string;
+  description: string;
+  icon?: {
+    url: string;
+    filename?: string;
+  };
+  score: number;
+  id?: string;
+}
 
 export interface Game {
   slug: string;
@@ -7,7 +18,7 @@ export interface Game {
   description: string;
   picture: string;
   thumbnail: string;
-  abilities?: Ability[];
+  abilities?: GameAbility[];
   media?: Media[];
   isCompleted?: boolean; // Added for scratch card progress tracking
 }

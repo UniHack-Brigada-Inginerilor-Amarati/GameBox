@@ -1,4 +1,5 @@
 import { Role } from './role';
+
 export interface UserProfile {
   id: string;
   username: string;
