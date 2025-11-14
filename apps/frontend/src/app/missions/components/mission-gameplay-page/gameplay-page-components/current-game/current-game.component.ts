@@ -138,24 +138,24 @@ export class CurrentGameComponent {
 
   getAbilityIcon(ability: string): string {
     const icons: { [key: string]: string } = {
-      strengthEndurance: '💪',
-      agilitySpeed: '🏃',
-      aimPrecision: '🎯',
-      memoryAttention: '🧠',
-      communication: '💬',
-      logicProblemSolving: '🧩',
+      mentalFortitudeComposure: '💪',
+      adaptabilityDecisionMaking: '🏃',
+      aimMechanicalSkill: '🎯',
+      gameSenseAwareness: '🧠',
+      teamworkCommunication: '💬',
+      strategy: '🧩',
     };
     return icons[ability] || '🎮';
   }
 
   getAbilityName(ability: string): string {
     const names: { [key: string]: string } = {
-      strengthEndurance: 'Strength & Endurance',
-      agilitySpeed: 'Agility & Speed',
-      aimPrecision: 'Aim & Precision',
-      memoryAttention: 'Memory & Attention',
-      communication: 'Communication',
-      logicProblemSolving: 'Logic & Problem Solving',
+      mentalFortitudeComposure: 'Mental Fortitude / Composure',
+      adaptabilityDecisionMaking: 'Adaptability / Decision Making',
+      aimMechanicalSkill: 'Aim / Mechanical Skill',
+      gameSenseAwareness: 'Game Sense / Awareness',
+      teamworkCommunication: 'Teamwork / Communication',
+      strategy: 'Strategy',
     };
     return names[ability] || ability;
   }

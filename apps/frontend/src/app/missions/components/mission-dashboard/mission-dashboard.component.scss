@@ -227,20 +227,20 @@
   display: none !important;
 }
 
-.ability-item.strength::before { background: #e5e7eb !important; }
-.ability-item.agility::before { background: #e5e7eb !important; }
+.ability-item.composure::before { background: #e5e7eb !important; }
+.ability-item.adaptability::before { background: #e5e7eb !important; }
 .ability-item.aim::before { background: #e5e7eb !important; }
-.ability-item.memory::before { background: #e5e7eb !important; }
-.ability-item.communication::before { background: #e5e7eb !important; }
-.ability-item.logic::before { background: #e5e7eb !important; }
+.ability-item.awareness::before { background: #e5e7eb !important; }
+.ability-item.teamwork::before { background: #e5e7eb !important; }
+.ability-item.strategy::before { background: #e5e7eb !important; }
 
 /* Icon accent colors */
-.ability-item.strength .ability-icon { color: #374151 !important; }
-.ability-item.agility .ability-icon { color: #374151 !important; }
+.ability-item.composure .ability-icon { color: #374151 !important; }
+.ability-item.adaptability .ability-icon { color: #374151 !important; }
 .ability-item.aim .ability-icon { color: #374151 !important; }
-.ability-item.memory .ability-icon { color: #374151 !important; }
-.ability-item.communication .ability-icon { color: #374151 !important; }
-.ability-item.logic .ability-icon { color: #374151 !important; }
+.ability-item.awareness .ability-icon { color: #374151 !important; }
+.ability-item.teamwork .ability-icon { color: #374151 !important; }
+.ability-item.strategy .ability-icon { color: #374151 !important; }
 
 
 .missions-error {

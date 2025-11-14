@@ -33,12 +33,12 @@ export class MissionService {
   async getMissionGames(slug: string): Promise<Game[]> {
     const mission = await this.getMission(slug);
     return [
-      mission.games.strengthEndurance,
-      mission.games.agilitySpeed,
-      mission.games.aimPrecision,
-      mission.games.memoryAttention,
-      mission.games.communication,
-      mission.games.logicProblemSolving,
+      mission.games.mentalFortitudeComposure,
+      mission.games.adaptabilityDecisionMaking,
+      mission.games.aimMechanicalSkill,
+      mission.games.gameSenseAwareness,
+      mission.games.teamworkCommunication,
+      mission.games.strategy,
     ];
   }
 

@@ -14,12 +14,12 @@ export interface MissionSession {
 export interface SessionPlayer {
   session_id: string;
   player_name: string;
-  strength_endurance_result_id?: string;
-  agility_speed_result_id?: string;
-  aim_precision_result_id?: string;
-  memory_attention_result_id?: string;
-  communication_result_id?: string;
-  logic_problem_solving_result_id?: string;
+  mental_fortitude_composure_result_id?: string;
+  adaptability_decision_making_result_id?: string;
+  aim_mechanical_skill_result_id?: string;
+  game_sense_awareness_result_id?: string;
+  teamwork_communication_result_id?: string;
+  strategy_result_id?: string;
 }
 
 export interface GameResult {

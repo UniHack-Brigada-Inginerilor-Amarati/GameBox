@@ -49,12 +49,12 @@ export class MissionGameplayPageComponent implements OnInit, OnDestroy {
   missionCompleted = false;
 
   gameOrder: (keyof Mission['games'])[] = [
-    'strengthEndurance',
-    'agilitySpeed',
-    'aimPrecision',
-    'memoryAttention',
-    'communication',
-    'logicProblemSolving',
+    'mentalFortitudeComposure',
+    'adaptabilityDecisionMaking',
+    'aimMechanicalSkill',
+    'gameSenseAwareness',
+    'teamworkCommunication',
+    'strategy',
   ];
 
   private route = inject(ActivatedRoute);
