@@ -219,7 +219,7 @@ export interface Ability {
   slug: string;
   name: string;
   description: string;
-  icon: number | Media;
+  icon?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
 }

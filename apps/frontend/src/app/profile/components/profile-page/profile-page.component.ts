@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AbilityRadarChartComponent } from '../ability-radar-chart/ability-radar-chart.component';
 import { AuthService, LogoutComponent } from '../../../auth';
 import { ProfileService } from '../../services/profile.service';
 import { UserProfileDTO } from '@gamebox/shared';
@@ -29,6 +30,7 @@ import {
     MatInputModule,
     FormsModule,
     LogoutComponent,
+    AbilityRadarChartComponent,
   ],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss',

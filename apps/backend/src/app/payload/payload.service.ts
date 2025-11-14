@@ -12,30 +12,47 @@ export class PayloadService {
   }
 
   async makeRequest<T>(endpoint: string): Promise<T> {
+    const url = `${this.payloadUrl}/api/${endpoint}`;
     try {
-      this.logger.debug(`Making request to Payload CMS: ${endpoint}`);
+      this.logger.debug(`Making request to Payload CMS: ${url}`);
 
       const response = await firstValueFrom(
-        this.httpService.get<T>(`${this.payloadUrl}/api/${endpoint}`),
+        this.httpService.get<T>(url),
       );
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      const status = error.response?.status || error.status;
+      const statusText = error.response?.statusText || error.statusText || 'Unknown error';
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      const errorDetails = error.response?.data || {};
+
       this.logger.error(`Payload CMS request failed: ${endpoint}`, {
-        error: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
+        url,
+        status,
+        statusText,
+        errorMessage,
+        errorDetails,
+        payloadUrl: this.payloadUrl,
       });
 
-      if (error.response?.status === 404) {
+      if (status === 404) {
         throw new NotFoundException(`Resource not found: ${endpoint}`);
       }
 
-      if (error.response?.status >= 400 && error.response?.status < 500) {
-        throw new BadRequestException(`Bad request to Payload CMS: ${error.response?.statusText}`);
+      if (status >= 400 && status < 500) {
+        const detailedMessage = errorDetails?.message 
+          ? `Bad request to Payload CMS (${endpoint}): ${errorDetails.message}`
+          : `Bad request to Payload CMS (${endpoint}): ${statusText}`;
+        throw new BadRequestException(detailedMessage);
       }
 
-      throw new BadRequestException(`Payload CMS request failed: ${error.message}`);
+      // Network errors or other issues
+      const networkMessage = error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND'
+        ? `Cannot connect to Payload CMS at ${this.payloadUrl}. Is it running?`
+        : `Payload CMS request failed (${endpoint}): ${errorMessage}`;
+      
+      throw new BadRequestException(networkMessage);
     }
   }
 }

@@ -29,7 +29,7 @@ export const Abilities: CollectionConfig = {
       name: 'icon',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      required: false,
     },
   ],
 };

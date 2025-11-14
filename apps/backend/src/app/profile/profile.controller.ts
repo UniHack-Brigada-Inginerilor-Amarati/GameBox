@@ -1,26 +1,17 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Body,
-  UseGuards,
-  Request,
-  Param,
-  UseInterceptors,
-  UploadedFile,
-  Logger,
-  Query,
-} from '@nestjs/common';
+import {Controller, Get,Post,Patch, Body,UseGuards, Request,Param,UseInterceptors,UploadedFile,Logger,Query,} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../admin/admin.guard';
-import { UserProfile, UserProfileDTO } from '@gamebox/shared';
+import { AbilityService } from './ability.service';
+import { UserProfile, UserProfileDTO,AbilityScores } from '@gamebox/shared';
 
 @Controller('profiles')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(
+    private readonly profileService: ProfileService,
+    private readonly abilityService: AbilityService,
+  ) {}
   private readonly logger = new Logger(ProfileController.name);
 
   @Get('all')
@@ -128,5 +119,24 @@ export class ProfileController {
     return this.profileService.updateProfile(username, {
       avatar_url: body.avatar_url,
     });
+  }
+  @Get('me/abilities')
+  @UseGuards(AuthGuard)
+  async getCurrentUserAbilities(@Request() req: any): Promise<AbilityScores> {
+    this.logger.debug('GET /profiles/me/abilities - Fetching ability scores', {
+      userId: req.user.id,
+    });
+    const profile = await this.profileService.getProfileByUsername(req.user.username);
+    return this.abilityService.calculateAbilityScores(profile.id);
+  }
+
+  @Get(':username/abilities')
+  @UseGuards(AuthGuard)
+  async getUserAbilities(@Param('username') username: string): Promise<AbilityScores> {
+    this.logger.debug('GET /profiles/:username/abilities - Fetching ability scores', {
+      username,
+    });
+    const profile = await this.profileService.getProfileByUsername(username);
+    return this.abilityService.calculateAbilityScores(profile.id);
   }
 }

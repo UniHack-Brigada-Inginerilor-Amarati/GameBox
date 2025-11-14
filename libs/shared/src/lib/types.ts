@@ -9,3 +9,4 @@ export * from './mission-session';
 export * from './rich-text';
 export * from './admin_reservations';
 export * from './reservation';
+export * from './ability-scores';
