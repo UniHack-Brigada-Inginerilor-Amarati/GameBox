@@ -872,14 +872,46 @@ export class ReservationService {
     try {
       const name = userMetadata?.name || email.split('@')[0];
       const avatarUrl = userMetadata?.avatar_url || null;
+      
+      // Generate username from name or email
+      // Remove special characters, convert to lowercase, replace spaces with underscores
+      let username = (userMetadata?.username || name || email.split('@')[0])
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
+      
+      // Ensure username is not empty and has valid length
+      if (!username || username.length < 3) {
+        username = `user_${userId.substring(0, 8)}`;
+      }
+      
+      // Check if username is available, if not append a suffix
+      let finalUsername = username;
+      let suffix = 1;
+      while (true) {
+        const { data: existing } = await this.supabaseService.supabaseAdmin
+          .schema('gamebox')
+          .from('user_profiles')
+          .select('id')
+          .eq('username', finalUsername)
+          .limit(1);
+        
+        if (!existing || existing.length === 0) {
+          break; // Username is available
+        }
+        
+        finalUsername = `${username}_${suffix}`;
+        suffix++;
+      }
 
       const { error } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('user_profiles')
         .insert({
           id: userId,
+          username: finalUsername,
           email,
-          name,
           avatar_url: avatarUrl,
           role: 'user',
         });
@@ -889,7 +921,7 @@ export class ReservationService {
         throw new BadRequestException('Failed to create user profile');
       }
 
-      this.logger.log(`User profile created for: ${email}`);
+      this.logger.log(`User profile created for: ${email} with username: ${finalUsername}`);
     } catch (error) {
       this.logger.error('Error in handleNewUser:', error);
       throw error;

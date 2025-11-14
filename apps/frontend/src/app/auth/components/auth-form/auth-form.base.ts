@@ -185,7 +185,7 @@ export abstract class AuthFormBase {
   }
 
   goToProfile(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/profile/me']);
   }
 
   goToDashboard(): void {
