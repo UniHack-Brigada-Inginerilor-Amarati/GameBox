@@ -177,7 +177,7 @@ export class ProfileService {
     return `${this.avatarGeneratorUrl}${userId}`;
   }
 
-  async searchUsers(query: string, limit = 10): Promise<UserProfileDTO[]> {
+  async searchUsers(query: string, limit = 10): Promise<UserProfile[]> {
     this.logger.debug('Searching users', { query, limit });
 
     if (!query || query.trim().length < 2) {
@@ -208,13 +208,15 @@ export class ProfileService {
       this.db.handleSupabaseError('searchUsers', error, { query, limit });
     }
 
-    this.logger.debug('User search completed', { query, resultsCount: data?.length || 0 });
+    this.logger.debug('User search completed', {
+      query,
+      resultsCount: data?.length || 0,
+      results: data?.map((u) => ({ id: u.id, username: u.username })) || [],
+    });
 
-    const userProfiles: UserProfileDTO[] = (data || []).map((user) =>
-      this.mapUserProfileToDTO(user),
-    );
-
-    return userProfiles;
+    // Return full UserProfile objects (including id) for frontend compatibility
+    // The frontend needs the id field to filter and compare users
+    return (data || []) as UserProfile[];
   }
 
   async uploadFileToStorage(

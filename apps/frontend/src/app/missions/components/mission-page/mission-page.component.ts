@@ -59,6 +59,7 @@ export class MissionPageComponent implements OnInit {
     if (!game) {
       return null;
     }
+  
     return {
       ...game,
       category: category

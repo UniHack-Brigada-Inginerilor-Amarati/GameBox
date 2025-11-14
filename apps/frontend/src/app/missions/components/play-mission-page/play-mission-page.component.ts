@@ -12,12 +12,21 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import {
+  Observable,
+  map,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  catchError,
+  of,
+} from 'rxjs';
 import { Mission, UserProfile, RichTextUtils, RichTextDescription } from '@gamebox/shared';
 import { MissionService } from '../../services/mission.service';
 import { SessionService } from '../../services/session.service';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ProfileService } from '../../../profile/services/profile.service';
 
 @Component({
   selector: 'app-play-mission-page',
@@ -46,6 +55,7 @@ export class PlayMissionPageComponent implements OnInit {
   private sessionService = inject(SessionService);
   private userService = inject(UserService);
   private authService = inject(AuthService);
+  private profileService = inject(ProfileService);
   private snackBar = inject(MatSnackBar);
 
   mission: Mission | null = null;
@@ -61,18 +71,37 @@ export class PlayMissionPageComponent implements OnInit {
       distinctUntilChanged(),
       switchMap((query) => {
         if (!query || query.length < 2) {
-          return new Observable<UserProfile[]>((subscriber) => {
-            subscriber.next([]);
-            subscriber.complete();
-          });
+          return of([]);
         }
-        return this.userService.searchUsers(query);
+        return this.userService.searchUsers(query).pipe(
+          catchError((error) => {
+            console.error('Error searching users:', error);
+            this.snackBar.open('Error searching users', 'Close', {
+              duration: 3000,
+            });
+            return of([]);
+          }),
+        );
       }),
       map((users) => {
-        const filtered = users.filter(
-          (user) => !this.selectedPlayers.some((selected) => selected.id === user.id),
-        );
+        console.log('Received users from search:', users);
+        if (!users || !Array.isArray(users)) {
+          console.warn('Invalid users data:', users);
+          return [];
+        }
+        const filtered = users.filter((user) => {
+          const hasId = user && user.id;
+          if (!hasId) {
+            console.warn('User missing id field:', user);
+          }
+          return hasId && !this.selectedPlayers.some((selected) => selected.id === user.id);
+        });
+        console.log('Filtered users:', filtered);
         return filtered;
+      }),
+      catchError((error) => {
+        console.error('Error in filteredUsers$ stream:', error);
+        return of([]);
       }),
     );
   }
@@ -124,20 +153,27 @@ export class PlayMissionPageComponent implements OnInit {
       return;
     }
 
+    if (!this.mission?.slug) {
+      this.snackBar.open('Mission information is missing', 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
+
     this.creatingSession = true;
 
-    this.authService.getCurrentUser().subscribe({
-      next: ({ user }: { user: unknown }) => {
-        if (!user) {
-          this.snackBar.open('You must be logged in to start a mission', 'Close', {
+    // Get the current user's profile to get their username
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        if (!profile || !profile.username) {
+          this.snackBar.open('Unable to get user profile', 'Close', {
             duration: 3000,
           });
           this.creatingSession = false;
           return;
         }
 
-        const userObj = user as { id: string };
-        this.sessionService.createSession(this.mission?.slug || '', userObj.id).subscribe({
+        this.sessionService.createSession(this.mission!.slug, profile.username).subscribe({
           next: (session) => {
             const playerIds = this.selectedPlayers.map((player) => player.id);
             this.sessionService.addSessionPlayers(session.session_id, playerIds).subscribe({

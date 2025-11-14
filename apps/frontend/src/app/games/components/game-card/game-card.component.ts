@@ -11,18 +11,20 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './game-card.component.html',
-  styleUrls: ['./game-card.component.scss']
+  styleUrls: ['./game-card.component.scss'],
 })
 export class GameCardComponent implements OnInit {
-  @Input({ required: true }) game!: Game & { category?: string };
-  
+  @Input() game: (Game & { category?: string }) | null = null;
+
   isExpanded = false;
   private gameService = inject(GameService);
   gameData: Game | null = null;
   environment = environment;
 
   ngOnInit(): void {
-    this.loadGameData();
+    if (this.game) {
+      this.loadGameData();
+    }
   }
 
   private loadGameData(): void {
@@ -34,7 +36,7 @@ export class GameCardComponent implements OnInit {
         error: (error) => {
           console.error('Error loading game data:', error);
           this.gameData = this.game;
-        }
+        },
       });
     } else {
       this.gameData = this.game;
@@ -50,10 +52,10 @@ export class GameCardComponent implements OnInit {
       const mediaUrl = game.media[0].mediaField?.url || game.media[0].url;
       if (mediaUrl) return mediaUrl;
     }
-    
+
     if (game.thumbnail) return game.thumbnail;
     if (game.picture) return game.picture;
-    
+
     return '';
   }
 }

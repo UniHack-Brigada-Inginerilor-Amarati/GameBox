@@ -1,6 +1,13 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
-import { GameResult, MissionSession, SessionPlayer, UserProfileDTO, PlayerGameResult, GameScore } from '@gamebox/shared';
+import {
+  GameResult,
+  MissionSession,
+  SessionPlayer,
+  UserProfileDTO,
+  PlayerGameResult,
+  GameScore,
+} from '@gamebox/shared';
 import { MissionService } from '../missions/mission.service';
 import { ProfileService } from '../profile/profile.service';
 
@@ -103,6 +110,29 @@ export class SessionService {
 
     if (error) {
       this.db.handleSupabaseError('addSessionPlayers', error, { sessionId, playerNames });
+    }
+
+    if (!data) {
+      throw new NotFoundException('Session players not found');
+    }
+
+    return data;
+  }
+
+  async addSessionPlayersByIds(sessionId: string, playerIds: string[]): Promise<SessionPlayer[]> {
+    const sessionPlayers = playerIds.map((playerId) => ({
+      session_id: sessionId,
+      player_id: playerId,
+    }));
+
+    this.logger.debug('Adding session players by IDs', { sessionId, playerIds });
+    const { data, error } = await this.db.supabase
+      .from('session_players')
+      .insert(sessionPlayers)
+      .select();
+
+    if (error) {
+      this.db.handleSupabaseError('addSessionPlayersByIds', error, { sessionId, playerIds });
     }
 
     if (!data) {
@@ -248,27 +278,32 @@ export class SessionService {
     this.logger.debug('Fetching player game results for session', { sessionId });
     const { data, error } = await this.db.supabase
       .from('player_results')
-      .select(`
+      .select(
+        `
         player_game_result_id,
         game_result_id,
         player_name,
         score,
-        game_results!inner (
+        game_results (
           game_slug,
           session_id,
           game_result
         )
-      `)
+      `,
+      )
       .eq('game_results.session_id', sessionId);
 
     if (error) {
+      this.logger.error('Error fetching game results', { error, sessionId });
       this.db.handleSupabaseError('getGameResults', error, {
         sessionId,
       });
     }
 
-    if (!data) {
-      throw new NotFoundException('Player game results not found');
+    // Return empty array if no results exist (instead of throwing error)
+    if (!data || data.length === 0) {
+      this.logger.debug('No game results found for session', { sessionId });
+      return [];
     }
 
     // Transform to PlayerGameResult format
