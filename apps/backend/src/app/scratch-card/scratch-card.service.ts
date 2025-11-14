@@ -66,10 +66,18 @@ export class ScratchCardService {
     this.logger.debug('Fetching user progress from Supabase', { userId });
 
     try {
+      // Query player_results joined with game_results to get game_slug and score
       const { data, error } = await this.supabaseService.supabase
-        .from('game_results')
-        .select('game_slug, game_result')
-        .eq('player_id', userId);
+        .from('player_results')
+        .select(
+          `
+          score,
+          game_results (
+            game_slug
+          )
+        `,
+        )
+        .eq('player_name', userId);
 
       if (error) {
         this.logger.warn('Failed to fetch user progress from Supabase, using empty progress', {
@@ -79,13 +87,16 @@ export class ScratchCardService {
       }
 
       const progressMap = new Map();
-      data?.forEach((result) => {
-        const score = result.game_result?.score ? parseInt(result.game_result.score) : 0;
-        progressMap.set(result.game_slug, {
-          isCompleted: true,
-          score: score,
-          completedAt: new Date().toISOString(),
-        });
+      data?.forEach((result: any) => {
+        if (result.game_results?.game_slug) {
+          const gameSlug = result.game_results.game_slug;
+          const score = result.score || 0;
+          progressMap.set(gameSlug, {
+            isCompleted: true,
+            score: score,
+            completedAt: new Date().toISOString(),
+          });
+        }
       });
 
       this.logger.debug('User progress fetched successfully', {

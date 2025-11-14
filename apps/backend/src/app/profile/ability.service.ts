@@ -2,16 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { MissionService } from '../missions/mission.service';
 import { GameService } from '../games/game.service';
-import { AbilityScores, AbilityScore } from '@gamebox/shared';
-import { Mission, Game } from '@gamebox/shared';
-
-interface GameResultData {
-  game_slug: string;
-  game_result: {
-    score?: number;
-    [key: string]: any;
-  };
-}
+import { AbilityScores, AbilityScore, Mission, Game, PlayerGameResult } from '@gamebox/shared';
 
 @Injectable()
 export class AbilityService {
@@ -59,11 +50,11 @@ export class AbilityService {
   /**
    * Get all game results for a user
    */
-  private async getUserGameResults(userId: string): Promise<GameResultData[]> {
+  private async getUserGameResults(username: string): Promise<PlayerGameResult[]> {
     const { data, error } = await this.db.supabase
-      .from('game_results')
-      .select('game_slug, game_result')
-      .eq('player_id', userId);
+      .from('player_results')
+      .select('*')
+      .eq('player_name', username);
 
     if (error) {
       this.logger.error('Error fetching game results', error);
@@ -191,7 +182,7 @@ export class AbilityService {
    * Aggregate scores by ability category
    */
   private aggregateScoresByAbility(
-    gameResults: GameResultData[],
+    gameResults: PlayerGameResult[],
     gameToAbilityMap: Map<string, { slug: string; name: string }>,
   ): Omit<AbilityScores, 'overall'> {
     const abilityData: Record<string, { scores: number[]; name: string; slug: string }> = {
@@ -229,12 +220,9 @@ export class AbilityService {
 
     // Collect scores for each ability
     for (const result of gameResults) {
-      const abilityInfo = gameToAbilityMap.get(result.game_slug);
+      const abilityInfo = gameToAbilityMap.get(result.game_result_id);
       if (abilityInfo) {
-        const score = this.extractScore(result.game_result);
-        if (score !== null) {
-          abilityData[abilityInfo.slug].scores.push(score);
-        }
+        abilityData[abilityInfo.slug].scores.push(result.total_score);
       }
     }
 

@@ -34,34 +34,46 @@
       
       <div class="games-grid">
         <!-- Mental Fortitude / Composure Game -->
-        <app-game-card 
-          [game]="getGameForCard(mission.games.mentalFortitudeComposure, 'Mental Fortitude / Composure')"
-        ></app-game-card>
+        @if (getGameForCard(mission.games?.mentalFortitudeComposure, 'Mental Fortitude / Composure')) {
+          <app-game-card 
+            [game]="getGameForCard(mission.games.mentalFortitudeComposure, 'Mental Fortitude / Composure')!"
+          ></app-game-card>
+        }
 
         <!-- Adaptability / Decision Making Game -->
-        <app-game-card 
-          [game]="getGameForCard(mission.games.adaptabilityDecisionMaking, 'Adaptability / Decision Making')"
-        ></app-game-card>
+        @if (getGameForCard(mission.games?.adaptabilityDecisionMaking, 'Adaptability / Decision Making')) {
+          <app-game-card 
+            [game]="getGameForCard(mission.games.adaptabilityDecisionMaking, 'Adaptability / Decision Making')!"
+          ></app-game-card>
+        }
 
         <!-- Aim / Mechanical Skill Game -->
-        <app-game-card 
-          [game]="getGameForCard(mission.games.aimMechanicalSkill, 'Aim / Mechanical Skill')"
-        ></app-game-card>
+        @if (getGameForCard(mission.games?.aimMechanicalSkill, 'Aim / Mechanical Skill')) {
+          <app-game-card 
+            [game]="getGameForCard(mission.games.aimMechanicalSkill, 'Aim / Mechanical Skill')!"
+          ></app-game-card>
+        }
 
         <!-- Game Sense / Awareness Game -->
-        <app-game-card 
-          [game]="getGameForCard(mission.games.gameSenseAwareness, 'Game Sense / Awareness')"
-        ></app-game-card>
+        @if (getGameForCard(mission.games?.gameSenseAwareness, 'Game Sense / Awareness')) {
+          <app-game-card 
+            [game]="getGameForCard(mission.games.gameSenseAwareness, 'Game Sense / Awareness')!"
+          ></app-game-card>
+        }
 
         <!-- Teamwork / Communication Game -->
-        <app-game-card 
-          [game]="getGameForCard(mission.games.teamworkCommunication, 'Teamwork / Communication')"
-        ></app-game-card>
+        @if (getGameForCard(mission.games?.teamworkCommunication, 'Teamwork / Communication')) {
+          <app-game-card 
+            [game]="getGameForCard(mission.games.teamworkCommunication, 'Teamwork / Communication')!"
+          ></app-game-card>
+        }
 
         <!-- Strategy Game -->
-        <app-game-card 
-          [game]="getGameForCard(mission.games.strategy, 'Strategy')"
-        ></app-game-card>
+        @if (getGameForCard(mission.games?.strategy, 'Strategy')) {
+          <app-game-card 
+            [game]="getGameForCard(mission.games.strategy, 'Strategy')!"
+          ></app-game-card>
+        }
       </div>
     </div>
   }

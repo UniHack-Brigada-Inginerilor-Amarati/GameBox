@@ -15,7 +15,7 @@
     <div class="game-header">
       <div class="game-title-section">
         <h3 class="game-title">{{ gameData.name }}</h3>
-        <p class="game-category">{{ game.category }}</p>
+        <p class="game-category">{{ game?.category }}</p>
       </div>
 
       <button mat-stroked-button color="primary" class="learn-more-btn" (click)="toggleExpanded()">
