@@ -109,12 +109,12 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
 
     // Get ability scores in order
     const abilities: AbilityScore[] = [
-      scores.strengthEndurance,
-      scores.agilitySpeed,
-      scores.aimPrecision,
-      scores.memoryAttention,
-      scores.communication,
-      scores.logicProblemSolving,
+      scores.mentalFortitudeComposure,
+      scores.adaptabilityDecisionMaking,
+      scores.aimMechanicalSkill,
+      scores.gameSenseAwareness,
+      scores.teamworkCommunication,
+      scores.strategy,
     ];
 
     // Draw filled area
@@ -200,12 +200,12 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
     if (!scores) return [];
 
     return [
-      scores.strengthEndurance,
-      scores.agilitySpeed,
-      scores.aimPrecision,
-      scores.memoryAttention,
-      scores.communication,
-      scores.logicProblemSolving,
+      scores.mentalFortitudeComposure,
+      scores.adaptabilityDecisionMaking,
+      scores.aimMechanicalSkill,
+      scores.gameSenseAwareness,
+      scores.teamworkCommunication,
+      scores.strategy,
     ];
   }
 }

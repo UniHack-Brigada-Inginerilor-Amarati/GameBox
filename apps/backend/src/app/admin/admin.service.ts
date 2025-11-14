@@ -110,7 +110,7 @@ export class AdminService {
     const { data: ownerProfiles, error: profilesError } = await this.supabase
       .schema('gamebox')
       .from('user_profiles')
-      .select('id, name, email')
+      .select('id, username, email')
       .in('id', ownerIds);
 
     if (profilesError) {

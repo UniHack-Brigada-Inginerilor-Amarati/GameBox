@@ -7,12 +7,12 @@ export interface AbilityScore {
   }
   
   export interface AbilityScores {
-    strengthEndurance: AbilityScore;
-    agilitySpeed: AbilityScore;
-    aimPrecision: AbilityScore;
-    memoryAttention: AbilityScore;
-    communication: AbilityScore;
-    logicProblemSolving: AbilityScore;
+    mentalFortitudeComposure: AbilityScore;
+    adaptabilityDecisionMaking: AbilityScore;
+    aimMechanicalSkill: AbilityScore;
+    gameSenseAwareness: AbilityScore;
+    teamworkCommunication: AbilityScore;
+    strategy: AbilityScore;
     overall: {
       averageScore: number; // Average of all abilities
       totalGames: number;

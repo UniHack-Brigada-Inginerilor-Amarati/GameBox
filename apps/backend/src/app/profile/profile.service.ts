@@ -82,7 +82,7 @@ export class ProfileService {
     const { data, error } = await this.db.supabase
       .from('user_profiles')
       .select('*')
-      .in('name', usernames);
+      .in('username', usernames);
 
     if (error) {
       this.db.handleSupabaseError('getProfilesByUsernames', error, usernames);
@@ -190,7 +190,7 @@ export class ProfileService {
       .from('user_profiles')
       .select('*')
       .or(`name.ilike.${searchTerm},email.ilike.${searchTerm}`)
-      .order('name', { ascending: true })
+      .order('username', { ascending: true })
       .limit(limit);
 
     if (error) {

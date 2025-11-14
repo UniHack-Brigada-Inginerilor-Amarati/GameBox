@@ -83,56 +83,71 @@ export class AbilityService {
   ): Map<string, { slug: string; name: string }> {
     const map = new Map<string, { slug: string; name: string }>();
 
-    // Create ability name mapping
+    // Create ability name mapping (new ability names from mission structure)
     const abilityNames: Record<string, string> = {
-      strengthEndurance: 'Strength & Endurance',
-      agilitySpeed: 'Agility & Speed',
-      aimPrecision: 'Aim & Precision',
-      memoryAttention: 'Memory & Attention',
-      communication: 'Communication',
-      logicProblemSolving: 'Logic & Problem Solving',
+      mentalFortitudeComposure: 'Mental Fortitude / Composure',
+      adaptabilityDecisionMaking: 'Adaptability / Decision Making',
+      aimMechanicalSkill: 'Aim / Mechanical Skill',
+      gameSenseAwareness: 'Game Sense / Awareness',
+      teamworkCommunication: 'Teamwork / Communication',
+      strategy: 'Strategy',
     };
 
     // Map games from missions to their ability categories
     for (const mission of missions) {
       if (mission.games) {
-        // Map each game in the mission to its ability
-        if (mission.games.strengthEndurance) {
-          const game = this.getGameFromMission(mission.games.strengthEndurance, allGames);
-          if (game?.slug) {
-            map.set(game.slug, { slug: 'strengthEndurance', name: abilityNames.strengthEndurance });
-          }
-        }
-        if (mission.games.agilitySpeed) {
-          const game = this.getGameFromMission(mission.games.agilitySpeed, allGames);
-          if (game?.slug) {
-            map.set(game.slug, { slug: 'agilitySpeed', name: abilityNames.agilitySpeed });
-          }
-        }
-        if (mission.games.aimPrecision) {
-          const game = this.getGameFromMission(mission.games.aimPrecision, allGames);
-          if (game?.slug) {
-            map.set(game.slug, { slug: 'aimPrecision', name: abilityNames.aimPrecision });
-          }
-        }
-        if (mission.games.memoryAttention) {
-          const game = this.getGameFromMission(mission.games.memoryAttention, allGames);
-          if (game?.slug) {
-            map.set(game.slug, { slug: 'memoryAttention', name: abilityNames.memoryAttention });
-          }
-        }
-        if (mission.games.communication) {
-          const game = this.getGameFromMission(mission.games.communication, allGames);
-          if (game?.slug) {
-            map.set(game.slug, { slug: 'communication', name: abilityNames.communication });
-          }
-        }
-        if (mission.games.logicProblemSolving) {
-          const game = this.getGameFromMission(mission.games.logicProblemSolving, allGames);
+        // Map each game in the mission to its ability using new property names
+        if (mission.games.mentalFortitudeComposure) {
+          const game = this.getGameFromMission(mission.games.mentalFortitudeComposure, allGames);
           if (game?.slug) {
             map.set(game.slug, {
-              slug: 'logicProblemSolving',
-              name: abilityNames.logicProblemSolving,
+              slug: 'mentalFortitudeComposure',
+              name: abilityNames.mentalFortitudeComposure,
+            });
+          }
+        }
+        if (mission.games.adaptabilityDecisionMaking) {
+          const game = this.getGameFromMission(mission.games.adaptabilityDecisionMaking, allGames);
+          if (game?.slug) {
+            map.set(game.slug, {
+              slug: 'adaptabilityDecisionMaking',
+              name: abilityNames.adaptabilityDecisionMaking,
+            });
+          }
+        }
+        if (mission.games.aimMechanicalSkill) {
+          const game = this.getGameFromMission(mission.games.aimMechanicalSkill, allGames);
+          if (game?.slug) {
+            map.set(game.slug, {
+              slug: 'aimMechanicalSkill',
+              name: abilityNames.aimMechanicalSkill,
+            });
+          }
+        }
+        if (mission.games.gameSenseAwareness) {
+          const game = this.getGameFromMission(mission.games.gameSenseAwareness, allGames);
+          if (game?.slug) {
+            map.set(game.slug, {
+              slug: 'gameSenseAwareness',
+              name: abilityNames.gameSenseAwareness,
+            });
+          }
+        }
+        if (mission.games.teamworkCommunication) {
+          const game = this.getGameFromMission(mission.games.teamworkCommunication, allGames);
+          if (game?.slug) {
+            map.set(game.slug, {
+              slug: 'teamworkCommunication',
+              name: abilityNames.teamworkCommunication,
+            });
+          }
+        }
+        if (mission.games.strategy) {
+          const game = this.getGameFromMission(mission.games.strategy, allGames);
+          if (game?.slug) {
+            map.set(game.slug, {
+              slug: 'strategy',
+              name: abilityNames.strategy,
             });
           }
         }
@@ -183,15 +198,35 @@ export class AbilityService {
       string,
       { scores: number[]; name: string; slug: string }
     > = {
-      strengthEndurance: { scores: [], name: 'Strength & Endurance', slug: 'strengthEndurance' },
-      agilitySpeed: { scores: [], name: 'Agility & Speed', slug: 'agilitySpeed' },
-      aimPrecision: { scores: [], name: 'Aim & Precision', slug: 'aimPrecision' },
-      memoryAttention: { scores: [], name: 'Memory & Attention', slug: 'memoryAttention' },
-      communication: { scores: [], name: 'Communication', slug: 'communication' },
-      logicProblemSolving: {
+      mentalFortitudeComposure: {
         scores: [],
-        name: 'Logic & Problem Solving',
-        slug: 'logicProblemSolving',
+        name: 'Mental Fortitude / Composure',
+        slug: 'mentalFortitudeComposure',
+      },
+      adaptabilityDecisionMaking: {
+        scores: [],
+        name: 'Adaptability / Decision Making',
+        slug: 'adaptabilityDecisionMaking',
+      },
+      aimMechanicalSkill: {
+        scores: [],
+        name: 'Aim / Mechanical Skill',
+        slug: 'aimMechanicalSkill',
+      },
+      gameSenseAwareness: {
+        scores: [],
+        name: 'Game Sense / Awareness',
+        slug: 'gameSenseAwareness',
+      },
+      teamworkCommunication: {
+        scores: [],
+        name: 'Teamwork / Communication',
+        slug: 'teamworkCommunication',
+      },
+      strategy: {
+        scores: [],
+        name: 'Strategy',
+        slug: 'strategy',
       },
     };
 
@@ -226,12 +261,12 @@ export class AbilityService {
     };
 
     return {
-      strengthEndurance: calculateAbilityScore(abilityData.strengthEndurance),
-      agilitySpeed: calculateAbilityScore(abilityData.agilitySpeed),
-      aimPrecision: calculateAbilityScore(abilityData.aimPrecision),
-      memoryAttention: calculateAbilityScore(abilityData.memoryAttention),
-      communication: calculateAbilityScore(abilityData.communication),
-      logicProblemSolving: calculateAbilityScore(abilityData.logicProblemSolving),
+      mentalFortitudeComposure: calculateAbilityScore(abilityData.mentalFortitudeComposure),
+      adaptabilityDecisionMaking: calculateAbilityScore(abilityData.adaptabilityDecisionMaking),
+      aimMechanicalSkill: calculateAbilityScore(abilityData.aimMechanicalSkill),
+      gameSenseAwareness: calculateAbilityScore(abilityData.gameSenseAwareness),
+      teamworkCommunication: calculateAbilityScore(abilityData.teamworkCommunication),
+      strategy: calculateAbilityScore(abilityData.strategy),
     };
   }
 
@@ -269,12 +304,12 @@ export class AbilityService {
     totalGames: number;
   } {
     const scores = [
-      abilityScores.strengthEndurance,
-      abilityScores.agilitySpeed,
-      abilityScores.aimPrecision,
-      abilityScores.memoryAttention,
-      abilityScores.communication,
-      abilityScores.logicProblemSolving,
+      abilityScores.mentalFortitudeComposure,
+      abilityScores.adaptabilityDecisionMaking,
+      abilityScores.aimMechanicalSkill,
+      abilityScores.gameSenseAwareness,
+      abilityScores.teamworkCommunication,
+      abilityScores.strategy,
     ];
 
     const totalGames = scores.reduce((sum, score) => sum + score.gameCount, 0);
