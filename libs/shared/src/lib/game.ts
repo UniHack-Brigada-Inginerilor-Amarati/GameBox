@@ -1,13 +1,19 @@
 import { Ability } from './ability';
 import { Media } from './media';
 
+export interface GameAbility {
+  ability: Ability;
+  score: number;
+  id?: string;
+}
+
 export interface Game {
   slug: string;
   name: string;
   description: string;
   picture: string;
   thumbnail: string;
-  abilities?: Ability[];
+  abilities?: GameAbility[];
   media?: Media[];
   isCompleted?: boolean; // Added for scratch card progress tracking
 }
