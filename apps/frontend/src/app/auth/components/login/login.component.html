@@ -1,0 +1,102 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+     <!-- Back to Home Button -->
+     <div class="back-home-container">
+      <button mat-icon-button routerLink="/" class="back-home-btn" aria-label="Back to home">
+        <mat-icon>home</mat-icon>
+      </button>
+    </div>
+    
+    <h2 class="auth-title">Login to your account</h2>
+    <p class="auth-subtitle">Enter your email below to login to your account</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+      <!-- Email Field -->
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input 
+          matInput 
+          type="email" 
+          formControlName="email" 
+          placeholder="example@example.com"
+          (input)="onInputChange()"
+        />
+
+        @if (email.invalid && (email.touched || submitted())) {
+          @for (error of emailErrors; track error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        }
+      </mat-form-field>
+
+      <!-- Password Field with Forgot Password -->
+      <div class="password-wrapper">
+        <mat-form-field appearance="fill" class="password-field">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••••"
+            (input)="onInputChange()"
+          />
+
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="'Toggle password visibility'"
+            [attr.aria-pressed]="showPassword()"      
+            > 
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+
+          @if (password.invalid && (password.touched || submitted())) {
+            @for (error of passwordErrors; track error) {
+              <mat-error>{{ error }}</mat-error>
+            }
+          }
+        </mat-form-field>
+
+        <a class="forgot-password-link" routerLink="/auth/forgot-password">Forgot your password?</a>
+      </div>
+
+      <!-- Login Error Message -->
+      @if (errorMessage()) {
+        <div class="auth-error-message">
+          <mat-icon>error</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Submit Button -->
+      <button mat-raised-button color="primary" type="submit" class="auth-button">
+      
+        @if (isLoading()) {
+          <mat-icon>hourglass_empty</mat-icon>
+        } @else if (loginForm.invalid) {  
+          <mat-icon>block</mat-icon>
+        } @else {
+          <mat-icon>login</mat-icon>
+        }
+
+        @if (isLoading()) {
+          Logging in...
+        } @else {
+          Login
+        }
+      </button>
+    </form>
+
+    <!-- Google Login -->
+    <app-google-login-button class="auth-button" (click)="onGoogleLogin()"/>
+
+    <!-- Signup -->
+    <p class="auth-link-text">
+      Don't have an account?
+      <a routerLink="/auth/register">Sign up</a>
+    </p>
+  </div>
+</div>

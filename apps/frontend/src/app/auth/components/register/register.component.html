@@ -1,0 +1,139 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+     <!-- Back to Home Button -->
+     <div class="back-home-container">
+      <button mat-icon-button routerLink="/" class="back-home-btn" aria-label="Back to home">
+        <mat-icon>home</mat-icon>
+      </button>
+    </div>
+    
+    <h2 class="auth-title">Create your account</h2>
+    <p class="auth-subtitle">Enter your details below to create your account</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+      <!-- Username Field -->
+      <mat-form-field appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username"/>
+
+        @if (username.invalid && (username.touched || submitted())) {
+          @for (error of usernameErrors; track error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        }
+      </mat-form-field>
+
+      <!-- Email Field -->
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="example@example.com" />
+
+        @if (email.invalid && (email.touched || submitted())) {
+          @for (error of emailErrors; track error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        }
+      </mat-form-field>
+
+      <!-- Password Field -->
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="••••••••"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="'Toggle password visibility'"
+          [attr.aria-pressed]="showPassword()"
+        >
+          <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+
+        @if (password.invalid && (password.touched || submitted())) {
+          @for (error of passwordErrors; track error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        }
+      </mat-form-field>
+
+      <!-- Confirm Password Field -->
+      <mat-form-field appearance="fill">
+        <mat-label>Confirm Password</mat-label>
+        <input
+          matInput
+          [type]="showConfirmPassword() ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          placeholder="••••••••"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="toggleConfirmPasswordVisibility()"
+          [attr.aria-label]="'Toggle confirm password visibility'"
+          [attr.aria-pressed]="showConfirmPassword()"
+        >
+          <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+
+        @if ((confirmPassword.invalid || registerForm.hasError('fieldsMismatch')) && (confirmPassword.touched || submitted())) {
+          @for (error of confirmPasswordErrors; track error) {
+            <mat-error>{{ error }}</mat-error>
+          }
+        }
+      </mat-form-field>
+
+      <!-- Register Error Message -->
+      @if (errorMessage()) {
+        <div class="auth-error-message">
+          <mat-icon>error</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Submit Button -->
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit"
+      >
+        <!-- Icons -->
+        @if (isLoading()) {
+          <mat-icon>hourglass_empty</mat-icon>
+        } @else if (registerForm.invalid) {
+          <mat-icon>block</mat-icon>
+        } @else {
+          <mat-icon>person_add</mat-icon>
+        }
+
+        <!-- Text -->
+        @if (isLoading()) {
+          Creating account...
+        } @else {         
+          Create Account
+        }
+      </button>
+    </form>
+
+    <!-- Google Registration -->
+    <app-google-login-button 
+      class="full-width" 
+      (click)="onGoogleRegister()"
+    />
+
+    <!-- Login Link -->
+    <p class="auth-link-text">
+      Already have an account?
+      <a routerLink="/auth/login">Sign in</a>
+    </p>
+  </div>
+</div>

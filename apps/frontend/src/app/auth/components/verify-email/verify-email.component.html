@@ -1,0 +1,73 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2 class="auth-title">Verify Your Email</h2>
+    <p class="auth-subtitle">We've sent a verification email to <strong>{{ userEmail }}</strong></p>
+    
+    <div class="verify-email-content">
+      <div class="email-icon">
+        <mat-icon>email</mat-icon>
+      </div>
+      
+      <p class="verification-instructions">
+        Please check your inbox and click the verification link to continue.
+      </p>
+    </div>
+
+    <div class="form-actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="resendVerification()" 
+        [disabled]="isResending"
+        class="auth-button"
+      >
+        @if (isResending) {
+          <mat-icon>hourglass_empty</mat-icon>
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
+        
+        @if (isResending) {
+          Sending...
+        } @else {
+          Resend Verification Email
+        }
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent" 
+        (click)="checkVerification()" 
+        [disabled]="isChecking"
+        class="auth-button"
+      >
+        @if (isChecking) {
+          <mat-icon>hourglass_empty</mat-icon>
+        } @else {
+          <mat-icon>check_circle</mat-icon>
+        }
+        
+        @if (isChecking) {
+          Checking...
+        } @else {
+          I've Verified My Email
+        }
+      </button>
+    </div>
+
+    @if (message) {
+      <div class="auth-message" [class.auth-error-message]="isError">
+        @if (isError) {
+          <mat-icon>error</mat-icon>
+        } @else {
+          <mat-icon>info</mat-icon>
+        }
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    <p class="auth-link-text">
+      <a routerLink="/auth/login">Back to Login</a>
+    </p>
+  </div>
+</div> 

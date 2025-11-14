@@ -1,0 +1,11 @@
+export { AuthFormBase } from './components/auth-form/auth-form.base';
+export { LoginComponent } from './components/login/login.component';
+export { RegisterComponent } from './components/register/register.component';
+export { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+export { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+export { OAuthCallbackComponent } from './components/oauth-callback/oauth-callback.component';
+export { LogoutComponent } from './components/logout/logout.component';
+export { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+export { AuthService } from './services/auth.service';
+export { AuthGuard } from './guards/auth.guard';
+export { AdminGuard } from '../admin/guards/admin.guard';

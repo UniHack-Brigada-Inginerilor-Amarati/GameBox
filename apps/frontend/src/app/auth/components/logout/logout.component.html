@@ -1,0 +1,9 @@
+<button 
+  mat-raised-button 
+  color="warn" 
+  (click)="logout()" 
+  [disabled]="isLoggingOut"
+  class="logout-button">
+  <mat-icon>{{ isLoggingOut ? 'hourglass_empty' : 'logout' }}</mat-icon>
+  {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
+</button> 

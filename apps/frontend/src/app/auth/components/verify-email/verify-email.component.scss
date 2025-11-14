@@ -1,0 +1,72 @@
+@use '../auth-form/auth-form.base.scss' as auth;
+
+.verify-email-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.email-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+  background: rgba(135, 164, 250, 0.1);
+  border: 2px solid rgba(135, 164, 250, 0.3);
+  border-radius: 50%;
+  margin-bottom: 1rem;
+
+  mat-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    color: #87a4fa;
+  }
+}
+
+.verification-instructions {
+  color: #999;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.auth-button {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.auth-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+
+  mat-icon {
+    color: #4caf50;
+    font-size: 1.2rem;
+  }
+
+  span {
+    color: #f1f1f1;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+}
+
+.auth-message.auth-error-message {
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+
+  mat-icon {
+    color: #f44336;
+  }
+} 
