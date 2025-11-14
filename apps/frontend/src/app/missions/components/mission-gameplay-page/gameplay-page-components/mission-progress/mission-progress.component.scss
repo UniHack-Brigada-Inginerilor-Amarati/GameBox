@@ -1,0 +1,223 @@
+.gameplay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  gap: 24px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .mission-title-section {
+    flex: 1;
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: #f1f1f1;
+      background: linear-gradient(135deg, #f1f1f1 0%, #e5e7eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .mission-badge {
+      display: inline-block;
+      background: rgba(135, 164, 250, 0.1);
+      border: 1px solid rgba(135, 164, 250, 0.3);
+      color: #87a4fa;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .session-info {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .info-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+
+      mat-icon {
+        color: #87a4fa;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .info-content {
+        .info-label {
+          color: #9ca3af;
+          font-size: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 2px;
+        }
+
+        .info-value {
+          color: #f1f1f1;
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+.progress-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  padding: 24px;
+  margin-bottom: 32px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .progress-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      h3 {
+        margin: 0;
+        color: #f1f1f1;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .status-container {
+        .status-badge {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(16, 185, 129, 0.1);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          color: #10b981;
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-weight: 600;
+          font-size: 14px;
+
+          &.completed {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
+          }
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+
+    .progress-stats {
+      display: flex;
+      gap: 24px;
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+
+        .stat-label {
+          color: #9ca3af;
+          font-size: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+          color: #f1f1f1;
+          font-size: 18px;
+          font-weight: 700;
+          background: linear-gradient(135deg, #87a4fa 0%, #6b8cfa 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+      }
+    }
+  }
+
+  .progress-container {
+    position: relative;
+
+    .progress-bar {
+      height: 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+
+      ::ng-deep .mat-mdc-progress-bar-buffer {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      ::ng-deep .mat-mdc-progress-bar-fill::after {
+        background: linear-gradient(135deg, #87a4fa 0%, #6b8cfa 100%);
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .gameplay-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+
+    .session-info {
+      width: 100%;
+      justify-content: space-between;
+
+      .info-card {
+        flex: 1;
+        min-width: 120px;
+      }
+    }
+  }
+
+  .progress-section {
+    padding: 20px;
+
+    .progress-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+
+      .progress-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  }
+}

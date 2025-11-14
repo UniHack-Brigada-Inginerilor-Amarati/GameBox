@@ -1,0 +1,53 @@
+<div class="mission-gameplay-page" *ngIf="gameplayData">
+  <div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>Mission Gameplay</h1>
+    </div>
+
+    <!-- Mission Progress Component -->
+    <app-mission-progress
+      [missionName]="gameplayData.mission.name"
+      [currentGameIndex]="currentGameIndex"
+      [totalGames]="games.length"
+      [missionCompleted]="missionCompleted"
+      [playersCount]="gameplayData.players.length"
+    ></app-mission-progress>
+
+    <!-- Current Game Component -->
+    <app-current-game
+      [currentGame]="currentGame"
+      [currentGameIndex]="currentGameIndex"
+      [totalGames]="games.length"
+      [gameCompleted]="gameCompleted"
+      [loading]="loading"
+      [isLastGame]="isLastGame"
+      [missionCompleted]="missionCompleted"
+      [gameOrder]="gameOrder"
+      [gameplayData]="{ session: gameplayData.session, players: gameplayData.players }"
+      [gameResults]="gameResults"
+      (gameResultsUpdated)="gameResults = $event"
+      (gameCompletedUpdate)="gameCompleted = $event"
+      (loadingUpdate)="loading = $event"
+      (missionCompletedUpdate)="missionCompleted = $event"
+      (currentGameIndexUpdate)="currentGameIndex = $event"
+    ></app-current-game>
+
+    <!-- Players Progress Component -->
+    <app-players-progress
+      [players]="gameplayData.players"
+      [gameResults]="gameResults"
+      [currentGameIndex]="currentGameIndex"
+      [missionCompleted]="missionCompleted"
+    ></app-players-progress>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading && !gameplayData">
+  <mat-spinner diameter="50"></mat-spinner>
+  <h3>Loading Mission...</h3>
+</div>

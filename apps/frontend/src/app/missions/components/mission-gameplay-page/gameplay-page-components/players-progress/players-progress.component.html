@@ -1,0 +1,60 @@
+<!-- Players Section -->
+<div class="players-section" *ngIf="!missionCompleted">
+  <h3>Players Progress</h3>
+  <div class="players-grid">
+    <div class="player-card" *ngFor="let player of players">
+      <div class="player-info">
+        <div class="player-avatar">
+          <img
+            *ngIf="player.avatar_url"
+            [src]="player.avatar_url"
+            [alt]="player.username"
+            class="avatar-image"
+            (error)="onAvatarError($event)"
+          />
+          <div *ngIf="!player.avatar_url" class="avatar-fallback">
+            {{ player.username.charAt(0).toUpperCase() || 'U' }}
+          </div>
+        </div>
+        <div class="player-name">{{ player.username }}</div>
+      </div>
+      <div class="player-status">
+        <mat-icon *ngIf="isPlayerCompleted(player.id)" class="completed-icon"
+          >check_circle</mat-icon
+        >
+        <mat-icon *ngIf="!isPlayerCompleted(player.id)" class="pending-icon">schedule</mat-icon>
+        <span>{{ isPlayerCompleted(player.id) ? 'Completed' : 'In Progress' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Final Results (Mission Completed) -->
+<div class="results-summary" *ngIf="missionCompleted">
+  <h3>Final Results</h3>
+  <div class="results-grid">
+    <div class="result-item" *ngFor="let player of players">
+      <div class="player-info">
+        <div class="player-avatar">
+          <img
+            *ngIf="player.avatar_url"
+            [src]="player.avatar_url"
+            [alt]="player.username"
+            class="avatar-image"
+            (error)="onAvatarError($event)"
+          />
+          <div *ngIf="!player.avatar_url" class="avatar-fallback">
+            {{ player.username.charAt(0).toUpperCase() || 'U' }}
+          </div>
+        </div>
+        <div class="player-name">{{ player.username }}</div>
+      </div>
+      <div class="player-score">
+        <div class="score-value">
+          {{ getPlayerTotalScore(player.id) }}
+        </div>
+        <div class="score-label">Total Score</div>
+      </div>
+    </div>
+  </div>
+</div>

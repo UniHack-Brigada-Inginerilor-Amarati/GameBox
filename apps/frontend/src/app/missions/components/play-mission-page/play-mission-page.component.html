@@ -1,0 +1,147 @@
+<div class="play-mission-page" *ngIf="mission">
+  <div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>Play Mission</h1>
+    </div>
+
+    <!-- Mission Info Card -->
+    <mat-card class="mission-card">
+      <mat-card-header>
+        <mat-card-title>{{ mission.name }}</mat-card-title>
+        <mat-card-subtitle>Mission</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="mission-description" *ngIf="getDescriptionText(mission.description)">
+          {{ getDescriptionText(mission.description) }}
+        </p>
+
+        <div class="mission-details">
+          <div class="detail-item">
+            <mat-icon>people</mat-icon>
+            <span>Players: 2+ players</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Player Selection -->
+    <mat-card class="player-selection-card">
+      <mat-card-header>
+        <mat-card-title>Select Players</mat-card-title>
+        <mat-card-subtitle>Choose at least 2 players to start the mission</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Search Input -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search players by username</mat-label>
+          <input
+            matInput
+            [formControl]="searchControl"
+            placeholder="Type at least 2 characters to search"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Search Results -->
+        <div class="search-results" *ngIf="searchControl.value && searchControl.value.length >= 2">
+          <div class="search-hint" *ngIf="(filteredUsers$ | async)?.length === 0">
+            No users found
+          </div>
+
+          <div
+            class="user-option"
+            *ngFor="let user of filteredUsers$ | async"
+            (click)="onUserSelected(user)"
+            (keyup.enter)="onUserSelected(user)"
+            (keyup.space)="onUserSelected(user)"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'Add ' + user.username + ' to mission'"
+          >
+            <div class="user-info">
+              <div class="user-avatar">
+                <img
+                  *ngIf="user.avatar_url"
+                  [src]="user.avatar_url"
+                  [alt]="user.username"
+                  class="avatar-image"
+                  (error)="onAvatarError($event)"
+                />
+                <div *ngIf="!user.avatar_url" class="avatar-fallback">
+                  {{ user.username.charAt(0).toUpperCase() || 'U' }}
+                </div>
+              </div>
+              <div class="user-details">
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-email">{{ user.email }}</div>
+              </div>
+            </div>
+            <mat-icon>add</mat-icon>
+          </div>
+        </div>
+
+        <!-- Selected Players -->
+        <div class="selected-players" *ngIf="selectedPlayers.length > 0">
+          <h3>Selected Players ({{ selectedPlayers.length }})</h3>
+          <div class="players-chips">
+            <mat-chip-set>
+              <mat-chip
+                *ngFor="let player of selectedPlayers"
+                (removed)="removePlayer(player)"
+                [removable]="true"
+              >
+                <div class="player-chip">
+                  <div class="player-avatar">
+                    <img
+                      *ngIf="player.avatar_url"
+                      [src]="player.avatar_url"
+                      [alt]="player.username"
+                      class="avatar-image"
+                      (error)="onAvatarError($event)"
+                    />
+                    <div *ngIf="!player.avatar_url" class="avatar-fallback">
+                      {{ player.username.charAt(0).toUpperCase() || 'U' }}
+                    </div>
+                  </div>
+                  <span class="player-name">{{ player.username }}</span>
+                </div>
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="startMission()"
+        [disabled]="!canStartMission()"
+        class="start-button"
+      >
+        <mat-spinner *ngIf="creatingSession" diameter="20" class="button-spinner"></mat-spinner>
+        <mat-icon *ngIf="!creatingSession">play_arrow</mat-icon>
+        {{ creatingSession ? 'Starting Mission...' : 'Start Mission' }}
+      </button>
+
+      <button mat-button (click)="goBack()" class="cancel-button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <mat-spinner diameter="50"></mat-spinner>
+  <h3>Loading Mission...</h3>
+</div>

@@ -1,0 +1,121 @@
+<!-- Current Game -->
+<div class="current-game" *ngIf="currentGame && !missionCompleted">
+  <mat-card class="game-card">
+    <div class="game-header">
+      <div class="ability-section">
+        <div class="ability-icon-container">
+          <span class="ability-icon">{{
+            getAbilityIcon(gameOrder[currentGameIndex])
+          }}</span>
+        </div>
+        <div class="ability-info">
+          <div class="ability-name">
+            {{ getAbilityName(gameOrder[currentGameIndex]) }}
+          </div>
+          <div class="game-number">
+            Game {{ currentGameIndex + 1 }} of {{ totalGames }}
+          </div>
+        </div>
+      </div>
+
+      <div class="game-status" *ngIf="gameCompleted">
+        <mat-icon class="completed-icon">check_circle</mat-icon>
+        <span>Completed</span>
+      </div>
+    </div>
+
+    <div class="game-content">
+      <div class="game-title-section">
+        <h3 class="game-title">{{ currentGame.name }}</h3>
+        <div class="game-badge">
+          <mat-icon>sports_esports</mat-icon>
+          <span>Game</span>
+        </div>
+      </div>
+
+      <p class="game-description" *ngIf="currentGame.description">
+        {{ currentGame.description }}
+      </p>
+
+      <div class="game-image" *ngIf="currentGame.picture">
+        <div class="image-container">
+          <img
+            [src]="currentGame.picture"
+            [alt]="currentGame.name"
+            class="game-picture"
+          />
+          <div class="image-overlay">
+            <mat-icon>play_arrow</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-actions">
+      <button
+        *ngIf="!gameCompleted"
+        mat-raised-button
+        color="primary"
+        (click)="onPlayCurrentGame()"
+        [disabled]="loading"
+        class="play-button"
+      >
+        <mat-spinner
+          *ngIf="loading"
+          diameter="20"
+          class="button-spinner"
+        ></mat-spinner>
+        <mat-icon *ngIf="!loading">play_arrow</mat-icon>
+        {{ loading ? 'Playing...' : 'Play Game' }}
+      </button>
+
+      <button
+        *ngIf="gameCompleted && !isLastGame"
+        mat-raised-button
+        color="accent"
+        (click)="onNextGame()"
+        class="next-button"
+      >
+        <mat-icon>skip_next</mat-icon>
+        Next Game
+      </button>
+
+      <button
+        *ngIf="gameCompleted && isLastGame"
+        mat-raised-button
+        color="accent"
+        (click)="onNextGame()"
+        class="next-button"
+      >
+        <mat-icon>flag</mat-icon>
+        Complete Mission
+      </button>
+    </div>
+  </mat-card>
+</div>
+
+<!-- Mission Completed -->
+<div class="mission-completed" *ngIf="missionCompleted">
+  <mat-card class="completion-card">
+    <div class="completion-content">
+      <mat-icon class="completion-icon">celebration</mat-icon>
+      <h2>Mission Completed!</h2>
+      <p>Congratulations! All games have been completed successfully.</p>
+
+      <div class="completion-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="onRestartMission()"
+        >
+          <mat-icon>refresh</mat-icon>
+          Play Again
+        </button>
+        <button mat-button (click)="onGoBack()">
+          <mat-icon>home</mat-icon>
+          Back to Missions
+        </button>
+      </div>
+    </div>
+  </mat-card>
+</div>

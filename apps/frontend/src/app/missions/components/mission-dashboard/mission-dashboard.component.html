@@ -1,0 +1,49 @@
+<div class="mission-dashboard-container">
+  <!-- Header Section -->
+  <div class="mission-dashboard-header">
+    <h1 class="mission-dashboard-title">Mission Packs</h1>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+  <div class="mission-dashboard-loading">
+    <div class="loading-spinner"></div>
+    <h3>Loading missions...</h3>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error && !loading) {
+  <div class="mission-dashboard-error">
+    <div class="error-icon">⚠️</div>
+    <h3>Error loading missions</h3>
+    <p class="error-message">{{ error }}</p>
+    <button (click)="loadMissions()" class="retry-button">Try Again</button>
+  </div>
+  }
+
+  <!-- No Missions State -->
+  @if (!loading && !error && missions.length === 0) {
+  <div class="mission-dashboard-empty">
+    <div class="empty-icon">📋</div>
+    <h3>No missions</h3>
+    <p>Get started by creating a new mission in the admin panel.</p>
+  </div>
+  }
+
+  <!-- Missions Grid - 3 per row -->
+  @if (!loading && !error && missions.length > 0) {
+  <div class="mission-dashboard-grid">
+    @for (mission of missions; track trackByMissionSlug($index, mission)) {
+    <app-mission-card
+      [mission]="mission"
+      [showDescription]="true"
+      [showGames]="true"
+      [showPlayButton]="true"
+      (playMission)="onPlayMission($event)"
+    >
+    </app-mission-card>
+    }
+  </div>
+  }
+</div>

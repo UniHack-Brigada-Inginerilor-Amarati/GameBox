@@ -1,0 +1,82 @@
+<div class="mission-card" [routerLink]="['/missions', mission.slug]">
+  <!-- Mission Media -->
+  @if (mission.media) {
+  <div class="mission-media">
+    <img
+      [src]="getMediaUrl(mission.media)"
+      [alt]="mission.media.alt || mission.name"
+      class="media-image"
+      (error)="onImageError($event)"
+    />
+  </div>
+  }
+
+  <!-- Mission Content -->
+  <div class="mission-content">
+    <div class="mission-header">
+      <h2 class="mission-name">{{ mission.name }}</h2>
+      @if (showPlayButton) {
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onPlayMission($event)"
+        class="play-button"
+      >
+        <mat-icon>play_arrow</mat-icon>
+        Play Mission
+      </button>
+      }
+    </div>
+
+ @if (showGames) {
+    <!-- Games by Ability -->
+    <div class="mission-abilities">
+      <h3 class="abilities-title">Games by Ability:</h3>
+
+      <div class="abilities-list">
+        <div class="ability-item strength">
+          <span class="ability-icon">💪</span>
+          <span class="game-name">{{
+            mission.games.strengthEndurance.name || 'Not assigned'
+          }}</span>
+        </div>
+
+        <div class="ability-item agility">
+          <span class="ability-icon">🏃</span>
+          <span class="game-name">{{
+            mission.games.agilitySpeed.name || 'Not assigned'
+          }}</span>
+        </div>
+
+        <div class="ability-item aim">
+          <span class="ability-icon">🎯</span>
+          <span class="game-name">{{
+            mission.games.aimPrecision.name || 'Not assigned'
+          }}</span>
+        </div>
+
+        <div class="ability-item memory">
+          <span class="ability-icon">🧠</span>
+          <span class="game-name">{{
+            mission.games.memoryAttention.name || 'Not assigned'
+          }}</span>
+        </div>
+
+        <div class="ability-item communication">
+          <span class="ability-icon">💬</span>
+          <span class="game-name">{{
+            mission.games.communication.name || 'Not assigned'
+          }}</span>
+        </div>
+
+        <div class="ability-item logic">
+          <span class="ability-icon">🧩</span>
+          <span class="game-name">{{
+            mission.games.logicProblemSolving.name || 'Not assigned'
+          }}</span>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

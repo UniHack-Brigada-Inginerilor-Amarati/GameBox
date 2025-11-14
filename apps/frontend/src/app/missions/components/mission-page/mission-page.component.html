@@ -1,0 +1,84 @@
+<div class="mission-page-container">
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <h3>Loading mission...</h3>
+    </div>
+  }
+
+  <!-- Mission Content -->
+  @if (!isLoading && mission) {
+    <!-- Header Section -->
+    <div class="mission-header">
+      <button 
+        mat-icon-button 
+        class="back-button"
+        (click)="goBack()"
+        aria-label="Go back"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      
+      <div class="mission-title-section">
+        <h1 class="mission-title">{{ mission.name }}</h1>
+        <p class="mission-description">{{ getDescriptionText(mission.description) }}</p>
+      </div>
+    </div>
+
+
+    <!-- Games Grid -->
+    <div class="games-section">
+      <h2 class="games-title">Mission Games</h2>
+      <p class="games-subtitle">Complete all 6 games to finish this mission</p>
+      
+      <div class="games-grid">
+        <!-- Strength & Endurance Game -->
+        <app-game-card 
+          [game]="getGameForCard(mission.games.strengthEndurance, 'Strength & Endurance')"
+        ></app-game-card>
+
+        <!-- Agility & Speed Game -->
+        <app-game-card 
+          [game]="getGameForCard(mission.games.agilitySpeed, 'Agility & Speed')"
+        ></app-game-card>
+
+        <!-- Aim & Precision Game -->
+        <app-game-card 
+          [game]="getGameForCard(mission.games.aimPrecision, 'Aim & Precision')"
+        ></app-game-card>
+
+        <!-- Memory & Attention Game -->
+        <app-game-card 
+          [game]="getGameForCard(mission.games.memoryAttention, 'Memory & Attention')"
+        ></app-game-card>
+
+        <!-- Communication Game -->
+        <app-game-card 
+          [game]="getGameForCard(mission.games.communication, 'Communication')"
+        ></app-game-card>
+
+        <!-- Logic & Problem Solving Game -->
+        <app-game-card 
+          [game]="getGameForCard(mission.games.logicProblemSolving, 'Logic & Problem Solving')"
+        ></app-game-card>
+      </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (!isLoading && !mission) {
+    <div class="error-state">
+      <mat-icon class="error-icon">error</mat-icon>
+      <h3>Mission Not Found</h3>
+      <p>The requested mission could not be loaded.</p>
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="goBack()"
+      >
+        Go Back
+      </button>
+    </div>
+  }
+</div>

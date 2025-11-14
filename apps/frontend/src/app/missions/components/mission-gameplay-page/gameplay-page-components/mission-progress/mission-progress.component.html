@@ -1,0 +1,31 @@
+<!-- Progress Section -->
+<div class="progress-section">
+  <div class="progress-header">
+    <div class="progress-info">
+      <h3>Mission Progress</h3>
+      <div class="status-container">
+        <div class="status-badge" [class.completed]="missionCompleted">
+          <mat-icon *ngIf="missionCompleted">check_circle</mat-icon>
+          <mat-icon *ngIf="!missionCompleted">schedule</mat-icon>
+          <span>{{ gameStatus }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-stats">
+      <div class="stat-item">
+        <span class="stat-label">Current Game:</span>
+        <span class="stat-value">{{ currentGameIndex + 1 }} / {{ totalGames }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-container">
+    <mat-progress-bar
+      mode="determinate"
+      [value]="progress"
+      class="progress-bar"
+    >
+    </mat-progress-bar>
+  </div>
+</div>
