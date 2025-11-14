@@ -1,0 +1,9 @@
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .app-shell router-outlet + app-bottom-nav.position-bottom-inline {
+    margin-top: auto;
+  }
