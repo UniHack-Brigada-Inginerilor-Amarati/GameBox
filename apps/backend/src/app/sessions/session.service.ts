@@ -284,7 +284,7 @@ export class SessionService {
         game_result_id,
         player_name,
         score,
-        game_results!inner (
+        game_results (
           game_slug,
           session_id,
           game_result
@@ -294,13 +294,16 @@ export class SessionService {
       .eq('game_results.session_id', sessionId);
 
     if (error) {
+      this.logger.error('Error fetching game results', { error, sessionId });
       this.db.handleSupabaseError('getGameResults', error, {
         sessionId,
       });
     }
 
-    if (!data) {
-      throw new NotFoundException('Player game results not found');
+    // Return empty array if no results exist (instead of throwing error)
+    if (!data || data.length === 0) {
+      this.logger.debug('No game results found for session', { sessionId });
+      return [];
     }
 
     // Transform to PlayerGameResult format

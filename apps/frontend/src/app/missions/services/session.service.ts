@@ -69,11 +69,12 @@ export class SessionService {
     gameSlug: string,
     players: UserProfile[],
   ): Observable<GameResult[]> {
-    const playerIds = players.map((player) => player.id);
+    // Backend expects usernames, not IDs
+    const playerNames = players.map((player) => player.username);
 
     const requestBody = {
-      game_slug: gameSlug,
-      player_ids: playerIds,
+      gameSlug: gameSlug,
+      playerNames: playerNames,
     };
 
     return this.http.post<GameResult[]>(
