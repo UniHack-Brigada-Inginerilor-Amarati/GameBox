@@ -10,8 +10,15 @@ import {
   Patch,
 } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { UserProfileDTO, MissionSession, SessionPlayer, GameResult, PlayerGameResult } from '@gamebox/shared';
+import {
+  UserProfileDTO,
+  MissionSession,
+  SessionPlayer,
+  GameResult,
+  PlayerGameResult,
+} from '@gamebox/shared';
 import { AdminGuard } from '../admin/admin.guard';
+import { BadRequestException } from '@nestjs/common';
 
 @Controller('sessions')
 export class SessionController {
@@ -53,13 +60,20 @@ export class SessionController {
   @UseGuards(AdminGuard)
   async addSessionPlayers(
     @Param('id') id: string,
-    @Body() body: { playerNames: string[] },
+    @Body() body: { playerNames?: string[]; player_ids?: string[] },
   ): Promise<SessionPlayer[]> {
     this.logger.debug('POST /sessions/:id/players - Adding session players', {
       id,
       body,
     });
-    return this.sessionService.addSessionPlayers(id, body.playerNames);
+    // Support both playerNames (usernames) and player_ids (UUIDs)
+    if (body.player_ids && body.player_ids.length > 0) {
+      return this.sessionService.addSessionPlayersByIds(id, body.player_ids);
+    } else if (body.playerNames && body.playerNames.length > 0) {
+      return this.sessionService.addSessionPlayers(id, body.playerNames);
+    } else {
+      throw new BadRequestException('Either playerNames or player_ids must be provided');
+    }
   }
 
   @Delete(':id/players')
@@ -77,26 +91,18 @@ export class SessionController {
 
   @Patch(':id/start')
   @UseGuards(AdminGuard)
-  async startSession(
-    @Param('id') id: string,
-    @Body() body: { time: number },
-  ): Promise<MissionSession> {
+  async startSession(@Param('id') id: string): Promise<MissionSession> {
     this.logger.debug('PUT /sessions/:id - Updating session time', {
       id,
-      body,
     });
     return this.sessionService.setStartTime(id);
   }
 
   @Patch(':id/end')
   @UseGuards(AdminGuard)
-  async endSession(
-    @Param('id') id: string,
-    @Body() body: { time: number },
-  ): Promise<MissionSession> {
+  async endSession(@Param('id') id: string): Promise<MissionSession> {
     this.logger.debug('PUT /sessions/:id - Updating session time', {
       id,
-      body,
     });
     return this.sessionService.setEndTime(id);
   }

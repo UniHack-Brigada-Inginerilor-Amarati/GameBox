@@ -37,9 +37,9 @@ export class SessionService {
   }
 
   addSessionPlayers(sessionId: string, playerIds: string[]): Observable<SessionPlayer[]> {
-    return this.http.put<SessionPlayer[]>(`${this.apiUrl}/sessions/${sessionId}/players`, {
+    return this.http.post<SessionPlayer[]>(`${this.apiUrl}/sessions/${sessionId}/players`, {
       player_ids: playerIds,
-    } as any);
+    });
   }
 
   removeSessionPlayers(sessionId: string, playerIds: string[]): Observable<void> {
@@ -49,15 +49,15 @@ export class SessionService {
   }
 
   startSession(sessionId: string): Observable<MissionSession> {
-    return this.http.put<MissionSession>(`${this.apiUrl}/sessions/${sessionId}/start`, {
-      time: Date.now(),
-    } as any);
+    // Backend uses @Patch and gets sessionId from URL param
+    // Empty body - backend sets start_time automatically
+    return this.http.patch<MissionSession>(`${this.apiUrl}/sessions/${sessionId}/start`, {} as any);
   }
 
   endSession(sessionId: string): Observable<MissionSession> {
-    return this.http.put<MissionSession>(`${this.apiUrl}/sessions/${sessionId}/end`, {
-      time: Date.now(),
-    } as any);
+    // Backend uses @Patch and gets sessionId from URL param
+    // Empty body - backend sets end_time automatically
+    return this.http.patch<MissionSession>(`${this.apiUrl}/sessions/${sessionId}/end`, {} as any);
   }
 
   getGameResults(sessionId: string): Observable<PlayerGameResult[]> {
