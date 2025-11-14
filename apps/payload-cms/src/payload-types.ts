@@ -237,7 +237,7 @@ export interface Event {
   createdAt: string;
 }
 /**
- * Create mission packs with 6 games covering all core abilities
+ * Create mission packs with 1-6 games covering core abilities
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "missions".
@@ -268,31 +268,31 @@ export interface Mission {
     [k: string]: unknown;
   };
   media?: (number | null) | Media;
-  games: {
+  games?: {
     /**
      * Select a game that focuses on mental fortitude and composure
      */
-    mentalFortitudeComposure: number | Game;
+    mentalFortitudeComposure?: (number | null) | Game;
     /**
      * Select a game that focuses on adaptability and decision making
      */
-    adaptabilityDecisionMaking: number | Game;
+    adaptabilityDecisionMaking?: (number | null) | Game;
     /**
      * Select a game that focuses on aim and mechanical skill
      */
-    aimMechanicalSkill: number | Game;
+    aimMechanicalSkill?: (number | null) | Game;
     /**
      * Select a game that focuses on game sense and awareness
      */
-    gameSenseAwareness: number | Game;
+    gameSenseAwareness?: (number | null) | Game;
     /**
      * Select a game that focuses on teamwork and communication
      */
-    teamworkCommunication: number | Game;
+    teamworkCommunication?: (number | null) | Game;
     /**
      * Select a game that focuses on strategy
      */
-    strategy: number | Game;
+    strategy?: (number | null) | Game;
   };
   updatedAt: string;
   createdAt: string;

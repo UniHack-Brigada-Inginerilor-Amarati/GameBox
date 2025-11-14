@@ -32,7 +32,7 @@ export class MissionService {
 
   async getMissionGames(slug: string): Promise<Game[]> {
     const mission = await this.getMission(slug);
-    return [
+    const games = [
       mission.games.mentalFortitudeComposure,
       mission.games.adaptabilityDecisionMaking,
       mission.games.aimMechanicalSkill,
@@ -40,6 +40,8 @@ export class MissionService {
       mission.games.teamworkCommunication,
       mission.games.strategy,
     ];
+    // Filter out undefined/null games since missions can now have 1-6 games
+    return games.filter((game): game is Game => game !== null && game !== undefined);
   }
 
   private getPayloadUrl(): string {
