@@ -20,6 +20,8 @@
 
 // Form field dark theme
 ::ng-deep .search-field .mat-mdc-form-field {
+  --mat-form-field-filled-input-text-color: #1a1a1a;
+
   .mat-mdc-form-field-flex {
     background: #1a1a1a;
     border: 1px solid #444;
@@ -43,13 +45,13 @@
   }
 
   .mat-mdc-form-field-label {
-    color: #aaa;
+    color: #ffffff;
     font-size: 1rem;
     font-weight: 500;
   }
 
   .mat-mdc-input-element {
-    color: #ffffff;
+    color: var(--mat-form-field-filled-input-text-color);
     font-size: 1.1rem;
     padding: 0.5rem 0;
 
