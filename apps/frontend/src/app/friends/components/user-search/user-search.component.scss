@@ -1,0 +1,210 @@
+.user-search {
+  padding: 0.5rem 0;
+
+  // Text selection styling
+  ::selection {
+    background: #87a4fa;
+    color: #ffffff;
+  }
+
+  ::-moz-selection {
+    background: #87a4fa;
+    color: #ffffff;
+  }
+}
+
+.search-field {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+// Form field dark theme
+::ng-deep .search-field .mat-mdc-form-field {
+  .mat-mdc-form-field-flex {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    min-height: 56px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #555;
+    }
+  }
+
+  &.mat-focused .mat-mdc-form-field-flex {
+    border-color: #87a4fa;
+    box-shadow: 0 0 0 2px rgba(135, 164, 250, 0.1);
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background: transparent;
+  }
+
+  .mat-mdc-form-field-label {
+    color: #aaa;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .mat-mdc-input-element {
+    color: #ffffff;
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+
+    // Text selection in input fields
+    &::selection {
+      background: #87a4fa;
+      color: #ffffff;
+    }
+
+    &::-moz-selection {
+      background: #87a4fa;
+      color: #ffffff;
+    }
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    background: transparent;
+  }
+
+  mat-icon {
+    color: #87a4fa;
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.75rem;
+  }
+
+  input::placeholder {
+    color: #666;
+    opacity: 1;
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #bbb;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.5rem;
+    color: #666;
+    opacity: 0.6;
+  }
+
+  p {
+    color: #bbb;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-card {
+  background: #232323;
+  border: 1px solid #444;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+
+  &:hover {
+    border-color: #87a4fa;
+    box-shadow: 0 4px 12px rgba(135, 164, 250, 0.2);
+    transform: translateY(-2px);
+  }
+
+  mat-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem !important;
+  }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #87a4fa;
+  background: #333;
+  flex-shrink: 0;
+}
+
+.user-details {
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.15rem;
+    color: #ffffff;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .email {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #bbb;
+    line-height: 1.4;
+  }
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+
+  button {
+    background: #87a4fa;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+
+    &:hover {
+      background: #6b8cfa;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(135, 164, 250, 0.3);
+    }
+
+    mat-icon {
+      color: #1a1a1a;
+      margin-right: 0.5rem;
+    }
+  }
+
+  mat-chip {
+    background: rgba(135, 164, 250, 0.2);
+    color: #87a4fa;
+    border: 1px solid rgba(135, 164, 250, 0.4);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+

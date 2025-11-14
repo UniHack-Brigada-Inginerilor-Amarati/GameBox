@@ -1,0 +1,97 @@
+<div class="friend-requests">
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    <mat-tab-group>
+      <mat-tab [label]="'Received (' + receivedRequests().length + ')'">
+        @if (receivedRequests().length === 0) {
+          <div class="no-requests">
+            <mat-icon>inbox</mat-icon>
+            <p>No pending friend requests</p>
+          </div>
+        } @else {
+          <div class="requests-list">
+            @for (request of receivedRequests(); track request.id) {
+              <mat-card class="request-card">
+                <mat-card-content>
+                  <div class="request-info">
+                    <img
+                      [src]="request.avatar_url || '/assets/default-avatar.png'"
+                      [alt]="request.username"
+                      class="avatar"
+                    />
+                    <div class="request-details">
+                      <h3>{{ request.username }}</h3>
+                      <p class="email">{{ request.email }}</p>
+                      <p class="date">Sent {{ request.created_at | date : 'mediumDate' }}</p>
+                    </div>
+                  </div>
+                  <div class="request-actions">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="acceptRequest(request.id)"
+                    >
+                      <mat-icon>check</mat-icon>
+                      Accept
+                    </button>
+                    <button
+                      mat-stroked-button
+                      color="warn"
+                      (click)="rejectRequest(request.id)"
+                    >
+                      <mat-icon>close</mat-icon>
+                      Reject
+                    </button>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+      <mat-tab [label]="'Sent (' + sentRequests().length + ')'">
+        @if (sentRequests().length === 0) {
+          <div class="no-requests">
+            <mat-icon>send</mat-icon>
+            <p>No sent friend requests</p>
+          </div>
+        } @else {
+          <div class="requests-list">
+            @for (request of sentRequests(); track request.id) {
+              <mat-card class="request-card">
+                <mat-card-content>
+                  <div class="request-info">
+                    <img
+                      [src]="request.avatar_url || '/assets/default-avatar.png'"
+                      [alt]="request.username"
+                      class="avatar"
+                    />
+                    <div class="request-details">
+                      <h3>{{ request.username }}</h3>
+                      <p class="email">{{ request.email }}</p>
+                      <p class="date">Sent {{ request.created_at | date : 'mediumDate' }}</p>
+                    </div>
+                  </div>
+                  <div class="request-actions">
+                    <button
+                      mat-stroked-button
+                      color="warn"
+                      (click)="cancelRequest(request.id)"
+                    >
+                      <mat-icon>cancel</mat-icon>
+                      Cancel
+                    </button>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>
+

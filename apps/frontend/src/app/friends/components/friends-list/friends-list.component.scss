@@ -1,0 +1,124 @@
+.friends-list {
+  padding: 1rem 0;
+
+  // Text selection styling
+  ::selection {
+    background: #87a4fa;
+    color: #ffffff;
+  }
+
+  ::-moz-selection {
+    background: #87a4fa;
+    color: #ffffff;
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.no-friends {
+  text-align: center;
+  padding: 3rem;
+  color: #cccccc;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    color: #999;
+  }
+
+  p {
+    color: #cccccc;
+    margin: 0.5rem 0;
+  }
+
+  .hint {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    color: #999;
+  }
+}
+
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.friend-card {
+  background: #232323;
+  border: 1px solid #444;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #87a4fa;
+    box-shadow: 0 4px 12px rgba(135, 164, 250, 0.2);
+    transform: translateY(-2px);
+  }
+
+  mat-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem !important;
+  }
+}
+
+.friend-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #87a4fa;
+  background: #333;
+  flex-shrink: 0;
+}
+
+.friend-details {
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.15rem;
+    color: #ffffff;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .email {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: #bbb;
+    line-height: 1.4;
+  }
+
+  .date {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #888;
+  }
+}
+
+button[mat-icon-button] {
+  color: #f44336;
+
+  &:hover {
+    background: rgba(244, 67, 54, 0.1);
+  }
+
+  mat-icon {
+    color: #f44336;
+  }
+}
+

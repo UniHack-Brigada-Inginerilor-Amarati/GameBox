@@ -10,6 +10,7 @@ import { PayloadModule } from './payload/payload.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ScratchCardModule } from './scratch-card/scratch-card.module';
 import { PlayerResultModule } from './player-results/player-result.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PlayerResultModule } from './player-results/player-result.module';
     AdminModule,
     SessionModule,
     PlayerResultModule,
+    FriendsModule,
   ],
   controllers: [],
   providers: [],

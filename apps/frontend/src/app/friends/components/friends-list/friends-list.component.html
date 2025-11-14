@@ -1,0 +1,43 @@
+<div class="friends-list">
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (friends().length === 0) {
+    <div class="no-friends">
+      <mat-icon>people_outline</mat-icon>
+      <p>You don't have any friends yet</p>
+      <p class="hint">Search for users and send them friend requests!</p>
+    </div>
+  } @else {
+    <div class="friends-grid">
+      @for (friend of friends(); track friend.id) {
+        <mat-card class="friend-card">
+          <mat-card-content>
+            <div class="friend-info">
+              <img
+                [src]="friend.avatar_url || '/assets/default-avatar.png'"
+                [alt]="friend.username"
+                class="avatar"
+              />
+              <div class="friend-details">
+                <h3>{{ friend.username }}</h3>
+                <p class="email">{{ friend.email }}</p>
+                <p class="date">Friends since {{ friend.created_at | date : 'mediumDate' }}</p>
+              </div>
+            </div>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="removeFriend(friend.friend_id, friend.username)"
+              matTooltip="Remove friend"
+            >
+              <mat-icon>person_remove</mat-icon>
+            </button>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>
+
