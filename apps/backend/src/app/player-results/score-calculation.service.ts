@@ -1,22 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Difficulty, AbilityRank, DIFFICULTY_MULTIPLIERS, ABILITY_RANK_MODIFIERS, SCORE_CONFIG, GameScore, GameAbility } from '@gamebox/shared';
+import {
+  Difficulty,
+  AbilityRank,
+  DIFFICULTY_MULTIPLIERS,
+  ABILITY_RANK_MODIFIERS,
+  SCORE_CONFIG,
+  GameScore,
+  GameAbility,
+} from '@gamebox/shared';
 
 export interface GameAbilityRatios {
-  strengthEndurance?: number;
-  agilitySpeed?: number;
-  aimPrecision?: number;
-  memoryAttention?: number;
-  communication?: number;
-  logicProblemSolving?: number;
+  mentalFortitudeComposure?: number;
+  adaptabilityDecisionMaking?: number;
+  aimMechanicalSkill?: number;
+  gameSenseAwareness?: number;
+  teamworkCommunication?: number;
+  strategy?: number;
 }
 
 export interface PlayerRanks {
-  strengthEnduranceRank: AbilityRank;
-  agilitySpeedRank: AbilityRank;
-  aimPrecisionRank: AbilityRank;
-  memoryAttentionRank: AbilityRank;
-  communicationRank: AbilityRank;
-  logicProblemSolvingRank: AbilityRank;
+  mentalFortitudeComposureRank: AbilityRank;
+  adaptabilityDecisionMakingRank: AbilityRank;
+  aimMechanicalSkillRank: AbilityRank;
+  gameSenseAwarenessRank: AbilityRank;
+  teamworkCommunicationRank: AbilityRank;
+  strategyRank: AbilityRank;
 }
 
 export interface ScoreCalculationInput {
@@ -48,10 +56,7 @@ export class ScoreCalculationService {
       baseScore * difficultyMultiplier * rankModifier * gameAbilityRatio,
     );
 
-    return Math.max(
-      SCORE_CONFIG.MIN_SCORE,
-      Math.min(SCORE_CONFIG.MAX_SCORE, finalScore),
-    );
+    return Math.max(SCORE_CONFIG.MIN_SCORE, Math.min(SCORE_CONFIG.MAX_SCORE, finalScore));
   }
 
   calculateGameScore(input: ScoreCalculationInput): GameScore {
@@ -59,62 +64,62 @@ export class ScoreCalculationService {
 
     const gameScore: GameScore = {};
 
-    if (gameAbilityRatios.strengthEndurance) {
-      gameScore.strengthEndurance = this.calculateAbilityScore(
+    if (gameAbilityRatios.mentalFortitudeComposure) {
+      gameScore.mentalFortitudeComposure = this.calculateAbilityScore(
         baseScore,
         difficulty,
-        playerRanks.strengthEnduranceRank,
-        gameAbilityRatios.strengthEndurance,
+        playerRanks.mentalFortitudeComposureRank,
+        gameAbilityRatios.mentalFortitudeComposure,
         isWin,
       );
     }
 
-    if (gameAbilityRatios.agilitySpeed) {
-      gameScore.agilitySpeed = this.calculateAbilityScore(
+    if (gameAbilityRatios.adaptabilityDecisionMaking) {
+      gameScore.adaptabilityDecisionMaking = this.calculateAbilityScore(
         baseScore,
         difficulty,
-        playerRanks.agilitySpeedRank,
-        gameAbilityRatios.agilitySpeed,
+        playerRanks.adaptabilityDecisionMakingRank,
+        gameAbilityRatios.adaptabilityDecisionMaking,
         isWin,
       );
     }
 
-    if (gameAbilityRatios.aimPrecision) {
-      gameScore.aimPrecision = this.calculateAbilityScore(
+    if (gameAbilityRatios.aimMechanicalSkill) {
+      gameScore.aimMechanicalSkill = this.calculateAbilityScore(
         baseScore,
         difficulty,
-        playerRanks.aimPrecisionRank,
-        gameAbilityRatios.aimPrecision,
+        playerRanks.aimMechanicalSkillRank,
+        gameAbilityRatios.aimMechanicalSkill,
         isWin,
       );
     }
 
-    if (gameAbilityRatios.memoryAttention) {
-      gameScore.memoryAttention = this.calculateAbilityScore(
+    if (gameAbilityRatios.gameSenseAwareness) {
+      gameScore.gameSenseAwareness = this.calculateAbilityScore(
         baseScore,
         difficulty,
-        playerRanks.memoryAttentionRank,
-        gameAbilityRatios.memoryAttention,
+        playerRanks.gameSenseAwarenessRank,
+        gameAbilityRatios.gameSenseAwareness,
         isWin,
       );
     }
 
-    if (gameAbilityRatios.communication) {
-      gameScore.communication = this.calculateAbilityScore(
+    if (gameAbilityRatios.teamworkCommunication) {
+      gameScore.teamworkCommunication = this.calculateAbilityScore(
         baseScore,
         difficulty,
-        playerRanks.communicationRank,
-        gameAbilityRatios.communication,
+        playerRanks.teamworkCommunicationRank,
+        gameAbilityRatios.teamworkCommunication,
         isWin,
       );
     }
 
-    if (gameAbilityRatios.logicProblemSolving) {
-      gameScore.logicProblemSolving = this.calculateAbilityScore(
+    if (gameAbilityRatios.strategy) {
+      gameScore.strategy = this.calculateAbilityScore(
         baseScore,
         difficulty,
-        playerRanks.logicProblemSolvingRank,
-        gameAbilityRatios.logicProblemSolving,
+        playerRanks.strategyRank,
+        gameAbilityRatios.strategy,
         isWin,
       );
     }
@@ -125,12 +130,12 @@ export class ScoreCalculationService {
 
   calculateTotalScore(gameScore: GameScore): number {
     const scores = [
-      gameScore.strengthEndurance || 0,
-      gameScore.agilitySpeed || 0,
-      gameScore.aimPrecision || 0,
-      gameScore.memoryAttention || 0,
-      gameScore.communication || 0,
-      gameScore.logicProblemSolving || 0,
+      gameScore.mentalFortitudeComposure || 0,
+      gameScore.adaptabilityDecisionMaking || 0,
+      gameScore.aimMechanicalSkill || 0,
+      gameScore.gameSenseAwareness || 0,
+      gameScore.teamworkCommunication || 0,
+      gameScore.strategy || 0,
     ];
 
     return scores.reduce((total, score) => total + score, 0);
@@ -139,32 +144,37 @@ export class ScoreCalculationService {
     const ratios: GameAbilityRatios = {};
 
     for (const item of payloadAbilities) {
-      const abilitySlug = item.ability?.slug;
+      const abilitySlug = item.slug;
       const score = item.score;
 
       switch (abilitySlug) {
-        case 'strength-endurance':
-        case 'strength_endurance':
-          ratios.strengthEndurance = score;
+        case 'mental-fortitude-composure':
+        case 'mental_fortitude_composure':
+        case 'mentalFortitudeComposure':
+          ratios.mentalFortitudeComposure = score;
           break;
-        case 'agility-speed':
-        case 'agility_speed':
-          ratios.agilitySpeed = score;
+        case 'adaptability-decision-making':
+        case 'adaptability_decision_making':
+        case 'adaptabilityDecisionMaking':
+          ratios.adaptabilityDecisionMaking = score;
           break;
-        case 'aim-precision':
-        case 'aim_precision':
-          ratios.aimPrecision = score;
+        case 'aim-mechanical-skill':
+        case 'aim_mechanical_skill':
+        case 'aimMechanicalSkill':
+          ratios.aimMechanicalSkill = score;
           break;
-        case 'memory-attention':
-        case 'memory_attention':
-          ratios.memoryAttention = score;
+        case 'game-sense-awareness':
+        case 'game_sense_awareness':
+        case 'gameSenseAwareness':
+          ratios.gameSenseAwareness = score;
           break;
-        case 'communication':
-          ratios.communication = score;
+        case 'teamwork-communication':
+        case 'teamwork_communication':
+        case 'teamworkCommunication':
+          ratios.teamworkCommunication = score;
           break;
-        case 'logic-problem-solving':
-        case 'logic_problem_solving':
-          ratios.logicProblemSolving = score;
+        case 'strategy':
+          ratios.strategy = score;
           break;
         default:
           this.logger.warn(`Unknown ability slug: ${abilitySlug}`);

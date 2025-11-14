@@ -33,16 +33,16 @@ export interface PlayerGameResult {
   player_game_result_id: string; // primary key
   game_result_id: string; // foreign key to game_results table
   player_name: string;
-  game_score: GameScore;
-  totalScore: number;
+  game_score?: GameScore;
+  total_score: number;
 }
 
 // Score is computed from the game_result, after the game is completed
 export interface GameScore {
-  strengthEndurance?: number;
-  agilitySpeed?: number;
-  aimPrecision?: number;
-  memoryAttention?: number;
-  communication?: number;
-  logicProblemSolving?: number;
+  mentalFortitudeComposure?: number;
+  adaptabilityDecisionMaking?: number;
+  aimMechanicalSkill?: number;
+  gameSenseAwareness?: number;
+  teamworkCommunication?: number;
+  strategy?: number;
 }

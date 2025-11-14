@@ -12,7 +12,6 @@ export interface CreatePlayerResultDto {
   playerRanks: PlayerRanks;
 }
 
-
 @Injectable()
 export class PlayerResultService {
   private readonly logger = new Logger(PlayerResultService.name);
@@ -27,10 +26,10 @@ export class PlayerResultService {
     const { gameResultId, playerName, baseScore, isWin, playerRanks } = dto;
 
     const gameResult = await this.getGameResult(gameResultId);
-    
+
     const game = await this.gameService.getGame(gameResult.game_slug);
     const gameAbilityRatios = this.scoreCalculationService.convertPayloadAbilitiesToRatios(
-      game.abilities || []
+      game.abilities || [],
     );
 
     const gameScore = this.scoreCalculationService.calculateGameScore({
@@ -66,16 +65,15 @@ export class PlayerResultService {
       game_result_id: data.game_result_id,
       player_name: data.player_name,
       game_score: gameScore,
-      totalScore,
+      total_score: totalScore,
     };
   }
 
-  async getPlayerResults(
-    playerName: string,
-  ): Promise<PlayerGameResult[]> {
+  async getPlayerResults(playerName: string): Promise<PlayerGameResult[]> {
     const { data, error } = await this.supabaseService.supabaseAdmin
       .from('player_results')
-      .select(`
+      .select(
+        `
         player_game_result_id,
         game_result_id,
         player_name,
@@ -86,7 +84,8 @@ export class PlayerResultService {
           session_id,
           game_result
         )
-      `)
+      `,
+      )
       .eq('player_name', playerName)
       .order('created_at', { ascending: false });
 
@@ -95,19 +94,20 @@ export class PlayerResultService {
       throw new Error(`Failed to get player results: ${error.message}`);
     }
 
-    return data.map(result => ({
+    return data.map((result) => ({
       player_game_result_id: result.player_game_result_id,
       game_result_id: result.game_result_id,
       player_name: result.player_name,
       game_score: this.convertScoreToGameScore(result.score), // For now, simplified
-      totalScore: result.score,
+      total_score: result.score,
     }));
   }
 
   async getPlayerResult(playerGameResultId: string): Promise<PlayerGameResult> {
     const { data, error } = await this.supabaseService.supabaseAdmin
       .from('player_results')
-      .select(`
+      .select(
+        `
         player_game_result_id,
         game_result_id,
         player_name,
@@ -118,7 +118,8 @@ export class PlayerResultService {
           session_id,
           game_result
         )
-      `)
+      `,
+      )
       .eq('player_game_result_id', playerGameResultId)
       .single();
 
@@ -132,7 +133,7 @@ export class PlayerResultService {
       game_result_id: data.game_result_id,
       player_name: data.player_name,
       game_score: this.convertScoreToGameScore(data.score),
-      totalScore: data.score,
+      total_score: data.score,
     };
   }
 
@@ -159,7 +160,7 @@ export class PlayerResultService {
       game_result_id: data.game_result_id,
       player_name: data.player_name,
       game_score: this.convertScoreToGameScore(data.score),
-      totalScore: data.score,
+      total_score: data.score,
     };
   }
   async getPlayerStats(playerName: string): Promise<{
@@ -178,7 +179,7 @@ export class PlayerResultService {
       throw new Error(`Failed to get player stats: ${error.message}`);
     }
 
-    const scores = data.map(result => result.score);
+    const scores = data.map((result) => result.score);
     const totalGames = scores.length;
     const totalScore = scores.reduce((sum, score) => sum + score, 0);
     const averageScore = totalGames > 0 ? totalScore / totalGames : 0;
@@ -192,7 +193,9 @@ export class PlayerResultService {
     };
   }
 
-  private async getGameResult(gameResultId: string): Promise<{ game_slug: string; difficulty: string; session_id: string; game_result: unknown }> {
+  private async getGameResult(
+    gameResultId: string,
+  ): Promise<{ game_slug: string; difficulty: string; session_id: string; game_result: unknown }> {
     const { data, error } = await this.supabaseService.supabaseAdmin
       .from('game_results')
       .select('*')
@@ -209,12 +212,12 @@ export class PlayerResultService {
 
   private convertScoreToGameScore(totalScore: number): GameScore {
     return {
-      strengthEndurance: Math.round(totalScore / 6),
-      agilitySpeed: Math.round(totalScore / 6),
-      aimPrecision: Math.round(totalScore / 6),
-      memoryAttention: Math.round(totalScore / 6),
-      communication: Math.round(totalScore / 6),
-      logicProblemSolving: Math.round(totalScore / 6),
+      mentalFortitudeComposure: Math.round(totalScore / 6),
+      adaptabilityDecisionMaking: Math.round(totalScore / 6),
+      aimMechanicalSkill: Math.round(totalScore / 6),
+      gameSenseAwareness: Math.round(totalScore / 6),
+      teamworkCommunication: Math.round(totalScore / 6),
+      strategy: Math.round(totalScore / 6),
     };
   }
   async createMultiplePlayerResults(

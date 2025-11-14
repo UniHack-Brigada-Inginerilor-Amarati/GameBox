@@ -10,6 +10,7 @@ import {
   UserProfile,
   Game,
   GameResult,
+  PlayerGameResult,
 } from '@gamebox/shared';
 import { SessionService } from '../../services/session.service';
 import { MissionService } from '../../services/mission.service';
@@ -43,7 +44,7 @@ export class MissionGameplayPageComponent implements OnInit, OnDestroy {
 
   games: Game[] = [];
   currentGameIndex = 0;
-  gameResults: GameResult[] = [];
+  gameResults: PlayerGameResult[] = [];
   loading = false;
   gameCompleted = false;
   missionCompleted = false;
@@ -170,6 +171,15 @@ export class MissionGameplayPageComponent implements OnInit, OnDestroy {
 
   goBack(): void {
     this.router.navigate(['/missions']);
+  }
+
+  onGameResultsUpdated(results: PlayerGameResult[]): void {
+    // If empty array, reload from server; otherwise use the provided results
+    if (results.length === 0 && this.gameplayData) {
+      this.loadGameResults();
+    } else {
+      this.gameResults = results;
+    }
   }
 
 }

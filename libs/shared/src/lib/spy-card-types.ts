@@ -32,12 +32,12 @@ export interface PlayerGameResult {
  * Score is computed from the game_result after the game is completed
  */
 export interface GameScore {
-  strengthEndurance?: number;
-  agilitySpeed?: number;
-  aimPrecision?: number;
-  memoryAttention?: number;
-  communication?: number;
-  logicProblemSolving?: number;
+  mentalFortitudeComposure?: number;
+  adaptabilityDecisionMaking?: number;
+  aimMechanicalSkill?: number;
+  gameSenseAwareness?: number;
+  teamworkCommunication?: number;
+  strategy?: number;
 }
 
 /**
@@ -52,12 +52,12 @@ export interface SpyCard {
 
   // Spider card ranks (1-5 where 1=S-tier, 5=D-tier)
   overallRank: AbilityRank;
-  strengthEnduranceRank: AbilityRank;
-  agilitySpeedRank: AbilityRank;
-  aimPrecisionRank: AbilityRank;
-  memoryAttentionRank: AbilityRank;
-  communicationRank: AbilityRank;
-  logicProblemSolvingRank: AbilityRank;
+  mentalFortitudeComposureRank: AbilityRank;
+  adaptabilityDecisionMakingRank: AbilityRank;
+  aimMechanicalSkillRank: AbilityRank;
+  gameSenseAwarenessRank: AbilityRank;
+  teamworkCommunicationRank: AbilityRank;
+  strategyRank: AbilityRank;
 
   // Optional fields for additional features
   profilePicture?: string;
@@ -82,12 +82,12 @@ export interface Badge {
  * Radar chart data for visual representation
  */
 export interface RadarChartData {
-  strengthEndurance: number;
-  agilitySpeed: number;
-  aimPrecision: number;
-  memoryAttention: number;
-  communication: number;
-  logicProblemSolving: number;
+  mentalFortitudeComposure: number;
+  adaptabilityDecisionMaking: number;
+  aimMechanicalSkill: number;
+  gameSenseAwareness: number;
+  teamworkCommunication: number;
+  strategy: number;
 }
 
 /**

@@ -1,60 +1,55 @@
 @if (gameData) {
-  <div class="game-card" [class.expanded]="isExpanded">
-    <!-- Game Image -->
-    <div class="game-image">
-      <img 
-        [src]="getGameImageUrl(gameData) || environment.gameFallbackImage" 
-        [alt]="gameData.name"
-        class="card-image"
-      />
-    </div>
+<div class="game-card" [class.expanded]="isExpanded">
+  <!-- Game Image -->
+  <div class="game-image">
+    <img
+      [src]="getGameImageUrl(gameData) || environment.gameFallbackImage"
+      [alt]="gameData.name"
+      class="card-image"
+    />
+  </div>
 
-    <!-- Game Content -->
-    <div class="game-content">
-      <!-- Header -->
-      <div class="game-header">
-        <div class="game-title-section">
-          <h3 class="game-title">{{ gameData.name }}</h3>
-          <p class="game-category">{{ game.category }}</p>
-        </div>
-        
-        <button 
-          mat-stroked-button 
-          color="primary" 
-          class="learn-more-btn"
-          (click)="toggleExpanded()"
-        >
-          {{ isExpanded ? 'SHOW LESS' : 'LEARN MORE' }}
-        </button>
+  <!-- Game Content -->
+  <div class="game-content">
+    <!-- Header -->
+    <div class="game-header">
+      <div class="game-title-section">
+        <h3 class="game-title">{{ gameData.name }}</h3>
+        <p class="game-category">{{ game.category }}</p>
       </div>
 
-      <!-- Expanded Description -->
-      @if (isExpanded) {
-        <div class="game-description-section">
-          <div class="game-description">
-            <h3>Description</h3>
-            <p>{{ gameData.description }}</p>
-          </div>
-          
-          @if (gameData.abilities && gameData.abilities.length > 0) {
-            <div class="game-abilities">
-              <h3>Skills Developed</h3>
-              <div class="abilities-list">
-                @for (ability of gameData.abilities; track ability.name) {
-                  <span class="ability-tag">{{ ability.name }}</span>
-                }
-              </div>
-            </div>
+      <button mat-stroked-button color="primary" class="learn-more-btn" (click)="toggleExpanded()">
+        {{ isExpanded ? 'SHOW LESS' : 'LEARN MORE' }}
+      </button>
+    </div>
+
+    <!-- Expanded Description -->
+    @if (isExpanded) {
+    <div class="game-description-section">
+      <div class="game-description">
+        <h3>Description</h3>
+        <p>{{ gameData.description }}</p>
+      </div>
+
+      @if (gameData.abilities && gameData.abilities.length > 0) {
+      <div class="game-abilities">
+        <h3>Skills Developed</h3>
+        <div class="abilities-list">
+          @for (ability of gameData.abilities; track ability.name) {
+          <span class="ability-tag">{{ ability.name }}</span>
           }
         </div>
+      </div>
       }
     </div>
+    }
   </div>
+</div>
 } @else {
-  <div class="game-card loading">
-    <div class="loading-content">
-      <div class="loading-spinner"></div>
-      <p>Loading game...</p>
-    </div>
+<div class="game-card loading">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <p>Loading game...</p>
   </div>
+</div>
 }

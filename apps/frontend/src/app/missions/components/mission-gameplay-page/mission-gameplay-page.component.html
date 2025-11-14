@@ -29,7 +29,7 @@
       [gameOrder]="gameOrder"
       [gameplayData]="{ session: gameplayData.session, players: gameplayData.players }"
       [gameResults]="gameResults"
-      (gameResultsUpdated)="gameResults = $event"
+      (gameResultsUpdated)="onGameResultsUpdated($event)"
       (gameCompletedUpdate)="gameCompleted = $event"
       (loadingUpdate)="loading = $event"
       (missionCompletedUpdate)="missionCompleted = $event"

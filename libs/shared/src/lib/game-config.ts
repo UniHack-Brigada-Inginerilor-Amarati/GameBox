@@ -18,12 +18,12 @@ export enum AbilityRank {
 }
 
 export enum AbilityType {
-  STRENGTH_ENDURANCE = 'strengthEndurance',
-  AGILITY_SPEED = 'agilitySpeed',
-  AIM_PRECISION = 'aimPrecision',
-  MEMORY_ATTENTION = 'memoryAttention',
-  COMMUNICATION = 'communication',
-  LOGIC_PROBLEM_SOLVING = 'logicProblemSolving',
+  MENTAL_FORTITUDE_COMPOSURE = 'mentalFortitudeComposure',
+  ADAPTABILITY_DECISION_MAKING = 'adaptabilityDecisionMaking',
+  AIM_MECHANICAL_SKILL = 'aimMechanicalSkill',
+  GAME_SENSE_AWARENESS = 'gameSenseAwareness',
+  TEAMWORK_COMMUNICATION = 'teamworkCommunication',
+  STRATEGY = 'strategy',
 }
 
 /**
@@ -72,10 +72,9 @@ export const SCORE_CONFIG = {
  * Total score thresholds for determining overall player rank
  */
 export const RANK_THRESHOLDS = {
-  [AbilityRank.S]: 80,  // 80+ points = S-tier
-  [AbilityRank.A]: 60,  // 60-79 points = A-tier
-  [AbilityRank.B]: 40,  // 40-59 points = B-tier
-  [AbilityRank.C]: 20,  // 20-39 points = C-tier
-  [AbilityRank.D]: 0,   // 0-19 points = D-tier
+  [AbilityRank.S]: 80, // 80+ points = S-tier
+  [AbilityRank.A]: 60, // 60-79 points = A-tier
+  [AbilityRank.B]: 40, // 40-59 points = B-tier
+  [AbilityRank.C]: 20, // 20-39 points = C-tier
+  [AbilityRank.D]: 0, // 0-19 points = D-tier
 } as const;
-

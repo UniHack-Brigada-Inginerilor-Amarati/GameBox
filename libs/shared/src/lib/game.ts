@@ -1,8 +1,13 @@
-import { Ability } from './ability';
 import { Media } from './media';
 
 export interface GameAbility {
-  ability: Ability;
+  slug: string;
+  name: string;
+  description: string;
+  icon?: {
+    url: string;
+    filename?: string;
+  };
   score: number;
   id?: string;
 }

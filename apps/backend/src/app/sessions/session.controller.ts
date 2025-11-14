@@ -10,7 +10,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { UserProfileDTO, MissionSession, SessionPlayer, GameResult } from '@gamebox/shared';
+import { UserProfileDTO, MissionSession, SessionPlayer, GameResult, PlayerGameResult } from '@gamebox/shared';
 import { AdminGuard } from '../admin/admin.guard';
 
 @Controller('sessions')
@@ -103,8 +103,8 @@ export class SessionController {
 
   @Get(':id/game-results')
   @UseGuards(AdminGuard)
-  async getGameResults(@Param('id') id: string): Promise<GameResult[]> {
-    this.logger.debug('GET /sessions/:id - Fetching game results', { id });
+  async getGameResults(@Param('id') id: string): Promise<PlayerGameResult[]> {
+    this.logger.debug('GET /sessions/:id - Fetching player game results', { id });
     return this.sessionService.getGameResults(id);
   }
 

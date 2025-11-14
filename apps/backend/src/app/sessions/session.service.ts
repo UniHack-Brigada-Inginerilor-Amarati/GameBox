@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
-import { GameResult, MissionSession, SessionPlayer, UserProfileDTO } from '@gamebox/shared';
+import { GameResult, MissionSession, SessionPlayer, UserProfileDTO, PlayerGameResult, GameScore } from '@gamebox/shared';
 import { MissionService } from '../missions/mission.service';
 import { ProfileService } from '../profile/profile.service';
 
@@ -244,12 +244,22 @@ export class SessionService {
     return data;
   }
 
-  async getGameResults(sessionId: string): Promise<GameResult[]> {
-    this.logger.debug('Fetching game results', { sessionId });
+  async getGameResults(sessionId: string): Promise<PlayerGameResult[]> {
+    this.logger.debug('Fetching player game results for session', { sessionId });
     const { data, error } = await this.db.supabase
-      .from('game_results')
-      .select('*')
-      .eq('session_id', sessionId);
+      .from('player_results')
+      .select(`
+        player_game_result_id,
+        game_result_id,
+        player_name,
+        score,
+        game_results!inner (
+          game_slug,
+          session_id,
+          game_result
+        )
+      `)
+      .eq('game_results.session_id', sessionId);
 
     if (error) {
       this.db.handleSupabaseError('getGameResults', error, {
@@ -258,10 +268,30 @@ export class SessionService {
     }
 
     if (!data) {
-      throw new NotFoundException('Game results not found');
+      throw new NotFoundException('Player game results not found');
     }
 
-    return data;
+    // Transform to PlayerGameResult format
+    return data.map((result: any) => ({
+      player_game_result_id: result.player_game_result_id,
+      game_result_id: result.game_result_id,
+      player_name: result.player_name,
+      game_score: this.convertScoreToGameScore(result.score),
+      total_score: result.score,
+    }));
+  }
+
+  private convertScoreToGameScore(totalScore: number): GameScore {
+    // Distribute score evenly across all abilities
+    const scorePerAbility = Math.round(totalScore / 6);
+    return {
+      mentalFortitudeComposure: scorePerAbility,
+      adaptabilityDecisionMaking: scorePerAbility,
+      aimMechanicalSkill: scorePerAbility,
+      gameSenseAwareness: scorePerAbility,
+      teamworkCommunication: scorePerAbility,
+      strategy: scorePerAbility,
+    };
   }
 
   private generateRandomGameResult() {
