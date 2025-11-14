@@ -1,10 +1,23 @@
-import {Controller, Get,Post,Patch, Body,UseGuards, Request,Param,UseInterceptors,UploadedFile,Logger,Query,} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  UseGuards,
+  Request,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+  Logger,
+  Query,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../admin/admin.guard';
 import { AbilityService } from './ability.service';
-import { UserProfile, UserProfileDTO,AbilityScores } from '@gamebox/shared';
+import { UserProfile, UserProfileDTO, AbilityScores } from '@gamebox/shared';
 
 @Controller('profiles')
 export class ProfileController {
@@ -26,7 +39,7 @@ export class ProfileController {
   async searchUsers(
     @Query('q') name: string,
     @Query('limit') limit?: string,
-  ): Promise<UserProfileDTO[]> {
+  ): Promise<UserProfile[]> {
     this.logger.debug('GET /profiles/search - Searching users', {
       name,
       limit,
