@@ -1,0 +1,256 @@
+<div class="admin-reservations">
+  <!-- Header Section -->
+  <div class="header">
+    <div class="header-top">
+      <button class="back-button" routerLink="/admin">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Admin
+      </button>
+    </div>
+    <h1>Reservations Management</h1>
+    <p>View, filter, and manage all reservations in a calendar format</p>
+  </div>
+
+  <!-- View Switcher -->
+  <app-view-switcher (viewChanged)="onViewChanged($event)"></app-view-switcher>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <h3>
+      <mat-icon>filter_list</mat-icon>
+      Filters & Search
+    </h3>
+    
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label for="dateFilter">Date</label>
+        <input 
+          type="date" 
+          id="dateFilter" 
+          [(ngModel)]="filters.date" 
+          placeholder="Select date">
+      </div>
+
+      <div class="filter-field">
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter" [(ngModel)]="filters.status">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="finished">Finished</option>
+          <option value="no-show">No Show</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="gameModeFilter">Game Mode</label>
+        <select id="gameModeFilter" [(ngModel)]="filters.gameMode">
+          <option value="">All Game Modes</option>
+          <option value="battleship">Battleship</option>
+          <option value="paintball">Paintball</option>
+          <option value="laser-tag">Laser Tag</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="applyFilters()">
+          <mat-icon>search</mat-icon>
+          Apply Filters
+        </button>
+        <button class="secondary" (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3>
+        <mat-icon>list_alt</mat-icon>
+        Reservations List
+      </h3>
+    </div>
+
+    @if (!loading && !error) {
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Game Mode</th>
+              <th>Level</th>
+              <th>Owner</th>
+              <th>Participants</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (reservation of filteredReservations; track reservation.id) {
+              <tr>
+            <td>
+              <div>
+                <div style="font-weight: 600; color: #f1f1f1;">
+                  {{ reservation.date | date:'MMM dd, yyyy' }}
+                </div>
+                <div style="color: #999; font-size: 0.8rem;">
+                  {{ reservation.slot_time | slice:0:5 }}
+                </div>
+              </div>
+            </td>
+            
+            <td>
+              <div style="font-weight: 600; color: #f1f1f1;">
+                {{ reservation.game_mode }}
+              </div>
+            </td>
+            
+            <td>
+              <span class="status-badge" [ngClass]="'level-' + reservation.level">
+                {{ reservation.level }}
+              </span>
+            </td>
+            
+            <td>
+              <div style="color: #f1f1f1; font-size: 0.9rem;">
+                <div style="font-weight: 600;">{{ reservation.owner_name || 'Unknown' }}</div>
+                <div style="color: #999; font-size: 0.8rem;">{{ reservation.owner_email || 'No email' }}</div>
+              </div>
+            </td>
+            
+            <td>
+              <div style="color: #f1f1f1; font-weight: 500;">
+                {{ getConfirmedParticipantsCount(reservation.participants) }} / {{ reservation.max_participants }}
+              </div>
+            </td>
+            
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="'status-' + reservation.status">
+                {{ mapStatus(reservation.status) }}
+              </span>
+            </td>
+            
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <!-- Mark as Finished -->
+                @if (reservation.status === 'confirmed') {
+                  <button 
+                    class="action-btn finished"
+                    (click)="markAsFinished(reservation)"
+                    matTooltip="Mark as finished">
+                    <mat-icon>done_all</mat-icon>
+                    Finished
+                  </button>
+                }
+                
+                <!-- Mark as No Show -->
+                @if (reservation.status === 'confirmed') {
+                  <button 
+                    class="action-btn no-show"
+                    (click)="markAsNoShow(reservation)"
+                    matTooltip="Mark as no-show">
+                    <mat-icon>person_off</mat-icon>
+                    No Show
+                  </button>
+                }
+                
+                <!-- Confirm -->
+                @if (reservation.status === 'pending') {
+                  <button 
+                    class="action-btn confirm"
+                    (click)="confirmReservation(reservation)"
+                    matTooltip="Confirm reservation">
+                    <mat-icon>check_circle</mat-icon>
+                    Confirm
+                  </button>
+                }
+                
+                <!-- Cancel -->
+                @if (reservation.status === 'confirmed' || reservation.status === 'pending') {
+                  <button 
+                    class="action-btn cancel"
+                    (click)="cancelReservation(reservation)"
+                    matTooltip="Cancel reservation">
+                    <mat-icon>cancel</mat-icon>
+                    Cancel
+                  </button>
+                }
+                
+                <!-- Delete -->
+                <button 
+                  class="action-btn delete"
+                  (click)="deleteReservation(reservation)"
+                  matTooltip="Delete reservation permanently">
+                  <mat-icon>delete_forever</mat-icon>
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+            }
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination-container">
+        <div class="pagination-info">
+          Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredReservations.length) }} of {{ filteredReservations.length }} reservations
+        </div>
+        
+        <div class="pagination-controls">
+          <button 
+            [disabled]="currentPage === 1"
+            (click)="previousPage()">
+            <mat-icon>chevron_left</mat-icon>
+            Previous
+          </button>
+          
+          <button 
+            [disabled]="currentPage * pageSize >= filteredReservations.length"
+            (click)="nextPage()">
+            Next
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    } @else {
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <div class="message">Loading reservations...</div>
+        </div>
+      }
+
+      @if (error) {
+        <div class="error-container">
+          <mat-icon color="warn" style="font-size: 3rem; width: 3rem; height: 3rem; margin-bottom: 1rem;">
+            error_outline
+          </mat-icon>
+          <div class="message">Failed to load reservations</div>
+          <div class="error-message">{{ error.message || 'An error occurred while loading data' }}</div>
+          <button (click)="loadReservations()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      }
+    }
+
+    <!-- Empty State -->
+    @if (!loading && !error && filteredReservations.length === 0) {
+      <div class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <div class="empty-message">No reservations found</div>
+        <div class="empty-description">
+          Try adjusting your filters or check back later for new reservations.
+        </div>
+      </div>
+    }
+  </div>
+</div>

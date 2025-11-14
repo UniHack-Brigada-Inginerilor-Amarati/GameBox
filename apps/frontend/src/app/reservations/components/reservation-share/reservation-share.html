@@ -1,0 +1,306 @@
+<div class="reservation-share-container">
+  @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading reservation details...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-container">
+      <mat-icon>error</mat-icon>
+      <h2>Error</h2>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" routerLink="/">
+        <mat-icon>home</mat-icon>
+        Go Home
+      </button>
+    </div>
+  }
+
+  @if (!isLoading && !error && reservation) {
+    <div class="reservation-content">
+      <!-- All Participants Confirmed Indicator -->
+      @if (areAllParticipantsConfirmed()) {
+        <div class="all-confirmed-indicator">
+          <mat-icon>check_circle</mat-icon>
+          <span>All participants confirmed!</span>
+        </div>
+      }
+
+      <mat-card class="reservation-card">
+        <mat-card-header>
+          <mat-card-title>{{ getGameModeName(reservation.game_mode) }}</mat-card-title>
+          <mat-card-subtitle>{{ formatDateTime(reservation) }}</mat-card-subtitle>
+          <mat-chip-set>
+            <mat-chip [color]="getStatusColor()" selected>
+              {{ reservation.status | titlecase }}
+            </mat-chip>
+            <mat-chip color="accent">
+              {{ getConfirmedParticipantsCount() }}/{{ getTotalParticipantsCount() }} confirmed
+            </mat-chip>
+            @if (isUpcoming()) {
+              <mat-chip color="primary">Upcoming</mat-chip>
+            }
+            @if (isPast()) {
+              <mat-chip color="basic">Past</mat-chip>
+            }
+            <!-- Public/Private indicator -->
+            @if (reservation.is_public) {
+              <mat-chip color="accent">
+                <mat-icon>public</mat-icon>
+                Public
+              </mat-chip>
+            }
+            @if (!reservation.is_public) {
+              <mat-chip color="warn">
+                <mat-icon>lock</mat-icon>
+                Private
+              </mat-chip>
+            }
+          </mat-chip-set>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="reservation-details">
+            <div class="detail-section">
+              <h3>Event Details</h3>
+              <div class="detail-row">
+                <strong>Date:</strong> {{ reservation.date | date:'fullDate' }}
+              </div>
+              <div class="detail-row">
+                <strong>Time:</strong> {{ reservation.slot_time }}
+              </div>
+              <div class="detail-row">
+                <strong>Game:</strong> {{ getGameModeName(reservation.game_mode) }}
+              </div>
+              <div class="detail-row">
+                <strong>Level:</strong> {{ reservation.level | titlecase }}
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3>Participants</h3>
+              <div class="participants-list">
+                @for (participant of reservation.participants; track participant.id) {
+                  <div class="participant-item" [class.confirmed]="participant.confirmed">
+                    <div class="participant-info">
+                      <span class="participant-name">{{ participant.name }}</span>
+                      <span class="participant-email">{{ participant.email }}</span>
+                    </div>
+                    <div class="participant-status">
+                      @if (participant.confirmed) {
+                        <mat-icon class="confirmed-icon">check_circle</mat-icon>
+                      }
+                      @if (!participant.confirmed) {
+                        <span class="pending-text">Pending</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Confirmation Form -->
+            @if (showConfirmForm) {
+              <div class="confirmation-form">
+                <h3>Confirm Your Participation</h3>
+
+                <!-- Different messages based on authentication status -->
+                @if (isAuthenticated && currentUser) {
+                  <div class="auto-confirm-info">
+                    <mat-icon>info</mat-icon>
+                    <span>You're logged in as {{ getUserEmail() }}. Click confirm to join this reservation.</span>
+                  </div>
+                }
+
+                @if (!isAuthenticated) {
+                  <div class="email-input-info">
+                    <mat-icon>email</mat-icon>
+                    <span>Please enter your email to confirm participation. You can join until the maximum number of players is reached.</span>
+                  </div>
+                }
+
+                <form [formGroup]="confirmForm" (ngSubmit)="confirmParticipation()">
+                  <!-- Show email input for non-authenticated users -->
+                  @if (!isAuthenticated) {
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Your Email</mat-label>
+                      <input matInput formControlName="email" placeholder="Enter your email address" type="email">
+                      @if (confirmForm.get('email')?.hasError('required')) {
+                        <mat-error>Email is required</mat-error>
+                      }
+                      @if (confirmForm.get('email')?.hasError('email')) {
+                        <mat-error>Please enter a valid email</mat-error>
+                      }
+                    </mat-form-field>
+                  }
+
+                  <div class="form-actions">
+                    <button mat-button type="button" (click)="cancelConfirm()">Cancel</button>
+                    <button mat-raised-button color="primary" type="submit"
+                            [disabled]="!isAuthenticated && !confirmForm.valid">
+                      {{ isAuthenticated ? 'Join Reservation' : 'Confirm Participation' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            }
+
+            <!-- Action Buttons -->
+            @if (!showConfirmForm) {
+              <div class="action-buttons">
+                <!-- Primary Action Section -->
+                <div class="primary-actions">
+                  <div class="main-buttons">
+                    <!-- Show confirmation button only when appropriate -->
+                    @if (shouldShowConfirmButton()) {
+                      <button mat-raised-button
+                              color="primary"
+                              class="primary-action-btn"
+                              (click)="showConfirmParticipation()">
+                        <mat-icon>check_circle</mat-icon>
+                        Confirm Participation
+                      </button>
+                    }
+
+                    <!-- Direct Join Reservation button for authenticated users -->
+                    @if (isAuthenticated && currentUser && !isOwner && !isParticipantConfirmedSafe(getUserEmail()) && isUpcoming()) {
+                      <button mat-raised-button
+                              color="accent"
+                              class="primary-action-btn"
+                              (click)="handleJoinReservation()">
+                        <mat-icon>person_add</mat-icon>
+                        Join Reservation
+                      </button>
+                    }
+
+                    <!-- Button for non-authenticated users to join (only for public reservations) -->
+                    @if (!isAuthenticated && !isOwner && !hasReachedMaxParticipants() && isUpcoming() && reservation.is_public) {
+                      <button mat-raised-button
+                              color="primary"
+                              class="primary-action-btn"
+                              (click)="showConfirmParticipation()">
+                        <mat-icon>person_add</mat-icon>
+                        Join with Email
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <!-- Status and Info Section -->
+                <div class="status-info-section">
+                  <!-- Access message -->
+                  <div class="access-message">
+                    <mat-icon>info</mat-icon>
+                    <span>{{ getAccessMessage() }}</span>
+                  </div>
+
+                  <!-- Participant count info -->
+                  <div class="participant-count-info">
+                    <mat-icon>group</mat-icon>
+                    <span>{{ getTotalParticipantsCount() }}/{{ getMaxParticipantsForGame() }} participants</span>
+                    @if (hasReachedMaxParticipants()) {
+                      <span class="full-indicator">(FULL)</span>
+                    }
+                  </div>
+
+                  <!-- Confirmed participants info -->
+                  <div class="confirmed-count-info">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>{{ getConfirmedParticipantsCount() }} confirmed</span>
+                  </div>
+                </div>
+
+                <!-- User Status Messages -->
+                @if (!shouldShowConfirmButton() && isUpcoming()) {
+                  <div class="participation-status">
+                    @if (isOwner) {
+                      <div class="owner-message">
+                        <mat-icon>star</mat-icon>
+                        <span>You are the owner of this reservation</span>
+                      </div>
+                    }
+                    @if (currentUser && isParticipantConfirmedSafe(getUserEmail())) {
+                      <div class="confirmed-message">
+                        <mat-icon>check_circle</mat-icon>
+                        <span>Your participation is confirmed</span>
+                      </div>
+                    }
+                    @if (!isAuthenticated && !hasReachedMaxParticipants() && reservation.is_public) {
+                      <div class="login-message">
+                        <mat-icon>info</mat-icon>
+                        <span>Click "Join with Email" above to confirm your participation</span>
+                      </div>
+                    }
+                    @if (!isAuthenticated && !reservation.is_public) {
+                      <div class="private-message">
+                        <mat-icon>lock</mat-icon>
+                        <span>This is a private reservation. Contact the owner to join.</span>
+                      </div>
+                    }
+                    @if (hasReachedMaxParticipants()) {
+                      <div class="max-participants-message">
+                        <mat-icon>group_off</mat-icon>
+                        <span>This reservation is full. Maximum participants reached.</span>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- Utility Actions Section -->
+                <div class="utility-actions">
+                  <div class="utility-buttons">
+                    <button mat-stroked-button class="utility-btn" (click)="copyShareLink()">
+                      <mat-icon>share</mat-icon>
+                      Copy Share Link
+                    </button>
+
+                    <button mat-stroked-button class="utility-btn" (click)="refreshReservationData()">
+                      <mat-icon>refresh</mat-icon>
+                      Refresh
+                    </button>
+
+                    <button mat-stroked-button color="accent" class="utility-btn" routerLink="/dashboard">
+                      <mat-icon>dashboard</mat-icon>
+                      Back to Dashboard
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div> <!-- /.reservation-details -->
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Additional Info -->
+      <div class="additional-info">
+        <mat-card>
+          <mat-card-content>
+            <h3>About This Reservation</h3>
+            <p>This is a shared reservation link. You can view the details and confirm your participation if you're on the guest list.</p>
+
+            @if (isUpcoming()) {
+              <div class="info-section">
+                <h4>What to expect:</h4>
+                <ul>
+                  <li>Arrive 10 minutes before the scheduled time</li>
+                  <li>Bring comfortable clothing and shoes</li>
+                  <li>All equipment will be provided</li>
+                  <li>Have fun and enjoy the game!</li>
+                </ul>
+              </div>
+            }
+
+            @if (isPast()) {
+              <div class="info-section">
+                <h4>This event has already taken place</h4>
+                <p>Thank you for participating! We hope you had a great time.</p>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div> <!-- /.additional-info -->
+    </div> <!-- /.reservation-content -->
+  }
+</div> <!-- /.reservation-share-container -->

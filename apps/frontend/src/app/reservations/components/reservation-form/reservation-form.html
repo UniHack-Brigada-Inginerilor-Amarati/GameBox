@@ -1,0 +1,310 @@
+<div class="reservation-form-container">
+  <div class="form-header">
+    <h1>Create New Reservation</h1>
+    <p class="subtitle">Book your game session with friends</p>
+    @if (isAuthenticated) {
+      <div class="auth-status">
+        <mat-icon>verified_user</mat-icon>
+        <span>Signed in as {{ currentUser?.user?.email || 'Loading...' }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="form-card">
+    <div class="form-content">
+      <form [formGroup]="reservationForm" (keydown.enter)="preventEnter($event)">
+        <mat-stepper #stepper class="custom-stepper">
+          <!-- Step 1: Date and Time -->
+          <mat-step [stepControl]="reservationForm" label="Date & Time">
+            <div class="step-content">
+              <div class="step-header">
+                <mat-icon>schedule</mat-icon>
+                <h3>Choose your preferred date and time</h3>
+              </div>
+              
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Date</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="date" [min]="minDate">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  @if (reservationForm.get('date')?.hasError('required')) {
+                    <mat-error>
+                      Date is required
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <div class="time-slot-selector">
+                  <label class="time-slot-label">Time Slot *</label>
+                  <div class="time-slot-grid">
+                    @for (slot of availableTimeSlots; track slot.time) {
+                      <div class="time-slot-card"
+                      [class.available]="slot.available"
+                      [class.booked]="!slot.available && slot.reservation_id"
+                      [class.past]="!slot.available && !slot.reservation_id"
+                      [class.selected]="reservationForm.get('slot_time')?.value === slot.time"
+                      (click)="selectTimeSlot(slot)"
+                      [class.disabled]="!slot.available">
+                      <div class="time-slot-content">
+                        <span class="time-slot-time">{{ slot.time }}</span>
+                        <span class="time-slot-status" [class]="slot.available ? 'status-available' : (slot.reservation_id ? 'status-booked' : 'status-past')">
+                          @if (slot.available) {
+                            <span class="status-text">Available</span>
+                          }
+                          @if (!slot.available && slot.reservation_id) {
+                            <span class="status-text">Booked</span>
+                          }
+                          @if (!slot.available && !slot.reservation_id) {
+                            <span class="status-text">Past</span>
+                          }
+                        </span>
+                      </div>
+
+                    </div>
+                  }
+                  </div>
+                  <div class="time-slot-hint">
+                    {{ getTimeSlotSummary() }}
+                  </div>
+                  @if (reservationForm.get('slot_time')?.hasError('required')) {
+                    <mat-error class="time-slot-error">
+                      Time slot is required
+                    </mat-error>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-raised-button color="primary" matStepperNext 
+                      [disabled]="!reservationForm.get('date')?.valid || !reservationForm.get('slot_time')?.valid">
+                <mat-icon>arrow_forward</mat-icon>
+                Next
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 2: Game Details -->
+          <mat-step [stepControl]="reservationForm" label="Game Details">
+            <div class="step-content">
+              <div class="step-header">
+                <mat-icon>sports_esports</mat-icon>
+                <h3>Select your game and difficulty level</h3>
+              </div>
+              
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Game Mode</mat-label>
+                  <mat-select formControlName="game_mode" (selectionChange)="onGameModeChange($event.value)">
+                    @for (game of gameModes; track game.id) {
+                      <mat-option [value]="game.id">
+                        {{ game.name }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                  @if (reservationForm.get('game_mode')?.hasError('required')) {
+                    <mat-error>
+                      Game mode is required
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Difficulty Level</mat-label>
+                  <mat-select formControlName="level">
+                    <mat-option value="beginner">Beginner</mat-option>
+                    <mat-option value="intermediate">Intermediate</mat-option>
+                    <mat-option value="advanced">Advanced</mat-option>
+                  </mat-select>
+                  @if (reservationForm.get('level')?.hasError('required')) {
+                    <mat-error>
+                      Difficulty level is required
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              @if (selectedGameMode) {
+                <div class="game-info">
+                <mat-chip-set>
+                  <mat-chip color="primary" class="info-chip">
+                    <mat-icon>group</mat-icon>
+                    {{ selectedGameMode.min_players }}-{{ selectedGameMode.max_players }} players
+                  </mat-chip>
+                  <mat-chip color="accent" class="info-chip">
+                    <mat-icon>info</mat-icon>
+                    {{ selectedGameMode.description }}
+                  </mat-chip>
+                </mat-chip-set>
+                </div>
+              }
+            </div>
+
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon>
+                Back
+              </button>
+              <button mat-raised-button color="primary" matStepperNext 
+                      [disabled]="!reservationForm.get('game_mode')?.valid">
+                <mat-icon>arrow_forward</mat-icon>
+                Next
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 3: Participants -->
+          <mat-step [stepControl]="reservationForm" label="Participants">
+            <div class="step-content">
+              <div class="step-header">
+                <mat-icon>people</mat-icon>
+                <h3>Add participants to your game session</h3>
+              </div>
+              
+              <div class="participants-container">
+                <div formArrayName="participants">
+                  @for (participant of participants.controls; track i; let i = $index) {
+                    <div [formGroupName]="i" 
+                         class="participant-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Name</mat-label>
+                      <input matInput formControlName="name" placeholder="Participant name">
+                      @if (participant.get('name')?.hasError('required')) {
+                        <mat-error>
+                          Name is required
+                        </mat-error>
+                      }
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Email</mat-label>
+                      <input matInput formControlName="email" placeholder="email@example.com" type="email">
+                      @if (participant.get('email')?.hasError('required')) {
+                        <mat-error>
+                          Email is required
+                        </mat-error>
+                      }
+                      @if (participant.get('email')?.hasError('email')) {
+                        <mat-error>
+                          Please enter a valid email
+                        </mat-error>
+                      }
+                    </mat-form-field>
+
+                    <button mat-icon-button color="warn" type="button" 
+                            (click)="removeParticipant(i)" 
+                            [disabled]="participants.length <= 1"
+                            class="remove-btn">
+                      <mat-icon>remove_circle</mat-icon>
+                    </button>
+                  </div>
+                  }
+                </div>
+
+                <button mat-stroked-button type="button" (click)="addParticipant()" class="add-participant-btn">
+                  <mat-icon>add</mat-icon>
+                  Add Participant
+                </button>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon>
+                Back
+              </button>
+              <button mat-raised-button color="primary" matStepperNext 
+                      [disabled]="!reservationForm.get('participants')?.valid">
+                <mat-icon>arrow_forward</mat-icon>
+                Next
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 4: Confirmation -->
+          <mat-step label="Confirmation">
+            <div class="step-content">
+              <div class="step-header">
+                <mat-icon>check_circle</mat-icon>
+                <h3>Review your reservation details</h3>
+              </div>
+              
+              <div class="confirmation-details">
+                <div class="detail-section">
+                  <h4>Date & Time</h4>
+                  <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value">{{ reservationForm.get('date')?.value | date:'fullDate' }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Time:</span>
+                    <span class="detail-value">{{ reservationForm.get('slot_time')?.value }}</span>
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <h4>Game Details</h4>
+                  <div class="detail-row">
+                    <span class="detail-label">Game:</span>
+                    <span class="detail-value">{{ getGameModeName(reservationForm.get('game_mode')?.value) }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Level:</span>
+                    <span class="detail-value">{{ reservationForm.get('level')?.value | titlecase }}</span>
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <h4>Participants ({{ participants.length }})</h4>
+                  <div class="participants-summary">
+                    @for (participant of participants.controls; track i; let i = $index) {
+                      <div class="participant-summary">
+                      <div class="participant-info">
+                        <span class="participant-name">{{ participant.get('name')?.value }}</span>
+                        <span class="participant-email">{{ participant.get('email')?.value }}</span>
+                      </div>
+                      <div class="participant-badges">
+                        @if (i === 0) {
+                          <span class="owner-badge">
+                            <mat-icon>star</mat-icon>
+                            Owner
+                          </span>
+                        }
+                        <span class="status-badge pending">Pending</span>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon>
+                Back
+              </button>
+              <button mat-raised-button color="primary" 
+                      (click)="onSubmit()" 
+                      [disabled]="!reservationForm.valid || isLoading"
+                      class="submit-btn">
+                @if (isLoading) {
+                  <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+                }
+                @if (!isLoading) {
+                  <mat-icon>check</mat-icon>
+                }
+                {{ isLoading ? 'Creating...' : 'Create Reservation' }}
+              </button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </form>
+    </div>
+  </div>
+</div> 

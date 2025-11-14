@@ -1,0 +1,28 @@
+<div class="view-switcher">
+  <div class="switcher-container">
+    <div class="switcher-label">
+      <mat-icon>view_module</mat-icon>
+      <span>View Mode</span>
+    </div>
+    
+    <div class="switcher-toggle">
+      <button 
+        class="toggle-option" 
+        [class.active]="currentView === 'calendar'"
+        (click)="switchToCalendar()"
+        [disabled]="currentView === 'calendar'">
+        <mat-icon>calendar_today</mat-icon>
+        <span>Calendar</span>
+      </button>
+      
+      <button 
+        class="toggle-option" 
+        [class.active]="currentView === 'reservations'"
+        (click)="switchToReservations()"
+        [disabled]="currentView === 'reservations'">
+        <mat-icon>list_alt</mat-icon>
+        <span>List</span>
+      </button>
+    </div>
+  </div>
+</div>

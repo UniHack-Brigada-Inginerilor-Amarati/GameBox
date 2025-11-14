@@ -1,0 +1,48 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <mat-icon class="warning-icon">warning</mat-icon>
+    <h2>Delete Reservation</h2>
+  </div>
+  
+  <div class="dialog-content">
+    <p>Are you sure you want to <strong>permanently delete</strong> this reservation?</p>
+    
+    <div class="reservation-details">
+      <div class="detail-row">
+        <span class="label">Game:</span>
+        <span class="value">{{ data.reservation.game_mode | titlecase }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Date:</span>
+        <span class="value">{{ data.reservation.date }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Time:</span>
+        <span class="value">{{ data.reservation.slot_time | slice:0:5 }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Owner:</span>
+        <span class="value">{{ data.reservation.owner_name || data.reservation.owner_email || 'Unknown' }}</span>
+      </div>
+    </div>
+    
+    <div class="warning-message">
+      <mat-icon>error_outline</mat-icon>
+      <span>This action cannot be undone. The reservation will be permanently removed from the database.</span>
+    </div>
+  </div>
+  
+  <div class="dialog-actions">
+    <button class="cancel-btn" (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+      Cancel
+    </button>
+    <button class="delete-btn" (click)="onConfirm()">
+      <mat-icon>delete_forever</mat-icon>
+      Delete Permanently
+    </button>
+  </div>
+</div>
+
+
+

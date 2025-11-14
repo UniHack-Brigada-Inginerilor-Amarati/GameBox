@@ -1,0 +1,79 @@
+<div class="dialog-container">
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <h2>
+      @if (data.action === 'finished') {
+        <mat-icon color="primary">done_all</mat-icon>
+      }
+      @if (data.action === 'no-show') {
+        <mat-icon color="warn">person_off</mat-icon>
+      }
+      Confirm {{ data.action === 'finished' ? 'Finished' : 'No-Show' }}
+    </h2>
+    <div class="reservation-info">
+      Update reservation status for {{ data.reservation.game_mode | titlecase }}
+    </div>
+  </div>
+
+  <!-- Dialog Content -->
+  <div class="dialog-content">
+    <div class="confirmation-message">
+      <p>
+        Are you sure you want to mark this reservation as 
+        <span class="action-type">{{ data.action === 'finished' ? 'finished' : 'no-show' }}</span>?
+      </p>
+      
+      <div class="reservation-details">
+        <div class="detail-row">
+          <span class="label">Game Mode:</span>
+          <span class="value">{{ data.reservation.game_mode | titlecase }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Date:</span>
+          <span class="value">{{ data.reservation.date | date:'MMM dd, yyyy' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Time:</span>
+          <span class="value">{{ data.reservation.slot_time | slice:0:5 }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Level:</span>
+          <span class="value">{{ data.reservation.level | titlecase }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Max Participants:</span>
+          <span class="value">{{ data.reservation.max_participants }}</span>
+        </div>
+      </div>
+
+      @if (data.action === 'no-show') {
+        <div class="warning-message">
+          <mat-icon>warning</mat-icon>
+          This action cannot be undone. The reservation will be marked as no-show.
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Dialog Actions -->
+  <div class="dialog-actions">
+    <button 
+      class="cancel-button" 
+      (click)="onCancel()">
+      Cancel
+    </button>
+    
+    <button 
+      class="confirm-button"
+      [ngClass]="data.action"
+      (click)="onConfirm()">
+      @if (data.action === 'finished') {
+        <mat-icon>done_all</mat-icon>
+      }
+      @if (data.action === 'no-show') {
+        <mat-icon>person_off</mat-icon>
+      }
+      Confirm {{ data.action === 'finished' ? 'Finished' : 'No-Show' }}
+    </button>
+  </div>
+</div>

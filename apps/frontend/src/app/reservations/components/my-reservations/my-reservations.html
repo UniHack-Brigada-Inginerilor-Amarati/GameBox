@@ -1,0 +1,315 @@
+<div class="reservations-container">
+  <div class="page-header">
+    <h1>My Reservations</h1>
+    <p class="subtitle">Manage your upcoming and past game sessions</p>
+    <div class="header-buttons">
+      <button mat-stroked-button color="accent" routerLink="/dashboard" class="dashboard-btn">
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </button>
+      <button mat-stroked-button color="primary" (click)="refreshReservationStatuses()" class="refresh-btn">
+        <mat-icon>refresh</mat-icon>
+        Refresh Statuses
+      </button>
+      <button mat-raised-button color="primary" routerLink="/reservation/new" class="new-reservation-btn">
+        <mat-icon>add</mat-icon>
+        New Reservation
+      </button>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Loading -->
+    @if (isLoading) {
+      <div class="loading-state">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading your reservations...</p>
+      </div>
+    }
+
+    <!-- Empty -->
+    @if (!isLoading && reservations.length === 0) {
+      <div class="empty-state">
+        <mat-icon>event_busy</mat-icon>
+        <h3>No Reservations Yet</h3>
+        <p>You haven't made any reservations yet. Start by creating your first game session!</p>
+        <button mat-raised-button color="primary" routerLink="/reservation/new">
+          <mat-icon>add</mat-icon>
+          Create First Reservation
+        </button>
+      </div>
+    }
+
+    <!-- Content -->
+    @if (!isLoading && reservations.length > 0) {
+      <div class="reservations-content">
+        <!-- Upcoming -->
+        @if (getUpcomingReservations().length > 0) {
+          <div class="reservations-section">
+            <div class="section-header">
+              <mat-icon>upcoming</mat-icon>
+              <h2>Upcoming Sessions</h2>
+              <span class="count-badge">{{ getUpcomingReservations().length }}</span>
+            </div>
+
+            <div class="reservations-grid">
+              @for (reservation of getUpcomingReservations(); track reservation.id) {
+                <mat-card class="reservation-card upcoming">
+                  <mat-card-header>
+                    <div class="card-header-content">
+                      <div class="game-info">
+                        <h3>{{ getGameModeName(reservation.game_mode) }}</h3>
+                        <p class="game-details">{{ reservation.level | titlecase }} Level</p>
+                        @if (hasReachedMaxParticipants(reservation)) {
+                          <span class="header-max-indicator">
+                            <mat-icon>group_off</mat-icon>
+                            FULL
+                          </span>
+                        }
+                      </div>
+                      <div class="status-badge" [ngClass]="reservation.status">
+                        {{ reservation.status | titlecase }}
+                      </div>
+                    </div>
+                  </mat-card-header>
+
+                  <mat-card-content>
+                    <div class="reservation-details">
+                      <div class="detail-item">
+                        <mat-icon>schedule</mat-icon>
+                        <div class="detail-content">
+                          <span class="detail-label">Date & Time</span>
+                          <span class="detail-value">
+                            {{ reservation.date | date:'fullDate' }} at {{ reservation.slot_time }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="detail-item">
+                        <mat-icon>people</mat-icon>
+                        <div class="detail-content">
+                          <span class="detail-label">Participants</span>
+                          <span class="detail-value" [ngClass]="{'max-reached': hasReachedMaxParticipants(reservation)}">
+                            {{ getParticipantCountDisplay(reservation) }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="detail-item">
+                        <mat-icon>share</mat-icon>
+                        <div class="detail-content">
+                          <span class="detail-label">Share Link</span>
+                          <div class="share-link-container">
+                            <span class="detail-value">{{ reservation.id }}</span>
+                            <button mat-icon-button class="copy-btn"
+                                    (click)="copyShareLink(reservation.id)"
+                                    matTooltip="Copy share link">
+                              <mat-icon>content_copy</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="participants-preview">
+                      <div class="preview-header">
+                        <h4>Participants</h4>
+                        @if (hasReachedMaxParticipants(reservation)) {
+                          <span class="max-indicator">
+                            <mat-icon>group_off</mat-icon>
+                            MAX
+                          </span>
+                        }
+                      </div>
+
+                      <div class="participants-list">
+                        @for (participant of reservation.participants.slice(0, 3); track participant.id) {
+                          <div class="participant-item">
+                            <div class="participant-avatar">
+                              {{ participant.name.charAt(0).toUpperCase() }}
+                            </div>
+                            <div class="participant-info">
+                              <span class="participant-name">
+                                {{ participant.name }}
+                                @if (isOwner(participant, reservation)) {
+                                  <mat-icon class="owner-crown" matTooltip="Owner">star</mat-icon>
+                                }
+                              </span>
+                              <span class="participant-email">{{ participant.email }}</span>
+                            </div>
+                            <div class="participant-status">
+                              <span class="status-dot" [ngClass]="participant.confirmed ? 'confirmed' : 'pending'"></span>
+                            </div>
+                          </div>
+                        }
+                        @if (reservation.participants.length > 3) {
+                          <div class="more-participants">
+                            +{{ reservation.participants.length - 3 }} more
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </mat-card-content>
+
+                  <mat-card-actions>
+                    @if (isOwnerOfReservation(reservation)) {
+                      <div class="owner-actions">
+                        <button mat-stroked-button color="warn"
+                                (click)="cancelReservation(reservation)"
+                                class="cancel-btn">
+                          <mat-icon>cancel</mat-icon>
+                          Cancel
+                        </button>
+                        <button mat-raised-button color="primary"
+                                (click)="shareReservation(reservation)"
+                                class="share-btn">
+                          <mat-icon>share</mat-icon>
+                          Share
+                        </button>
+                      </div>
+                    }
+
+                    @if (!isOwnerOfReservation(reservation)) {
+                      <div class="participant-actions">
+                        <button mat-stroked-button color="accent"
+                                (click)="updateParticipantConfirmation(reservation, getCurrentUserParticipant(reservation)?.email || '', true)"
+                                class="confirm-btn"
+                                [disabled]="isCurrentUserConfirmed(reservation)">
+                          <mat-icon>check</mat-icon>
+                          {{ isCurrentUserConfirmed(reservation) ? 'Confirmed' : 'Confirm' }}
+                        </button>
+                        <button mat-stroked-button color="warn"
+                                (click)="updateParticipantConfirmation(reservation, getCurrentUserParticipant(reservation)?.email || '', false)"
+                                class="decline-btn"
+                                [disabled]="!isCurrentUserConfirmed(reservation)">
+                          <mat-icon>close</mat-icon>
+                          {{ isCurrentUserConfirmed(reservation) ? 'Decline' : 'Not Coming' }}
+                        </button>
+                        <button mat-stroked-button color="primary"
+                                (click)="shareReservation(reservation)"
+                                class="share-btn">
+                          <mat-icon>share</mat-icon>
+                          Share
+                        </button>
+                      </div>
+                    }
+                  </mat-card-actions>
+                </mat-card>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Past -->
+        @if (getPastReservations().length > 0) {
+          <div class="reservations-section">
+            <div class="section-header">
+              <mat-icon>history</mat-icon>
+              <h2>Past Sessions</h2>
+              <span class="count-badge">{{ getPastReservations().length }}</span>
+            </div>
+
+            <div class="reservations-grid">
+              @for (reservation of getPastReservations(); track reservation.id) {
+                <mat-card class="reservation-card past">
+                  <mat-card-header>
+                    <div class="card-header-content">
+                      <div class="game-info">
+                        <h3>{{ getGameModeName(reservation.game_mode) }}</h3>
+                        <p class="game-details">{{ reservation.level | titlecase }} Level</p>
+                        @if (hasReachedMaxParticipants(reservation)) {
+                          <span class="header-max-indicator">
+                            <mat-icon>group_off</mat-icon>
+                            FULL
+                          </span>
+                        }
+                      </div>
+                      <div class="status-badge" [ngClass]="reservation.status">
+                        {{ reservation.status | titlecase }}
+                      </div>
+                    </div>
+                  </mat-card-header>
+
+                  <mat-card-content>
+                    <div class="reservation-details">
+                      <div class="detail-item">
+                        <mat-icon>schedule</mat-icon>
+                        <div class="detail-content">
+                          <span class="detail-label">Date & Time</span>
+                          <span class="detail-value">
+                            {{ reservation.date | date:'fullDate' }} at {{ reservation.slot_time }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="detail-item">
+                        <mat-icon>people</mat-icon>
+                        <div class="detail-content">
+                          <span class="detail-label">Participants</span>
+                          <span class="detail-value" [ngClass]="{'max-reached': hasReachedMaxParticipants(reservation)}">
+                            {{ getParticipantCountDisplay(reservation) }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="detail-item">
+                        <mat-icon>emoji_events</mat-icon>
+                        <div class="detail-content">
+                          <span class="detail-label">Session Status</span>
+                          <span class="detail-value">
+                            {{ reservation.status === 'cancelled' ? 'Cancelled' : 'Completed' }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="participants-preview">
+                      <h4>Participants</h4>
+                      <div class="participants-list">
+                        @for (participant of reservation.participants.slice(0, 3); track participant.id) {
+                          <div class="participant-item">
+                            <div class="participant-avatar">
+                              {{ participant.name.charAt(0).toUpperCase() }}
+                            </div>
+                            <div class="participant-info">
+                              <span class="participant-name">
+                                {{ participant.name }}
+                                @if (isOwner(participant, reservation)) {
+                                  <mat-icon class="owner-crown" matTooltip="Owner">star</mat-icon>
+                                }
+                              </span>
+                              <span class="participant-email">{{ participant.email }}</span>
+                            </div>
+                            <div class="participant-status">
+                              <span class="status-dot" [ngClass]="participant.confirmed ? 'confirmed' : 'pending'"></span>
+                            </div>
+                          </div>
+                        }
+                        @if (reservation.participants.length > 3) {
+                          <div class="more-participants">
+                            +{{ reservation.participants.length - 3 }} more
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </mat-card-content>
+
+                  <mat-card-actions>
+                    <button mat-stroked-button (click)="viewReservationDetails(reservation)" class="details-btn">
+                      <mat-icon>visibility</mat-icon>
+                      View Details
+                    </button>
+                    <button mat-stroked-button color="primary" (click)="rebookReservation(reservation)" class="rebook-btn">
+                      <mat-icon>refresh</mat-icon>
+                      Rebook
+                    </button>
+                  </mat-card-actions>
+                </mat-card>
+              }
+            </div>
+          </div>
+        }
+      </div> <!-- /.reservations-content -->
+    } <!-- /@if content -->
+  </div> <!-- /.content-wrapper -->
+</div> <!-- /.reservations-container -->

@@ -1,0 +1,207 @@
+// Dialog Container
+.dialog-container {
+  background: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+// Dialog Header
+.dialog-header {
+  background: #232323;
+  padding: 1.5rem;
+  border-bottom: 1px solid #333;
+  text-align: center;
+
+  h2 {
+    color: #f1f1f1;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .reservation-info {
+    color: #999;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+  }
+}
+
+// Dialog Content
+.dialog-content {
+  padding: 1.5rem;
+  color: #f1f1f1;
+
+  .confirmation-message {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+
+    .action-type {
+      color: #87a4fa;
+      font-weight: 600;
+    }
+
+    .reservation-details {
+      background: #232323;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      text-align: left;
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .label {
+          color: #999;
+          font-weight: 500;
+        }
+
+        .value {
+          color: #f1f1f1;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .warning-message {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    color: #ffc107;
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.5;
+
+    mat-icon {
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+  }
+}
+
+// Dialog Actions
+.dialog-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #232323;
+  border-top: 1px solid #333;
+
+  button {
+    min-width: 120px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+
+    &.cancel-button {
+      background: #1a1a1a;
+      color: #f1f1f1;
+      border: 1px solid #333;
+
+      &:hover {
+        background: #232323;
+        border-color: #666;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    &.confirm-button {
+      background: #87a4fa;
+      color: #1a1a1a;
+
+      &:hover {
+        background: #6b8cfa;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(135, 164, 250, 0.3);
+      }
+
+      &.finished {
+        background: #4caf50;
+        color: white;
+
+        &:hover {
+          background: #45a049;
+          box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+        }
+      }
+
+      &.no-show {
+        background: #f44336;
+        color: white;
+
+        &:hover {
+          background: #d32f2f;
+          box-shadow: 0 4px 16px rgba(244, 67, 54, 0.3);
+        }
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 480px) {
+  .dialog-container {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .dialog-header,
+  .dialog-content,
+  .dialog-actions {
+    padding: 1rem;
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// Focus States for Accessibility
+button:focus {
+  outline: 2px solid #87a4fa;
+  outline-offset: 2px;
+}
+
+// Animation for dialog
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dialog-container {
+  animation: slideInUp 0.3s ease-out;
+}

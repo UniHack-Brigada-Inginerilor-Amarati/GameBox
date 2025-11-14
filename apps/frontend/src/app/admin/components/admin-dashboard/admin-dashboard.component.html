@@ -1,0 +1,85 @@
+<div class="admin-dashboard">
+  <!-- Header Section -->
+  <div class="header">
+    <h1>Admin Control Panel</h1>
+    <p>Manage reservations, view statistics, and monitor system activity</p>
+  </div>
+
+  <!-- View Switcher -->
+  <app-view-switcher (viewChanged)="onViewChanged($event)"></app-view-switcher>
+
+  <!-- Navigation Cards -->
+  <div class="nav-cards">
+    <a routerLink="/admin/calendar" class="nav-card">
+      <mat-icon>calendar_month</mat-icon>
+      <h3>Calendar View</h3>
+      <p>View and manage reservations in a calendar format</p>
+    </a>
+
+    <a routerLink="/admin/reservations" class="nav-card">
+      <mat-icon>list_alt</mat-icon>
+      <h3>Reservations</h3>
+      <p>Manage all reservations in a detailed table view</p>
+    </a>
+
+    <a routerLink="/admin/stats" class="nav-card">
+      <mat-icon>analytics</mat-icon>
+      <h3>Analytics</h3>
+      <p>View detailed statistics and system metrics</p>
+    </a>
+  </div>
+
+  <!-- Quick Statistics Section -->
+  <div class="stats-section">
+    <h2>Quick Statistics</h2>
+
+    @if (!loading && !error && stats) {
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.totalReservations }}</div>
+          <div class="stat-label">Total Reservations</div>
+          <div class="stat-description">All time reservations</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.todayBookings }}</div>
+          <div class="stat-label">Today's Bookings</div>
+          <div class="stat-description">Reservations for today</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.activeUsers }}</div>
+          <div class="stat-label">Active Users</div>
+          <div class="stat-description">Users with recent activity</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-value">${{ stats.revenue }}</div>
+          <div class="stat-label">Revenue</div>
+          <div class="stat-description">Total revenue generated</div>
+        </div>
+      </div>
+    } @else {
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <div class="message">Loading statistics...</div>
+        </div>
+      }
+
+      @if (error) {
+        <div class="error-container">
+          <mat-icon color="warn" style="font-size: 3rem; width: 3rem; height: 3rem; margin-bottom: 1rem;">
+            error_outline
+          </mat-icon>
+          <div class="message">Failed to load statistics</div>
+          <div class="error-message">{{ error.message || 'An error occurred while loading data' }}</div>
+          <button mat-raised-button (click)="loadAdminStats()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      }
+    }
+  </div>
+</div>

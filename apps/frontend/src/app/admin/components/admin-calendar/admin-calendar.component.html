@@ -1,0 +1,137 @@
+<div class="admin-calendar">
+  <!-- Header Section -->
+  <div class="header">
+    <div class="header-top">
+      <button class="back-button" routerLink="/admin">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Admin
+      </button>
+    </div>
+    <h1>Calendar View</h1>
+    <p>View and manage reservations in a calendar format</p>
+  </div>
+
+  <!-- View Switcher -->
+  <app-view-switcher (viewChanged)="onViewChanged($event)"></app-view-switcher>
+
+  <!-- Calendar Controls -->
+  <div class="calendar-controls">
+    <button (click)="previousWeek()" [disabled]="loading">
+      <mat-icon>chevron_left</mat-icon>
+      Previous Week
+    </button>
+    
+    <div class="current-date">
+      {{ getCurrentWeekRange() }}
+    </div>
+    
+    <button (click)="nextWeek()" [disabled]="loading">
+      Next Week
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    
+    <button (click)="goToToday()" [disabled]="loading">
+      <mat-icon>today</mat-icon>
+      Today
+    </button>
+  </div>
+
+  <!-- Loading and Error States -->
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <div class="message">Loading reservations...</div>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-container">
+      <mat-icon color="warn" style="font-size: 3rem; width: 3rem; height: 3rem; margin-bottom: 1rem;">
+        error_outline
+      </mat-icon>
+      <div class="message">Failed to load reservations</div>
+      <div class="error-message">{{ error.message || 'An error occurred while loading data' }}</div>
+      <button (click)="loadReservations()">
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- Calendar Grid -->
+  @if (!loading && !error) {
+    <div class="calendar-grid">
+    <!-- Calendar Header -->
+    <div class="calendar-header">
+      <div class="time-header">Time</div>
+      @for (day of calendarDays; track day.date) {
+        <div class="day-header">
+          <div class="day-name">{{ getDayName(day.date) }}</div>
+          <div class="day-date">{{ day.date | date:'MMM d' }}</div>
+        </div>
+      }
+    </div>
+
+    <!-- Calendar Body with Time Grid -->
+    <div class="calendar-body">
+      <div class="time-grid">
+        <!-- Time slots column -->
+        <div class="time-column">
+          @for (time of timeSlots; track time) {
+            <div class="time-slot" 
+                 [ngClass]="{
+                   'has-reservation': hasReservationsAtTime(time)
+                 }">
+              <span class="time-label">{{ time }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Day columns -->
+        @for (day of calendarDays; track day.date) {
+          <div class="day-column">
+            @for (time of timeSlots; track time) {
+              <div class="day-cell" 
+                   [ngClass]="{
+                     'today': isToday(day.date),
+                     'has-reservation': hasReservationsAtTime(time)
+                   }">
+            
+            <!-- Show reservations for this time slot -->
+            @for (reservation of getReservationsAtTime(day.date, time); track reservation.id) {
+              <div class="reservation-slot" 
+                   [matTooltip]="getReservationTooltip(reservation)"
+                   (click)="openReservationDetails(reservation)"
+                   [ngClass]="'status-' + reservation.status">
+                
+                <div class="reservation-content">
+                  <div class="reservation-title">
+                    {{ getGameModeName(reservation.game_mode) }}
+                  </div>
+                  <div class="reservation-level">
+                    {{ reservation.level | titlecase }}
+                  </div>
+                  <div class="reservation-owner">
+                    {{ getOwnerDisplay(reservation) }}
+                  </div>
+                  <div class="reservation-participants">
+                    {{ getParticipantCount(reservation) }}/{{ reservation.max_participants }}
+                  </div>
+                  <div class="reservation-status">
+                    <mat-icon [ngClass]="'status-icon-' + reservation.status">
+                      {{ getStatusIcon(reservation.status) }}
+                    </mat-icon>
+                    <span>{{ reservation.status | titlecase }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+              </div>
+            }
+          </div>
+        }
+        </div>
+      </div>
+    </div>
+  }
+</div>

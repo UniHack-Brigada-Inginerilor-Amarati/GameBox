@@ -1,0 +1,212 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Reservation Details</h2>
+    <button mat-icon-button (click)="close()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <mat-tab-group>
+      <!-- Details Tab -->
+      <mat-tab label="Details">
+        <div class="tab-content">
+          <!-- Basic Information -->
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>info</mat-icon>
+              <mat-card-title>Basic Information</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">Game Mode:</span>
+                  <span class="value">{{ reservation.game_mode }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Level:</span>
+                  <span class="value">{{ reservation.level }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Date:</span>
+                  <span class="value">{{ reservation.date | date:'fullDate' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Time:</span>
+                  <span class="value">{{ reservation.slot_time }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Max Participants:</span>
+                  <span class="value">{{ reservation.max_participants }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Public:</span>
+                  <span class="value">{{ reservation.is_public ? 'Yes' : 'No' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Status Information -->
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>schedule</mat-icon>
+              <mat-card-title>Status</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-chip class="status-chip status-{{ reservation.status }}" selected>
+                <mat-icon>check_circle</mat-icon>
+                {{ reservation.status | titlecase }}
+              </mat-chip>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Participants -->
+          <mat-card class="info-card participants-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>people</mat-icon>
+              <mat-card-title>Participants ({{ participants.length }}/{{ reservation.max_participants }})</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (loadingParticipants) {
+                <div class="loading-container">
+                  <mat-spinner diameter="40"></mat-spinner>
+                  <p>Loading participants...</p>
+                </div>
+              }
+              
+              @if (!loadingParticipants && participants.length === 0) {
+                <div class="no-participants">
+                  <p>No participants yet</p>
+                </div>
+              }
+              
+              @if (!loadingParticipants && participants.length > 0) {
+                <mat-list class="participants-list">
+                @for (participant of participants; track participant.id) {
+                  <mat-list-item class="participant-item">
+                    <div class="participant-info">
+                      <div class="participant-name">{{ participant.name }}</div>
+                      <div class="participant-email">{{ participant.email }}</div>
+                    </div>
+                    <div class="participant-status">
+                      @if (participant.confirmed) {
+                        <mat-icon class="confirmed-icon">check_circle</mat-icon>
+                      }
+                      @if (!participant.confirmed) {
+                        <span class="pending-text">Pending</span>
+                      }
+                    </div>
+                  </mat-list-item>
+                }
+                </mat-list>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Edit Tab -->
+      <mat-tab label="Edit">
+        <div class="tab-content">
+          <form [formGroup]="editForm" class="edit-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="date" required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Time</mat-label>
+                <mat-select formControlName="slot_time" required>
+                  @for (time of timeSlots; track time) {
+                    <mat-option [value]="time">
+                      {{ time }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Game Mode</mat-label>
+                <mat-select formControlName="game_mode" required>
+                  @for (mode of gameModes; track mode) {
+                    <mat-option [value]="mode">
+                      {{ mode }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Level</mat-label>
+                <mat-select formControlName="level" required>
+                  @for (level of levels; track level) {
+                    <mat-option [value]="level">
+                      {{ level | titlecase }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Max Participants</mat-label>
+                <input matInput type="number" formControlName="max_participants" min="1" max="10" required>
+              </mat-form-field>
+
+              <div class="checkbox-container">
+                <mat-checkbox formControlName="is_public" color="primary">
+                  Public Reservation
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" (click)="saveChanges()" [disabled]="!editForm.valid">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <div class="status-actions">
+      <button mat-raised-button 
+              color="primary" 
+              (click)="updateStatus('confirmed')"
+              [disabled]="reservation.status === 'confirmed' || reservation.status === 'finished' || reservation.status === 'no-show' || reservation.status === 'cancelled'">
+        Confirm
+      </button>
+      <button mat-raised-button 
+              color="accent" 
+              (click)="updateStatus('finished')"
+              [disabled]="reservation.status === 'finished' || reservation.status === 'no-show' || reservation.status === 'cancelled'">
+        Mark Finished
+      </button>
+      <button mat-raised-button 
+              color="warn" 
+              (click)="updateStatus('no-show')"
+              [disabled]="reservation.status === 'finished' || reservation.status === 'no-show' || reservation.status === 'cancelled'">
+        No Show
+      </button>
+      <button mat-raised-button 
+              color="warn" 
+              (click)="updateStatus('cancelled')"
+              [disabled]="reservation.status === 'finished' || reservation.status === 'no-show' || reservation.status === 'cancelled'">
+        Cancel
+      </button>
+    </div>
+    <button mat-button (click)="close()">Close</button>
+  </mat-dialog-actions>
+</div>
+
+

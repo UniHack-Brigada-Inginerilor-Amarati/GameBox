@@ -1,0 +1,559 @@
+// Admin Calendar Container
+.admin-calendar {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: rgba(10, 10, 10, 0.91);
+  padding: 2rem 8rem 8rem 8rem;
+  gap: 2rem;
+}
+
+// Header Section
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+
+  .header-top {
+    align-self: flex-start;
+    margin-bottom: 1rem;
+
+    .back-button {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #f1f1f1;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+
+      &:hover {
+        background: #232323;
+        border-color: #87a4fa;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(135, 164, 250, 0.2);
+      }
+
+      mat-icon {
+        font-size: 1.2rem;
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+    }
+  }
+
+  h1 {
+    color: #f1f1f1;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  p {
+    color: #999;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0;
+  }
+}
+
+// Calendar Controls
+.calendar-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  button {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #f1f1f1;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      background: #232323;
+      border-color: #87a4fa;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(135, 164, 250, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    mat-icon {
+      font-size: 1.2rem;
+      width: 1.2rem;
+      height: 1.2rem;
+      margin: 0;
+    }
+  }
+
+  .current-date {
+    color: #87a4fa;
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-width: 200px;
+    text-align: center;
+  }
+}
+
+// Calendar Grid
+.calendar-grid {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+// Calendar Header
+.calendar-header {
+  display: grid;
+  grid-template-columns: 100px repeat(7, 1fr);
+  background: #232323;
+  border-bottom: 1px solid #333;
+
+  .time-header {
+    padding: 1rem;
+    text-align: center;
+    border-right: 1px solid #333;
+    color: #87a4fa;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: #1a1a1a;
+  }
+
+  .day-header {
+    padding: 1rem;
+    text-align: center;
+    border-right: 1px solid #333;
+    color: #f1f1f1;
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    .day-name {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .day-date {
+      font-size: 0.8rem;
+      color: #87a4fa;
+      font-weight: 500;
+    }
+  }
+}
+
+// Calendar Body
+.calendar-body {
+           .time-grid {
+      display: grid;
+      grid-template-columns: 100px repeat(7, 1fr);
+      min-height: 600px;
+    }
+
+     .time-column {
+     background: #1a1a1a;
+     border-right: 1px solid #333;
+
+     .time-slot {
+       height: 80px;
+       border-bottom: 1px solid #333;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       padding: 0.5rem;
+       position: relative;
+       transition: all 0.2s ease;
+
+       &.has-reservation {
+         height: 120px;
+       }
+
+       .time-label {
+         color: #87a4fa;
+         font-size: 0.8rem;
+         font-weight: 500;
+       }
+     }
+   }
+
+  .day-column {
+    border-right: 1px solid #333;
+
+    &:last-child {
+      border-right: none;
+    }
+
+         .day-cell {
+       height: 80px;
+       border-bottom: 1px solid #333;
+       padding: 0.25rem;
+       position: relative;
+       transition: all 0.2s ease;
+       overflow: hidden;
+
+       &.has-reservation {
+         height: 120px;
+       }
+
+             &.today {
+         background: rgba(135, 164, 250, 0.1);
+       }
+
+
+
+
+
+       &:hover {
+         background: rgba(135, 164, 250, 0.1);
+       }
+    }
+  }
+
+     .reservation-slot {
+     background: #232323;
+     border: 1px solid #333;
+     border-radius: 6px;
+     padding: 0.5rem;
+     margin: 0.25rem;
+     cursor: pointer;
+     transition: all 0.2s ease;
+     font-size: 0.75rem;
+     height: calc(100% - 0.5rem);
+     display: flex;
+     flex-direction: column;
+     justify-content: space-between;
+     overflow: hidden;
+
+    &:hover {
+      border-color: #87a4fa;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(135, 164, 250, 0.2);
+    }
+
+    &.status-pending {
+      border-left: 3px solid #ff9800;
+    }
+
+    &.status-confirmed {
+      border-left: 3px solid #4caf50;
+    }
+
+    &.status-cancelled {
+      border-left: 3px solid #f44336;
+      opacity: 0.7;
+    }
+
+    &.status-finished {
+      border-left: 3px solid #2196f3;
+      opacity: 0.8;
+    }
+
+    &.status-no-show {
+      border-left: 3px solid #9c27b0;
+      opacity: 0.6;
+    }
+
+         .reservation-content {
+       display: flex;
+       flex-direction: column;
+       gap: 0.25rem;
+       height: 100%;
+       overflow: hidden;
+     }
+
+         .reservation-title {
+       color: #f1f1f1;
+       font-weight: 600;
+       font-size: 0.8rem;
+       line-height: 1.2;
+       overflow: hidden;
+       text-overflow: ellipsis;
+       white-space: nowrap;
+     }
+
+    .reservation-level {
+      color: #87a4fa;
+      font-size: 0.7rem;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .reservation-owner {
+      color: #999;
+      font-size: 0.7rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .reservation-participants {
+      color: #87a4fa;
+      font-size: 0.7rem;
+      font-weight: 500;
+      margin-top: auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .reservation-status {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.6rem;
+      color: #f1f1f1;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.2rem;
+      border-radius: 3px;
+      margin-top: auto;
+      overflow: hidden;
+
+      mat-icon {
+        font-size: 0.8rem;
+        width: 0.8rem;
+        height: 0.8rem;
+      }
+    }
+  }
+}
+
+
+
+// Week View
+.week-view {
+  .week-header {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    background: #232323;
+    border-bottom: 1px solid #333;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .week-body {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    min-height: 400px;
+  }
+
+  .time-slot {
+    border-right: 1px solid #333;
+    border-bottom: 1px solid #333;
+    padding: 0.5rem;
+    min-height: 60px;
+    position: relative;
+    background: #1a1a1a;
+
+    &:nth-child(8n) {
+      border-right: none;
+    }
+
+    &:nth-child(n+57) {
+      border-bottom: none;
+    }
+
+    .time-label {
+      position: absolute;
+      top: 0.25rem;
+      left: 0.25rem;
+      color: #87a4fa;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .reservations {
+      margin-top: 1.5rem;
+    }
+  }
+}
+
+// Loading and Error States
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+
+  mat-spinner {
+    margin-bottom: 1rem;
+  }
+
+  .message {
+    color: #999;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .error-message {
+    color: #f44336;
+    font-size: 1rem;
+    background: rgba(244, 67, 54, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    max-width: 500px;
+  }
+
+  button {
+    margin-top: 1rem;
+    background: #87a4fa;
+    color: #1a1a1a;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #6b8cfa;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(135, 164, 250, 0.3);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .admin-calendar {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .header {
+    .header-top {
+      align-self: center;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .calendar-controls {
+    flex-direction: column;
+    gap: 0.75rem;
+
+    button {
+      width: 100%;
+      max-width: 200px;
+    }
+  }
+
+  .calendar-day {
+    min-height: 80px;
+    padding: 0.25rem;
+
+    .day-number {
+      font-size: 0.8rem;
+    }
+
+    .reservation-item {
+      font-size: 0.8rem;
+      padding: 0.5rem;
+
+      .reservation-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .reservation-details {
+        font-size: 0.75rem;
+
+        .detail-item {
+          gap: 0.4rem;
+          margin-bottom: 0.3rem;
+
+          mat-icon {
+            font-size: 0.8rem;
+            width: 0.8rem;
+            height: 0.8rem;
+          }
+
+          .detail-text {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-calendar {
+    padding: 0.75rem;
+  }
+
+  .header {
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .header-top {
+      .back-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .calendar-day {
+    min-height: 60px;
+  }
+}
+
+// Focus States for Accessibility
+.calendar-day:focus,
+.reservation-item:focus {
+  outline: 2px solid #87a4fa;
+  outline-offset: 2px;
+}
+
+// Animation for calendar
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calendar-grid {
+  animation: fadeInUp 0.6s ease-out;
+}

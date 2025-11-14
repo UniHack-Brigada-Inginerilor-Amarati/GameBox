@@ -1,0 +1,2332 @@
+/* ========================================
+   RESERVATION FORM - CONSISTENT DARK THEME
+   ======================================== */
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+/* Main Container */
+.reservation-form-container {
+  min-height: 100vh;
+  background: rgba(10, 10, 10, 0.91);
+  padding: 2rem 1rem;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Form Header */
+.form-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.form-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #f1f1f1;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.form-header .subtitle {
+  font-size: 1.2rem;
+  color: #999;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+.auth-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(135, 164, 250, 0.1);
+  border: 1px solid rgba(135, 164, 250, 0.3);
+  border-radius: 50px;
+  padding: 0.75rem 1.5rem;
+  color: #87a4fa;
+  font-weight: 500;
+}
+
+.auth-status mat-icon {
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Main Form Card */
+.form-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.form-content {
+  padding: 3rem;
+}
+
+/* Custom Stepper */
+.custom-stepper {
+  background: transparent;
+}
+
+::ng-deep .custom-stepper .mat-stepper-horizontal {
+  background: transparent;
+}
+
+::ng-deep .custom-stepper .mat-mdc-horizontal-stepper {
+  background: transparent;
+}
+
+::ng-deep .custom-stepper .mat-mdc-horizontal-stepper-header-container {
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+::ng-deep .custom-stepper .mat-mdc-horizontal-stepper-header {
+  color: #888;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  margin: 0 0.5rem;
+}
+
+::ng-deep .custom-stepper .mat-mdc-horizontal-stepper-header.mat-step-header-selected {
+  color: #87a4fa;
+  background: rgba(135, 164, 250, 0.1);
+  transform: translateY(-2px);
+}
+
+::ng-deep .custom-stepper .mat-step-icon {
+  background: #2a2a2a;
+  color: #888;
+  border: 2px solid #444;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .custom-stepper .mat-step-icon.mat-step-icon-selected {
+  background: #87a4fa;
+  color: white;
+  border-color: #87a4fa;
+  transform: scale(1.1);
+}
+
+::ng-deep .custom-stepper .mat-step-icon.mat-step-icon-state-done {
+  background: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+/* Step Content */
+.step-content {
+  padding: 2rem 0;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 12px;
+  position: relative;
+}
+
+.step-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #87a4fa;
+}
+
+.step-header mat-icon {
+  color: #87a4fa;
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  background: rgba(135, 164, 250, 0.1);
+  border-radius: 8px;
+  padding: 0.5rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 3rem;
+}
+
+.step-header h3 {
+  color: #f1f1f1;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Form Rows */
+.form-row {
+  margin-bottom: 2rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Material UI Form Field Overrides */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-flex {
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::ng-deep .mat-mdc-form-field:hover .mat-mdc-form-field-flex {
+  border-color: #87a4fa;
+  background: #232323;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-flex {
+  border-color: #87a4fa;
+  background: #232323;
+  box-shadow: 0 0 0 2px rgba(135, 164, 250, 0.1);
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: #87a4fa !important;
+  font-weight: 500;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: #87a4fa !important;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-hint {
+  color: #666;
+}
+
+/* Fix for Date Picker Double Box Issue */
+::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline {
+  display: none;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-outline-thick {
+  display: none;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-focus-overlay {
+  display: none;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-input-element {
+  color: #f1f1f1 !important;
+}
+
+/* All Input Fields Styling */
+::ng-deep .mat-mdc-form-field input[matInput] {
+  color: #f1f1f1 !important;
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-form-field input[matInput]::placeholder {
+  color: #999 !important;
+}
+
+/* Date Input Specific Styling */
+::ng-deep .mat-mdc-form-field input[matInput][matDatepicker] {
+  color: #f1f1f1 !important;
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-form-field input[matInput][matDatepicker]::placeholder {
+  color: #999 !important;
+}
+
+/* Date Field Custom Styling */
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex {
+  background: #232323 !important;
+  border: 2px solid #87a4fa !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  transition: none !important;
+  box-shadow: 0 2px 8px rgba(135, 164, 250, 0.1) !important;
+}
+
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex:hover {
+  border-color: #87a4fa !important;
+  background: #232323 !important;
+  transform: none !important;
+  box-shadow: 0 4px 16px rgba(135, 164, 250, 0.2) !important;
+}
+
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex.mat-focused {
+  border-color: #87a4fa !important;
+  background: #232323 !important;
+  box-shadow: 0 0 0 3px rgba(135, 164, 250, 0.2) !important;
+}
+
+/* Override any Material Design hover effects */
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex:focus-within {
+  border-color: #87a4fa !important;
+  background: #232323 !important;
+  box-shadow: 0 0 0 3px rgba(135, 164, 250, 0.2) !important;
+}
+
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex:active {
+  border-color: #87a4fa !important;
+  background: #232323 !important;
+  transform: none !important;
+  box-shadow: 0 0 0 3px rgba(135, 164, 250, 0.2) !important;
+}
+
+/* Remove any Material Design default hover styles */
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex:hover,
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex:focus,
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex:focus-within,
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex:active {
+  border-color: #87a4fa !important;
+  background: #232323 !important;
+  transform: none !important;
+  outline: none !important;
+}
+
+/* Additional hover prevention for date field */
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) {
+  pointer-events: none;
+}
+
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-flex {
+  pointer-events: auto;
+}
+
+/* Date field label styling */
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-label {
+  color: #87a4fa !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+}
+
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-label.mat-focused {
+  color: #87a4fa !important;
+  transform: translateY(-1.5rem) scale(0.75) !important;
+}
+
+/* Date field hint text */
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-hint {
+  color: #666 !important;
+  font-size: 0.8rem !important;
+}
+
+/* Date field error text */
+::ng-deep .mat-mdc-form-field:has(input[matDatepicker]) .mat-mdc-form-field-error {
+  color: #ff6b6b !important;
+  font-size: 0.8rem !important;
+}
+
+/* Ensure date input text is visible and styled */
+::ng-deep .mat-mdc-form-field .mat-mdc-input-element.mat-mdc-input-element {
+  color: #f1f1f1 !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Date input placeholder */
+::ng-deep .mat-mdc-form-field .mat-mdc-input-element::placeholder {
+  color: #999 !important;
+  font-style: italic !important;
+}
+
+/* ===== DATE PICKER CALENDAR DARK THEME ===== */
+
+/* Calendar popup container */
+::ng-deep .mat-datepicker-popup {
+  background: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
+  overflow: hidden !important;
+  margin: 8px !important;
+  max-width: 320px !important;
+  max-height: 400px !important;
+}
+
+/* Calendar header - REMOVED OLD STYLES */
+
+/* Calendar body - Force dark background */
+::ng-deep .mat-calendar-body {
+  background: #1a1a1a !important;
+  padding: 0 12px 8px 12px !important;
+  margin: 0 !important;
+}
+
+/* Calendar table - Force dark background */
+::ng-deep .mat-calendar-table {
+  background: #1a1a1a !important;
+  border-collapse: separate !important;
+  border-spacing: 2px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+
+/* Calendar header row (days of week) */
+::ng-deep .mat-calendar-table-header th {
+  color: #87a4fa !important;
+  font-weight: 600 !important;
+  background: #232323 !important;
+  padding: 8px 4px !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem !important;
+  text-align: center !important;
+  width: 36px !important;
+  height: 32px !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Remove any unwanted borders or lines */
+::ng-deep .mat-calendar-table-header {
+  border: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .mat-calendar-table-header tr {
+  border: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .mat-calendar-table-header td {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Ensure no extra spacing between header and body */
+::ng-deep .mat-calendar-header + .mat-calendar-body {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Calendar cells - Force dark background */
+::ng-deep .mat-calendar-body-cell {
+  background: #1a1a1a !important;
+  padding: 1px !important;
+  margin: 0 !important;
+}
+
+/* Calendar date cells */
+::ng-deep .mat-calendar-body-cell-content {
+  color: #f1f1f1 !important;
+  background: transparent !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  text-align: center !important;
+  font-weight: 500 !important;
+  border: 2px solid transparent !important;
+  margin: 0 !important;
+  font-size: 0.9rem !important;
+}
+
+/* Hover state for date cells */
+::ng-deep .mat-calendar-body-cell-content:hover {
+  background: rgba(135, 164, 250, 0.2) !important;
+  color: #87a4fa !important;
+  border-color: rgba(135, 164, 250, 0.3) !important;
+}
+
+/* Today's date */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-today {
+  background: rgba(135, 164, 250, 0.3) !important;
+  color: #87a4fa !important;
+  font-weight: 600 !important;
+  border-color: #87a4fa !important;
+}
+
+/* Selected date - Make it highly visible */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-selected {
+  background: #87a4fa !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-color: #87a4fa !important;
+  box-shadow: 0 0 0 2px rgba(135,164,250,0.35);
+}
+
+/* Additional selected date selectors for better coverage */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-selected,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-selected {
+  background: #87a4fa !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-color: #87a4fa !important;
+  box-shadow: 0 0 0 2px rgba(135,164,250,0.35);
+}
+
+/* Selected date hover state */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-selected:hover,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-selected:hover {
+  background: #6b8cfa !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-color: #6b8cfa !important;
+  box-shadow: 0 0 0 3px rgba(135, 164, 250, 0.6) !important;
+}
+
+/* Past dates (before today) - Bright yellow styling */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-disabled,
+::ng-deep .mat-calendar-body-cell-content[aria-disabled="true"],
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-disabled,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content[aria-disabled="true"],
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-disabled {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Past dates hover state */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-disabled:hover,
+::ng-deep .mat-calendar-body-cell-content[aria-disabled="true"]:hover,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-disabled:hover,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content[aria-disabled="true"]:hover {
+  background: rgba(255, 193, 7, 0.25) !important;
+  color: #ffc107 !important;
+  border-color: rgba(255, 193, 7, 0.5) !important;
+}
+
+/* Additional past date selectors for Material Design */
+::ng-deep .mat-calendar-body-cell.mat-calendar-body-disabled .mat-calendar-body-cell-content,
+::ng-deep .mat-calendar-body-cell[aria-disabled="true"] .mat-calendar-body-cell-content {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Past date hover for cell-based selectors */
+::ng-deep .mat-calendar-body-cell.mat-calendar-body-disabled:hover .mat-calendar-body-cell-content,
+::ng-deep .mat-calendar-body-cell[aria-disabled="true"]:hover .mat-calendar-body-cell-content {
+  background: rgba(255, 193, 7, 0.25) !important;
+  color: #ffc107 !important;
+  border-color: rgba(255, 193, 7, 0.5) !important;
+}
+
+/* Comprehensive past date targeting - Material Design specific */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-disabled,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content[aria-disabled="true"],
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-disabled,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content[aria-disabled="true"] {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Force yellow styling on any disabled/past date content */
+::ng-deep .mat-calendar-body-cell-content[class*="disabled"],
+::ng-deep .mat-calendar-body-cell-content[class*="past"],
+::ng-deep .mat-calendar-body-cell-content[class*="inactive"] {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Target the actual disabled state more aggressively */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-disabled,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-disabled,
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-disabled {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Attribute-based targeting for past dates */
+::ng-deep .mat-calendar-body-cell-content[data-mat-calendar-body-cell-content-disabled="true"],
+::ng-deep .mat-calendar-body-cell-content[data-disabled="true"],
+::ng-deep .mat-calendar-body-cell-content[aria-disabled="true"],
+::ng-deep .mat-calendar-body-cell-content[disabled] {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Target any element with disabled-related classes or attributes */
+::ng-deep [class*="disabled"] .mat-calendar-body-cell-content,
+::ng-deep [class*="past"] .mat-calendar-body-cell-content,
+::ng-deep [class*="inactive"] .mat-calendar-body-cell-content {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Force yellow on any content that might be past dates */
+::ng-deep .mat-calendar-body-cell-content[class*="disabled"],
+::ng-deep .mat-calendar-body-cell-content[class*="past"],
+::ng-deep .mat-calendar-body-cell-content[class*="inactive"],
+::ng-deep .mat-calendar-body-cell-content[class*="off"] {
+  color: #ffc107 !important;
+  background: rgba(255, 193, 7, 0.15) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Calendar month view */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-label {
+  color: #f1f1f1 !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+  border: none !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: normal !important;
+  padding: 8px !important;
+}
+
+/* Calendar year view */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-year {
+  color: #f1f1f1 !important;
+  background: transparent !important;
+  border: none !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: normal !important;
+  padding: 8px !important;
+}
+
+/* Calendar navigation arrows in year view */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-year:hover {
+  background: rgba(135, 164, 250, 0.2) !important;
+  color: #87a4fa !important;
+  border-color: rgba(135, 164, 250, 0.3) !important;
+}
+
+/* Date picker toggle button */
+::ng-deep .mat-datepicker-toggle {
+  color: #87a4fa !important;
+}
+
+::ng-deep .mat-datepicker-toggle:hover {
+  color: #6b8cfa !important;
+}
+
+/* Date picker toggle icon */
+::ng-deep .mat-datepicker-toggle .mat-icon {
+  color: #87a4fa !important;
+}
+
+/* Calendar overlay backdrop */
+::ng-deep .cdk-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Calendar popup animation */
+::ng-deep .mat-datepicker-popup.mat-datepicker-popup {
+  animation: calendarSlideIn 0.2s ease-out !important;
+}
+
+@keyframes calendarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Ensure calendar text is readable and force dark background */
+::ng-deep .mat-calendar {
+  color: #f1f1f1 !important;
+  font-family: inherit !important;
+  background: #1a1a1a !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Calendar footer (if any) */
+::ng-deep .mat-calendar-footer {
+  background: #232323 !important;
+  border-top: 1px solid #333 !important;
+  border-radius: 0 0 16px 16px !important;
+  padding: 12px 16px !important;
+  margin: 0 !important;
+}
+
+/* Calendar actions in footer */
+::ng-deep .mat-calendar-footer .mat-button {
+  color: #87a4fa !important;
+  border-radius: 8px !important;
+  margin: 0 4px !important;
+}
+
+::ng-deep .mat-calendar-footer .mat-button:hover {
+  background: rgba(135, 164, 250, 0.1) !important;
+}
+
+/* ===== ADDITIONAL CALENDAR BACKGROUND OVERRIDES ===== */
+
+/* Additional calendar background overrides to ensure dark theme */
+::ng-deep .mat-calendar-content {
+  background: #1a1a1a !important;
+}
+
+/* Force dark background on all calendar elements */
+::ng-deep .mat-calendar * {
+  background-color: inherit !important;
+}
+
+/* Specific override for calendar body */
+::ng-deep .mat-calendar-body {
+  background-color: #1a1a1a !important;
+}
+
+/* Additional Material Design overrides */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content {
+  background-color: transparent !important;
+}
+
+/* Target the actual calendar element more specifically */
+::ng-deep .mat-calendar.mat-calendar {
+  background-color: #1a1a1a !important;
+}
+
+/* Override any remaining white backgrounds with maximum specificity */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content.mat-calendar-body-cell-content {
+  background-color: transparent !important;
+}
+
+/* Ensure month/year labels are visible */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-label {
+  background-color: transparent !important;
+  color: #f1f1f1 !important;
+}
+
+/* Comprehensive calendar background overrides */
+::ng-deep .mat-calendar-content {
+  background: #1a1a1a !important;
+}
+
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-cell-content {
+  background-color: transparent !important;
+}
+
+/* Force dark background on all calendar elements */
+::ng-deep .mat-calendar * {
+  background-color: inherit !important;
+}
+
+/* Specific override for calendar body */
+::ng-deep .mat-calendar-body {
+  background-color: #1a1a1a !important;
+}
+
+/* Game Details Selector Styling */
+::ng-deep .mat-mdc-form-field .mat-mdc-select-value {
+  color: #f1f1f1 !important;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-select-value-text {
+  color: #f1f1f1 !important;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-select-trigger {
+  color: #f1f1f1 !important;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-select-arrow {
+  color: #f1f1f1 !important;
+}
+
+/* Ensure selected values in dropdowns are visible */
+::ng-deep .mat-mdc-select-panel .mat-mdc-option.mat-mdc-option-selected .mat-mdc-option-text {
+  color: #f1f1f1 !important;
+}
+
+/* Date Picker Specific Styling */
+::ng-deep .mat-datepicker-toggle {
+  color: #87a4fa;
+}
+
+::ng-deep .mat-datepicker-toggle .mat-mdc-icon-button {
+  color: #87a4fa;
+}
+
+::ng-deep .mat-datepicker-toggle .mat-mdc-icon-button:hover {
+  background: rgba(135, 164, 250, 0.1);
+}
+
+/* Dropdown Selector Styling */
+::ng-deep .mat-mdc-select-panel {
+  background: #000000 !important;
+  border: 1px solid #333333 !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option {
+  color: #ffffff !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option:hover:not(.mat-mdc-option-disabled) {
+  background: rgba(135, 164, 250, 0.1) !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option.mat-mdc-option-active {
+  background: rgba(135, 164, 250, 0.2) !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option.mat-mdc-option-selected {
+  background: rgba(135, 164, 250, 0.15) !important;
+  color: #87a4fa !important;
+}
+
+/* Prevent Manual Date Input */
+::ng-deep .mat-mdc-form-field input[matInput][matDatepicker] {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  cursor: pointer;
+}
+
+::ng-deep .mat-mdc-form-field input[matInput][matDatepicker]:focus {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Ensure date picker toggle remains clickable */
+::ng-deep .mat-datepicker-toggle {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Time Slot Mosaic Grid Selector */
+.time-slot-selector {
+  width: 100%;
+}
+
+.time-slot-label {
+  display: block;
+  color: #87a4fa;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+.time-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.time-slot-card {
+  background: #232323;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.time-slot-card:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.time-slot-card.available {
+  border-color: #333;
+  background: #232323;
+}
+
+.time-slot-card.available:hover {
+  border-color: #87a4fa;
+  background: rgba(135, 164, 250, 0.05);
+  box-shadow: 0 4px 16px rgba(135, 164, 250, 0.2);
+}
+
+.time-slot-card.selected {
+  border-color: #87a4fa;
+  background: rgba(135, 164, 250, 0.1);
+  box-shadow: 0 0 0 2px rgba(135, 164, 250, 0.2);
+}
+
+.time-slot-card.booked {
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.05);
+  cursor: not-allowed;
+}
+
+.time-slot-card.past {
+  border-color: #ffc107;
+  background: rgba(255, 193, 7, 0.05);
+  cursor: not-allowed;
+}
+
+.time-slot-card.past .time-slot-time {
+  color: #ffc107;
+  font-style: italic;
+}
+
+.time-slot-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.time-slot-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.time-slot-time {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f1f1f1;
+}
+
+.time-slot-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+.status-available {
+  background: rgba(81, 207, 102, 0.1);
+  border: 1px solid rgba(81, 207, 102, 0.3);
+  color: #51cf66;
+}
+
+.status-booked {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+}
+
+.status-past {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  color: #ffc107;
+}
+
+.time-slot-hint {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.time-slot-error {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 768px) {
+  .time-slot-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .time-slot-card {
+    padding: 0.75rem;
+  }
+  
+  .time-slot-time {
+    font-size: 1.1rem;
+  }
+  
+  .time-slot-status {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+}
+
+/* Time Slot Options - OLD STYLING (can be removed) */
+
+/* Badges */
+.booked-badge {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.available-badge {
+  color: #51cf66;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: rgba(81, 207, 102, 0.1);
+  border: 1px solid rgba(81, 207, 102, 0.3);
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.past-badge {
+  color: #999;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: rgba(153, 153, 153, 0.1);
+  border: 1px solid rgba(153, 153, 153, 0.3);
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Game Options */
+.game-option {
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.game-option:hover {
+  background: #232323;
+  border-color: #87a4fa;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.game-name {
+  font-weight: 700;
+  color: #f1f1f1;
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.game-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.game-description {
+  color: #999;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.player-count {
+  color: #87a4fa;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Level Options */
+.level-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.level-option .level-icon {
+  color: #87a4fa;
+  font-size: 1.3rem;
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.level-option .level-text {
+  color: #f1f1f1;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Participants */
+.participants-container {
+  margin: 2rem 0;
+}
+
+.participant-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1.5rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.participant-row:hover {
+  background: #232323;
+  border-color: #87a4fa;
+  transform: translateY(-2px);
+}
+
+.remove-btn {
+  color: #ff6b6b;
+  transition: all 0.3s ease;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 107, 107, 0.2);
+  transform: scale(1.1);
+}
+
+.add-participant-btn {
+  width: 100%;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border: 2px dashed rgba(135, 164, 250, 0.4);
+  background: rgba(135, 164, 250, 0.05);
+  color: #87a4fa;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.add-participant-btn:hover {
+  border-color: #87a4fa;
+  background: rgba(135, 164, 250, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(135, 164, 250, 0.2);
+}
+
+/* Step Actions */
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #333;
+}
+
+/* Buttons */
+::ng-deep .mat-mdc-button,
+::ng-deep .mat-mdc-raised-button {
+  border-radius: 8px !important;
+  padding: 0.75rem 2rem !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  text-transform: none !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-primary {
+  background: #87a4fa !important;
+  color: #1a1a1a !important;
+  box-shadow: 0 4px 15px rgba(135, 164, 250, 0.3) !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-primary:hover {
+  background: #6b8cfa !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(135, 164, 250, 0.4) !important;
+}
+
+::ng-deep .mat-mdc-button.mat-stroked-button {
+  border: 2px solid #333 !important;
+  color: #a0a0a0 !important;
+  background: #232323 !important;
+}
+
+::ng-deep .mat-mdc-button.mat-stroked-button:hover {
+  border-color: #87a4fa !important;
+  background: #232323 !important;
+  color: #f1f1f1 !important;
+}
+
+/* Loading State */
+.isLoading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Game Info Chips */
+.game-info {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.game-info mat-chip-set {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.info-chip {
+  background: rgba(135, 164, 250, 0.1) !important;
+  border: 1px solid rgba(135, 164, 250, 0.3) !important;
+  color: #87a4fa !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 20px !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+}
+
+.info-chip mat-icon {
+  font-size: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+/* Confirmation Details */
+.confirmation-details {
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-section h4 {
+  color: #87a4fa;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-label {
+  color: #999;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.detail-value {
+  color: #f1f1f1;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Participants Summary */
+.participants-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.participant-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.participant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.participant-name {
+  color: #f1f1f1;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.participant-email {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.participant-badges {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.owner-badge {
+  background: rgba(135, 164, 250, 0.1);
+  border: 1px solid rgba(135, 164, 250, 0.3);
+  color: #87a4fa;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.pending {
+  background: #ffc107 !important;
+  color: #000000 !important;
+  padding: 6px 12px !important;
+  border-radius: 16px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 80px !important;
+  height: 24px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+
+/* Submit Button */
+.submit-btn {
+  background: #87a4fa !important;
+  color: #1a1a1a !important;
+}
+
+.submit-btn:hover {
+  background: #6b8cfa !important;
+}
+
+.loading-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reservation-form-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .form-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .form-header h1 {
+    font-size: 2rem;
+  }
+  
+  .step-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .participant-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .step-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .participant-summary {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .participant-badges {
+    justify-content: center;
+  }
+} 
+
+/* ===== OLD CALENDAR STYLES REMOVED ===== */
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 480px) {
+  ::ng-deep .mat-datepicker-popup {
+    max-width: 300px !important;
+    margin: 8px !important;
+  }
+  
+  ::ng-deep .mat-calendar-header {
+    padding: 16px 20px !important;
+  }
+  
+  ::ng-deep .mat-calendar-previous-button,
+  ::ng-deep .mat-calendar-next-button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  
+  ::ng-deep .mat-calendar-body {
+    padding: 16px !important;
+  }
+  
+  ::ng-deep .mat-calendar-body-cell-content {
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    font-size: 14px !important;
+  }
+} 
+
+/* ===== FIX CALENDAR HEADER + GRID LEAKS ===== */
+
+/* 1) Weekday header should look like labels, not buttons */
+::ng-deep .mat-calendar-table-header th,
+::ng-deep .mat-calendar-table-header th * {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  pointer-events: none; /* they aren't clickable */
+}
+
+/* Clean, compact weekday label */
+::ng-deep .mat-calendar-table-header th {
+  color: #87a4fa;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 4px 0;
+  text-align: center;
+}
+
+/* Remove any unwanted elements below weekday headers */
+::ng-deep .mat-calendar-table-header {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .mat-calendar-table-header tr {
+  background: transparent !important;
+  border: none !important;
+}
+
+::ng-deep .mat-calendar-table-header td {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+/* Remove any extra spacing or backgrounds below headers */
+::ng-deep .mat-calendar-table-header + * {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure no gray backgrounds anywhere in the header area */
+::ng-deep .mat-calendar-table-header,
+::ng-deep .mat-calendar-table-header *,
+::ng-deep .mat-calendar-table-header + *,
+::ng-deep .mat-calendar-table-header + * * {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* AGGRESSIVE REMOVAL - Target all possible gray box sources */
+::ng-deep .mat-calendar-body > *:first-child,
+::ng-deep .mat-calendar-body > *:first-child * {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Target any element that might be creating the gray box */
+::ng-deep .mat-calendar-body > div:first-child,
+::ng-deep .mat-calendar-body > div:first-child *,
+::ng-deep .mat-calendar-body > table:first-child,
+::ng-deep .mat-calendar-body > table:first-child * {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Force remove any remaining backgrounds in the calendar body */
+::ng-deep .mat-calendar-body > * {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Target the specific gray box - maximum specificity */
+::ng-deep .mat-calendar-body .mat-calendar-table-header,
+::ng-deep .mat-calendar-body .mat-calendar-table-header *,
+::ng-deep .mat-calendar-body .mat-calendar-table-header + *,
+::ng-deep .mat-calendar-body .mat-calendar-table-header + * *,
+::ng-deep .mat-calendar-body .mat-calendar-table-header ~ *,
+::ng-deep .mat-calendar-body .mat-calendar-table-header ~ * * {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/* SPECIFIC TARGET - Remove the gray divider row */
+::ng-deep .mat-calendar-table-header-divider,
+::ng-deep .mat-calendar-table-header-divider th,
+::ng-deep .mat-calendar-table-header-divider td {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  line-height: 0 !important;
+  display: none !important; /* Completely hide the divider row */
+}
+
+/* Also target any tr with aria-hidden="true" that might be creating spacing */
+::ng-deep tr[aria-hidden="true"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  line-height: 0 !important;
+  display: none !important;
+}
+
+/* ===== MONTH NAVIGATION BUTTONS ===== */
+/* Custom round button design - keep inner content, style outer container */
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+  /* Keep Material Design button structure but style the container */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 8px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Style the inner button content to be circular */
+::ng-deep .mat-calendar-previous-button .mdc-button__ripple,
+::ng-deep .mat-calendar-next-button .mdc-button__ripple,
+::ng-deep .mat-calendar-previous-button .mat-mdc-button-touch-target,
+::ng-deep .mat-calendar-next-button .mat-mdc-button-touch-target {
+  background: linear-gradient(135deg, #87a4fa 0%, #5a7cfa 100%) !important;
+  border: 2px solid #4a6ce8 !important;
+  border-radius: 50% !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 12px rgba(135, 164, 250, 0.4) !important;
+}
+
+/* Hover effects on the inner content */
+::ng-deep .mat-calendar-previous-button:hover .mdc-button__ripple,
+::ng-deep .mat-calendar-next-button:hover .mdc-button__ripple,
+::ng-deep .mat-calendar-previous-button:hover .mat-mdc-button-touch-target,
+::ng-deep .mat-calendar-next-button:hover .mat-mdc-button-touch-target {
+  background: linear-gradient(135deg, #5a7cfa 0%, #4a6ce8 100%) !important;
+  border-color: #3d5bd8 !important;
+  box-shadow: 0 6px 20px rgba(135, 164, 250, 0.6) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+}
+
+/* Active effects on the inner content */
+::ng-deep .mat-calendar-previous-button:active .mdc-button__ripple,
+::ng-deep .mat-calendar-next-button:active .mdc-button__ripple,
+::ng-deep .mat-calendar-previous-button:active .mat-mdc-button-touch-target,
+::ng-deep .mat-calendar-next-button:active .mat-mdc-button-touch-target {
+  background: linear-gradient(135deg, #4a6ce8 0%, #3d5bd8 100%) !important;
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(135, 164, 250, 0.3) !important;
+}
+
+/* Disabled state styling */
+::ng-deep .mat-calendar-previous-button.mat-mdc-button-disabled .mdc-button__ripple,
+::ng-deep .mat-calendar-next-button.mat-mdc-button-disabled .mdc-button__ripple,
+::ng-deep .mat-calendar-previous-button.mat-mdc-button-disabled .mat-mdc-button-touch-target,
+::ng-deep .mat-calendar-next-button.mat-mdc-button-disabled .mat-mdc-button-touch-target {
+  background: linear-gradient(135deg, #666666 0%, #555555 100%) !important;
+  border-color: #444444 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+}
+
+/* Keep the original Material Design icons but make them visible */
+::ng-deep .mat-calendar-previous-button svg,
+::ng-deep .mat-calendar-next-button svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 2 !important;
+  position: relative !important;
+}
+
+/* Remove the custom CSS arrows since we're keeping the original icons */
+::ng-deep .mat-calendar-previous-button::before,
+::ng-deep .mat-calendar-next-button::before {
+  display: none !important;
+}
+
+/* ===== RESTORE ESSENTIAL CALENDAR STYLING ===== */
+
+/* 2) Keep header controls tidy, not "boxed" */
+::ng-deep .mat-calendar-header {
+  background: #1f2330;
+  padding: 10px 12px;
+}
+
+::ng-deep .mat-calendar-period-button {
+  background: rgba(135,164,250,0.18);
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+/* 3) Grid sizing so 7 columns always fit (no overflow) */
+::ng-deep .mat-calendar-body {
+  padding: 8px 8px 12px;
+}
+
+::ng-deep .mat-calendar-table {
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 4px;
+  width: 100%;
+  max-width: 320px; /* fits popup */
+  margin: 0 auto;
+}
+
+::ng-deep .mat-calendar-body-cell {
+  padding: 0;
+}
+
+/* 4) Day cell content: compact & centered */
+::ng-deep .mat-calendar-body-cell-content {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: transparent;
+  color: #f1f1f1;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+::ng-deep .mat-calendar-body-cell-content:hover {
+  background: rgba(135,164,250,0.18);
+  color: #87a4fa;
+}
+
+/* Today / selected */
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-today {
+  background: rgba(135,164,250,0.26);
+  color: #87a4fa;
+  border-color: #87a4fa;
+}
+
+::ng-deep .mat-calendar-body-cell-content.mat-calendar-body-selected {
+  background: #87a4fa;
+  color: #0b1220;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(135,164,250,0.35);
+}
+
+/* Disabled/past dates (keep your yellow style but ensure no hover) */
+::ng-deep .mat-calendar-body-cell[aria-disabled="true"] .mat-calendar-body-cell-content,
+::ng-deep .mat-calendar-body-cell-content[aria-disabled="true"] {
+  color: #ffc107;
+  background: rgba(255,193,7,0.14);
+  cursor: not-allowed;
+  font-style: italic;
+  opacity: .85;
+}
+
+::ng-deep .mat-calendar-body-cell[aria-disabled="true"] .mat-calendar-body-cell-content:hover,
+::ng-deep .mat-calendar-body-cell-content[aria-disabled="true"]:hover {
+  background: rgba(255,193,7,0.18);
+  color: #ffc107;
+}
+
+/* 5) Popup container — slimmer border so it doesn't look "double boxed" */
+::ng-deep .mat-datepicker-popup {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.9);
+  max-width: 400px; /* Increased from 336px to fit all days */
+  max-height: 600px; /* Increased from 520px for more vertical space */
+  overflow: hidden;
+  margin: 16px; /* Increased margin for better spacing */
+}
+
+/* 6) Make sure your global button rules don't bleed into the calendar */
+.reservation-form-container ::ng-deep .mat-mdc-button,
+.reservation-form-container ::ng-deep .mat-mdc-raised-button {
+  /* your button styling can stay, but scoping prevents it from hitting calendar internals */
+}
+
+/* 7) AGGRESSIVE OVERRIDES - Force calendar styling */
+::ng-deep .mat-calendar * {
+  box-sizing: border-box;
+}
+
+::ng-deep .mat-calendar-header * {
+  border: none !important; /* Needed to override Material Design borders */
+  box-shadow: none !important; /* Needed to override Material Design shadows */
+  outline: none;
+}
+
+::ng-deep .mat-calendar-body * {
+  border: none !important; /* Needed to override Material Design borders */
+  box-shadow: none !important; /* Needed to override Material Design shadows */
+  outline: none;
+}
+
+/* 8) Force table layout and prevent overflow */
+::ng-deep .mat-calendar-table,
+::ng-deep .mat-calendar-table * {
+  table-layout: fixed !important; /* Critical for grid layout */
+  max-width: none;
+  overflow: visible;
+}
+
+::ng-deep .mat-calendar-body-cell {
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+}
+
+/* ===== GAME DETAILS SECTION STYLING ===== */
+
+/* Style the Game Details section container */
+.game-details-section {
+  background: rgba(135, 164, 250, 0.05);
+  border: 1px solid rgba(135, 164, 250, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+/* Style the section title */
+.game-details-section h3 {
+  color: #87a4fa;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Style the form fields container */
+.game-details-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: end;
+}
+
+/* Style individual form field containers */
+.form-field-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Style form field labels */
+.form-field-container label {
+  color: #e0e0e0;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  margin-left: 4px;
+}
+
+/* Enhanced styling for descriptions and player count - make them more visible */
+.form-field-container .description,
+.form-field-container .player-count-info {
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  margin-top: 6px !important;
+  padding: 8px 12px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Hover effect for descriptions and player count */
+.form-field-container .description:hover,
+.form-field-container .player-count-info:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Specific styling for game mode description */
+.form-field-container .game-mode-description {
+  color: #e8f4fd !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  margin-top: 6px !important;
+  padding: 10px 14px !important;
+  background: rgba(135, 164, 250, 0.15) !important;
+  border: 1px solid rgba(135, 164, 250, 0.3) !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 2px 8px rgba(135, 164, 250, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Hover effect for game mode description */
+.form-field-container .game-mode-description:hover {
+  background: rgba(135, 164, 250, 0.2) !important;
+  border-color: rgba(135, 164, 250, 0.4) !important;
+  box-shadow: 0 4px 16px rgba(135, 164, 250, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Specific styling for participant count info */
+.form-field-container .participant-count-info {
+  color: #f0f8ff !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  margin-top: 6px !important;
+  padding: 10px 14px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Hover effect for participant count info */
+.form-field-container .participant-count-info:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Style the dropdown containers */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Style the dropdown input fields */
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-flex {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(135, 164, 250, 0.3);
+  border-radius: 12px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect on dropdown fields */
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-flex:hover {
+  border-color: rgba(135, 164, 250, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgba(135, 164, 250, 0.2);
+}
+
+/* Focus effect on dropdown fields */
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-flex {
+  border-color: #87a4fa;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(135, 164, 250, 0.2);
+}
+
+/* Style the dropdown input text */
+::ng-deep .mat-mdc-form-field input.mat-mdc-input-element,
+::ng-deep .mat-mdc-form-field .mat-mdc-select-value {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Style the dropdown placeholder text */
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+/* Style the dropdown arrow icon */
+::ng-deep .mat-mdc-form-field .mat-mdc-select-arrow {
+  color: #87a4fa;
+  opacity: 0.8;
+}
+
+/* Remove default Material Design borders and backgrounds */
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-underline {
+  display: none;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Style the dropdown panel when opened */
+::ng-deep .mat-mdc-select-panel {
+  background: #2a2f3f;
+  border: 1px solid rgba(135, 164, 250, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  margin-top: 8px;
+}
+
+/* Style dropdown options */
+::ng-deep .mat-mdc-option {
+  color: #e0e0e0;
+  font-size: 14px;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect on dropdown options */
+::ng-deep .mat-mdc-option:hover:not(.mat-mdc-option-disabled) {
+  background: rgba(135, 164, 250, 0.15);
+  color: #ffffff;
+}
+
+/* Selected dropdown option */
+::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background: rgba(135, 164, 250, 0.25);
+  color: #87a4fa;
+}
+
+/* Disabled dropdown option */
+::ng-deep .mat-mdc-option.mat-mdc-option-disabled {
+  color: rgba(255, 255, 255, 0.4);
+  background: transparent;
+}
+
+/* ===== MATERIAL DESIGN CHIPS STYLING ===== */
+
+/* Style the chip set container */
+::ng-deep .mat-mdc-chip-set {
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Style individual chips to match next button colors */
+::ng-deep .mat-mdc-chip.info-chip {
+  background: #87a4fa !important;
+  border: none !important;
+  border-radius: 20px !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  padding: 12px 20px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  transition: all 0.3s ease !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hover effect for chips */
+::ng-deep .mat-mdc-chip.info-chip:hover {
+  background: #5a7cfa !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Active/pressed effect for chips */
+::ng-deep .mat-mdc-chip.info-chip:active {
+  background: #4a6ce8 !important;
+  transform: translateY(0) !important;
+}
+
+/* Style the chip text content */
+::ng-deep .mat-mdc-chip.info-chip .mdc-evolution-chip__text-label {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Style the icons inside chips */
+::ng-deep .mat-mdc-chip.info-chip .mat-icon {
+  color: #ffffff !important;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin-right: 4px !important;
+}
+
+/* Remove default Material Design chip styling */
+::ng-deep .mat-mdc-chip.info-chip .mdc-evolution-chip__cell {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove focus overlay */
+::ng-deep .mat-mdc-chip.info-chip .mat-mdc-chip-focus-overlay {
+  display: none !important;
+}
+
+/* Remove ripple effects */
+::ng-deep .mat-mdc-chip.info-chip .mat-ripple {
+  display: none !important;
+}
+
+/* Ensure chips are full width and properly spaced */
+::ng-deep .mat-mdc-chip.info-chip {
+  width: 100% !important;
+  max-width: none !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+/* Style the chip action area */
+::ng-deep .mat-mdc-chip.info-chip .mdc-evolution-chip__action {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ===== CONFIRMATION PANEL STYLING ===== */
+
+/* Style the confirmation panel container */
+.confirmation-panel {
+  background: rgba(135, 164, 250, 0.05);
+  border: 1px solid rgba(135, 164, 250, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+/* Style the confirmation panel title */
+.confirmation-panel h3 {
+  color: #87a4fa;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Style the status text (Pending) in the yellow box */
+.status-pending {
+  background: #ffc107 !important;
+  color: #000000 !important;
+  padding: 6px 12px !important;
+  border-radius: 16px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 80px !important;
+  height: 24px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+
+/* Ensure the status text is properly centered within its container */
+.status-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Style the owner row to ensure proper alignment */
+.owner-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-bottom: 16px !important;
+}
+
+/* Style the owner label */
+.owner-label {
+  color: #e0e0e0;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+/* Style the owner value */
+.owner-value {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+}
+
+/* Style the status section */
+.status-section {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 100px;
+}
+
+/* ===== PARTICIPANT BADGES STYLING ===== */
+
+/* Container for both badges */
+.participant-badges {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-bottom: 16px !important;
+}
+
+/* Style both badges to be the same size and appearance */
+.owner-badge,
+.status-badge {
+  background: #87a4fa !important;
+  color: #ffffff !important;
+  padding: 8px 16px !important;
+  border-radius: 20px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 100px !important;
+  height: 32px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  gap: 6px !important;
+  box-shadow: 0 2px 8px rgba(135, 164, 250, 0.3) !important;
+  transition: all 0.3s ease !important;
+  flex-shrink: 0 !important;
+  width: 100px !important;
+  box-sizing: border-box !important;
+}
+
+/* Specific styling for owner badge */
+.owner-badge {
+  background: #87a4fa !important;
+  color: #ffffff !important;
+}
+
+/* Specific styling for pending status badge */
+.status-badge.pending {
+  background: #ffc107 !important;
+  color: #000000 !important;
+}
+
+/* Hover effects for both badges */
+.owner-badge:hover,
+.status-badge:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(135, 164, 250, 0.4) !important;
+}
+
+/* Style the icons inside badges */
+.owner-badge .mat-icon,
+.status-badge .mat-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+}
+
+/* Ensure consistent spacing and alignment */
+.owner-badge *,
+.status-badge * {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ===== PARTICIPANT SUMMARY ALIGNMENT ===== */
+
+/* Main participant summary container */
+.participant-summary {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 20px !important;
+  margin-bottom: 20px !important;
+  padding: 16px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(135, 164, 250, 0.1) !important;
+}
+
+/* Participant info section (name and email) - left side */
+.participant-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  align-items: flex-start !important;
+  flex: 1 !important;
+}
+
+/* Participant name styling */
+.participant-name {
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+/* Participant email styling */
+.participant-email {
+  color: #b0b0b0 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+}
+
+/* Participant badges section - right side */
+.participant-badges {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  justify-content: flex-end !important;
+  flex-shrink: 0 !important;
+}

@@ -1,0 +1,775 @@
+/* Modern Dark Theme for My Reservations */
+.reservations-container {
+  min-height: 100vh;
+  background: rgba(10, 10, 10, 0.91);
+  padding: 2rem 1rem;
+}
+
+/* Share Link Container */
+.share-link-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-link-container .detail-value {
+  flex: 1;
+  word-break: break-all;
+}
+
+.copy-btn {
+  color: #87a4fa;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  color: #6b8cfa;
+  transform: scale(1.1);
+}
+
+.copy-btn mat-icon {
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-header h1 {
+  color: #f1f1f1;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.page-header .subtitle {
+  color: #999;
+  font-size: 1.1rem;
+  margin: 0 0 2rem 0;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dashboard-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: rgba(33, 150, 243, 0.1);
+  border-color: #2196f3;
+}
+
+.refresh-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.dashboard-btn:hover {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: #ff5252;
+  color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+}
+
+.dashboard-btn mat-icon {
+  margin-right: 0.5rem;
+}
+
+.new-reservation-btn {
+  background: #87a4fa;
+  color: #1a1a1a;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.new-reservation-btn:hover {
+  background: #6b8cfa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(135, 164, 250, 0.4);
+}
+
+.new-reservation-btn mat-icon {
+  margin-right: 0.5rem;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-state mat-spinner {
+  margin-bottom: 1rem;
+}
+
+.loading-state p {
+  color: #999;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  margin: 2rem 0;
+}
+
+.empty-state mat-icon {
+  color: #666;
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: #f1f1f1;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state p {
+  color: #999;
+  font-size: 1rem;
+  margin: 0 0 2rem 0;
+  max-width: 400px;
+}
+
+.empty-state button {
+  background: #87a4fa;
+  color: #1a1a1a;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.empty-state button:hover {
+  background: #6b8cfa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(135, 164, 250, 0.4);
+}
+
+.empty-state button mat-icon {
+  margin: 0;
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Reservations Sections */
+.reservations-section {
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(135, 164, 250, 0.05);
+  border: 1px solid rgba(135, 164, 250, 0.2);
+  border-radius: 12px;
+}
+
+.section-header mat-icon {
+  color: #87a4fa;
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+.section-header h2 {
+  color: #f1f1f1;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.count-badge {
+  background: #87a4fa;
+  color: #1a1a1a;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 2rem;
+  text-align: center;
+}
+
+/* Reservations Grid */
+.reservations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Reservation Cards */
+.reservation-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.reservation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-color: rgba(135, 164, 250, 0.3);
+}
+
+.reservation-card.upcoming {
+  /* Removed border-left coloring */
+}
+
+.reservation-card.past {
+  opacity: 0.8;
+}
+
+.reservation-card.past:hover {
+  opacity: 1;
+}
+
+/* Card Header */
+.card-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.game-info h3 {
+  color: #f1f1f1;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.game-details {
+  color: #87a4fa;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.header-max-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  border-radius: 12px;
+  color: #f44336;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.header-max-indicator mat-icon {
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+  background: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.status-badge.confirmed {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-badge.cancelled {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* Card Content */
+.reservation-details {
+  margin-bottom: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-item mat-icon {
+  color: #87a4fa;
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.detail-label {
+  color: #999;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  color: #f1f1f1;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Participant count styling */
+.detail-value.max-reached {
+  color: #f44336 !important;
+  font-weight: 600;
+}
+
+/* Style for the MAX text specifically */
+.detail-value.max-reached .max-text {
+  color: #f44336;
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
+/* Participants Preview */
+.participants-preview {
+  margin-top: 20px;
+  margin-bottom: 0;
+  padding: 16px;
+  padding-bottom: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 2;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.preview-header h4 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.max-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  border-radius: 12px;
+  color: #f44336;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.max-indicator mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.participants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.participant-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.participant-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #87a4fa, #6b8cfa);
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.participant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.participant-name {
+  color: #f1f1f1;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.owner-crown {
+  color: #ffd700 !important;
+  font-size: 1.2rem !important;
+  width: 1.2rem !important;
+  height: 1.2rem !important;
+  margin-left: 0.25rem;
+  filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.8);
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* More specific selector to override Material Design */
+.participant-name .owner-crown.mat-icon {
+  color: #ffd700 !important;
+  fill: #ffd700 !important;
+}
+
+/* Even more specific to override any Material Design styles */
+.participant-item .participant-info .participant-name .mat-icon.owner-crown {
+  color: #ffd700 !important;
+  fill: #ffd700 !important;
+}
+
+.participant-email {
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.participant-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.status-dot.confirmed {
+  background: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+}
+
+.status-dot.pending {
+  background: #ff9800;
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+}
+
+.more-participants {
+  color: #999;
+  font-size: 0.875rem;
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+/* Card Actions */
+mat-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+mat-card-actions button {
+  flex: 1;
+  padding: 0.75rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+mat-card-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+mat-card-actions button mat-icon {
+  margin-right: 0.5rem;
+}
+
+.cancel-btn {
+  color: #f44336;
+  border-color: #f44336;
+}
+
+.cancel-btn:hover {
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.share-btn {
+  background: #87a4fa;
+  color: #1a1a1a;
+}
+
+.share-btn:hover {
+  background: #6b8cfa;
+}
+
+.details-btn {
+  color: #87a4fa;
+  border-color: #87a4fa;
+}
+
+.details-btn:hover {
+  background: rgba(135, 164, 250, 0.1);
+}
+
+.rebook-btn {
+  color: #87a4fa;
+  border-color: #87a4fa;
+}
+
+.rebook-btn:hover {
+  background: rgba(135, 164, 250, 0.1);
+}
+
+/* Owner and Participant Actions */
+.owner-actions,
+.participant-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.confirm-btn {
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.confirm-btn:disabled {
+  color: #4caf50;
+  border-color: #4caf50;
+  opacity: 0.6;
+}
+
+.decline-btn {
+  color: #f44336;
+  border-color: #f44336;
+}
+
+.decline-btn:hover:not(:disabled) {
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.decline-btn:disabled {
+  color: #f44336;
+  border-color: #f44336;
+  opacity: 0.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reservations-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .reservations-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .card-header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .detail-item mat-icon {
+    align-self: center;
+  }
+  
+  .participant-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  mat-card-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .page-header .subtitle {
+    font-size: 1rem;
+  }
+  
+  .new-reservation-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .section-header {
+    padding: 1rem;
+  }
+  
+  .section-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .count-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+} 
