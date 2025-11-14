@@ -11,21 +11,11 @@ export interface MissionSession {
   updated_at?: Date;
 }
 
-export interface SessionPlayer {
-  session_id: string;
-  player_name: string;
-  strength_endurance_result_id?: string;
-  agility_speed_result_id?: string;
-  aim_precision_result_id?: string;
-  memory_attention_result_id?: string;
-  communication_result_id?: string;
-  logic_problem_solving_result_id?: string;
-}
-
 export interface GameResult {
   game_result_id: string; // primary key
   game_slug: string;
   session_id: string;
+  difficulty: string;
   game_result: any; // JSONB field for game-specific results
 }
 

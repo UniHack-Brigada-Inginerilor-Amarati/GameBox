@@ -1,12 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  MissionSession,
-  SessionPlayer,
-  GameResult,
-  PlayerGameResult,
-  UserProfile,
-} from '@gamebox/shared';
+import { MissionSession, GameResult, PlayerGameResult, UserProfile } from '@gamebox/shared';
 import { environment } from '../../../environments/environment';
 import { HttpService } from '../../shared/services/http.service';
 
@@ -36,16 +30,10 @@ export class SessionService {
     return this.http.get<UserProfile[]>(`${this.apiUrl}/sessions/${sessionId}/players`);
   }
 
-  addSessionPlayers(sessionId: string, playerIds: string[]): Observable<SessionPlayer[]> {
-    return this.http.post<SessionPlayer[]>(`${this.apiUrl}/sessions/${sessionId}/players`, {
-      player_ids: playerIds,
+  addSessionPlayers(sessionId: string, playerNames: string[]): Observable<PlayerGameResult[]> {
+    return this.http.post<PlayerGameResult[]>(`${this.apiUrl}/sessions/${sessionId}/players`, {
+      playerNames: playerNames,
     });
-  }
-
-  removeSessionPlayers(sessionId: string, playerIds: string[]): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/sessions/${sessionId}/players`, {
-      body: { player_ids: playerIds },
-    } as any);
   }
 
   startSession(sessionId: string): Observable<MissionSession> {
