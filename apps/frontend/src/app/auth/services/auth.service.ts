@@ -16,14 +16,18 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
   private supabaseService = createClient(environment.supabaseUrl, environment.supabaseKey);
 
-  register(name: string, email: string, password: string): Observable<{ error: AuthError | null }> {
+  register(
+    username: string,
+    email: string,
+    password: string,
+  ): Observable<{ error: AuthError | null }> {
     const payload = {
       email,
       password,
       options: {
         data: {
-          name,
-          avatar_url: environment.avatarGeneratorUrl + name,
+          username,
+          avatar_url: environment.avatarGeneratorUrl + username,
         },
       },
     };

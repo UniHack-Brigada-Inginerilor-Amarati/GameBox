@@ -85,11 +85,11 @@ export class AbilityService {
 
     // Create ability name mapping (new ability names from mission structure)
     const abilityNames: Record<string, string> = {
-      mentalFortitudeComposure: 'Mental Fortitude / Composure',
-      adaptabilityDecisionMaking: 'Adaptability / Decision Making',
-      aimMechanicalSkill: 'Aim / Mechanical Skill',
-      gameSenseAwareness: 'Game Sense / Awareness',
-      teamworkCommunication: 'Teamwork / Communication',
+      mentalFortitudeComposure: 'Mental Fortitude & Composure',
+      adaptabilityDecisionMaking: 'Adaptability & Decision Making',
+      aimMechanicalSkill: 'Aim & Mechanical Skill',
+      gameSenseAwareness: 'Game Sense & Awareness',
+      teamworkCommunication: 'Teamwork & Communication',
       strategy: 'Strategy',
     };
 
@@ -194,10 +194,7 @@ export class AbilityService {
     gameResults: GameResultData[],
     gameToAbilityMap: Map<string, { slug: string; name: string }>,
   ): Omit<AbilityScores, 'overall'> {
-    const abilityData: Record<
-      string,
-      { scores: number[]; name: string; slug: string }
-    > = {
+    const abilityData: Record<string, { scores: number[]; name: string; slug: string }> = {
       mentalFortitudeComposure: {
         scores: [],
         name: 'Mental Fortitude / Composure',
@@ -242,10 +239,14 @@ export class AbilityService {
     }
 
     // Calculate ability scores
-    const calculateAbilityScore = (data: { scores: number[]; name: string; slug: string }): AbilityScore => {
+    const calculateAbilityScore = (data: {
+      scores: number[];
+      name: string;
+      slug: string;
+    }): AbilityScore => {
       const gameCount = data.scores.length;
       const averageScore = gameCount > 0 ? data.scores.reduce((a, b) => a + b, 0) / gameCount : 0;
-      
+
       // Normalize to 0-100 scale
       // Assume max possible score is 100 for normalization
       // If scores exceed 100, we'll cap at 100
@@ -313,8 +314,7 @@ export class AbilityService {
     ];
 
     const totalGames = scores.reduce((sum, score) => sum + score.gameCount, 0);
-    const averageScore =
-      scores.reduce((sum, score) => sum + score.score, 0) / scores.length;
+    const averageScore = scores.reduce((sum, score) => sum + score.score, 0) / scores.length;
 
     return {
       averageScore: Math.round(averageScore * 100) / 100,
@@ -322,4 +322,3 @@ export class AbilityService {
     };
   }
 }
-
