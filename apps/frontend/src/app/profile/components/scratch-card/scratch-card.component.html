@@ -1,0 +1,47 @@
+<div class="scratch-container">
+  <div class="scratch-header">
+    <div class="header-content">
+      <h1>Game Progress Dashboard</h1>
+      <p class="subtitle">Track your achievements across all available games</p>
+    </div>
+  </div>
+  @if (games.length > 0) {
+  <app-player-stats [games]="games" [scratchCard]="scratchCard">
+  </app-player-stats>
+  } @if (loading) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your games...</p>
+  </div>
+  } @if (error) {
+  <div class="error-state">
+    <p class="error-message">{{ error }}</p>
+    <button mat-raised-button class="retry-btn" (click)="loadScratchCard()">
+      Try Again
+    </button>
+  </div>
+  } @if (!loading && !error && games.length > 0) {
+  <div class="games-grid">
+    <mat-grid-list cols="3" rowHeight="450px" gutterSize="20px">
+      @for (game of games; track $index) {
+      <mat-grid-tile>
+        <app-mini-scratch-card
+          [game]="game"
+          [scratchCard]="scratchCard"
+          [flipState]="getFlipState(game)"
+          (cardClick)="onCardFlip($event)"
+          (cardKeyup)="onCardFlip($event.game)"
+        ></app-mini-scratch-card>
+      </mat-grid-tile>
+      }
+    </mat-grid-list>
+  </div>
+  } @if (!loading && !error && games.length === 0) {
+  <div class="empty-state">
+    <div class="empty-content">
+      <mat-icon class="empty-icon">games</mat-icon>
+      <p>No games available yet.</p>
+    </div>
+  </div>
+  }
+</div>

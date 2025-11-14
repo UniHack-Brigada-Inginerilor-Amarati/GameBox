@@ -1,0 +1,31 @@
+<div class="progress-cards">
+  <div class="progress-card">
+    <div class="card-icon">
+      <mat-icon>games</mat-icon>
+    </div>
+    <div class="card-content">
+      <span class="card-number">{{ animatedTotalGames() }}</span>
+      <span class="card-label">Total Games</span>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <div class="card-icon">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+    <div class="card-content">
+      <span class="card-number">{{ animatedCompletedGames() }}</span>
+      <span class="card-label">Games Completed</span>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <div class="card-icon">
+      <mat-icon>trending_up</mat-icon>
+    </div>
+    <div class="card-content">
+      <span class="card-number">{{ animatedCompletionRate() }}%</span>
+      <span class="card-label">Completion Rate</span>
+    </div>
+  </div>
+</div>

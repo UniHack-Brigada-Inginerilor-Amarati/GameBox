@@ -1,0 +1,89 @@
+<div class="tp-wrapper">
+  <div
+    class="tp-box"
+    [@flipState]="flipState"
+    (click)="onCardClick()"
+    (keyup.enter)="onCardKeyup($event)"
+    (keyup.space)="onCardKeyup($event)"
+    tabindex="0"
+    role="button"
+    [attr.aria-label]="'Flip card for ' + game.name"
+  >
+    <div class="tp-box__side tp-box__front">
+      <mat-card
+        class="game-card"
+        [class.played]="isGamePlayed(game)"
+        [class.unplayed]="!isGamePlayed(game)"
+        [matTooltip]="game.description"
+        matTooltipPosition="above"
+        matTooltipClass="game-tooltip"
+      >
+        <div class="image-container">
+          <img
+            mat-card-image
+            [src]="getGameImageUrl(game)"
+            [alt]="game.name"
+            (error)="onImageError($event)"
+          />
+
+          @if (isGamePlayed(game)) {
+          <div class="progress-badge">
+            <mat-icon class="played-icon">check_circle</mat-icon>
+          </div>
+          } @if (!isGamePlayed(game)) {
+          <div class="progress-badge">
+            <mat-icon class="unplayed-icon">lock</mat-icon>
+          </div>
+          }
+        </div>
+
+        <mat-card-header>
+          <mat-card-title>{{ game.name }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          @if (game.abilities && game.abilities.length > 0) {
+          <div class="ability-tags">
+            @for (ability of game.abilities.slice(0, 2); track ability.name) {
+            <mat-chip class="ability-chip" [matTooltip]="ability.description">
+              @if (ability.icon?.url) {
+              <img
+                [src]="getAbilityIconUrl(ability)"
+                [alt]="ability.name"
+                class="ability-icon"
+                (error)="onAbilityIconError($event)"
+              />
+              } {{ ability.name }}
+            </mat-chip>
+            } @if (game.abilities && game.abilities.length > 2) {
+            <span class="more-abilities">
+              +{{ game.abilities.length - 2 }}
+            </span>
+            }
+          </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="tp-box__side tp-box__back">
+      <mat-card class="game-card-back">
+        <mat-card-content class="description-content">
+          <div class="back-image-container">
+            <img
+              [src]="getGameImageUrl(game)"
+              [alt]="game.name"
+              (error)="onImageError($event)"
+            />
+          </div>
+          <h3 class="back-title">{{ game.name }}</h3>
+          <p class="game-description-back">{{ game.description }}</p>
+          <div class="flip-hint">
+            <mat-icon>touch_app</mat-icon>
+            <span>Click to flip back</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
