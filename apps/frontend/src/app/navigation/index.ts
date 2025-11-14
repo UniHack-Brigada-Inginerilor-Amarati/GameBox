@@ -1,0 +1,1 @@
+export { NavMenuComponent } from './components/nav-menu.component';

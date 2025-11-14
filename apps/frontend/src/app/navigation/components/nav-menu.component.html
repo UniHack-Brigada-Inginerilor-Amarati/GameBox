@@ -1,0 +1,40 @@
+<mat-toolbar class="nav-menu fade-in" [ngClass]="positionClass" color="primary">
+    <a mat-button routerLink="/dashboard" routerLinkActive="active" aria-label="Dashboard">
+      <mat-icon>home</mat-icon>
+      <span class="label">Home</span>
+    </a>
+  
+    <a mat-button routerLink="/profile/me" routerLinkActive="active" aria-label="Profile">
+      <mat-icon>person</mat-icon>
+      <span class="label">Profile</span>
+    </a>
+  
+    <a mat-button routerLink="/scratch-card" routerLinkActive="active" aria-label="Scratch Card">
+      <mat-icon>style</mat-icon>
+      <span class="label">Scratch</span>
+    </a>
+  
+    <a mat-button routerLink="/my-reservations" routerLinkActive="active" aria-label="Reservations">
+      <mat-icon>event_available</mat-icon>
+      <span class="label">Reserve</span>
+    </a>
+  
+    <a mat-button routerLink="/missions" routerLinkActive="active" aria-label="Missions">
+      <mat-icon>build</mat-icon>
+      <span class="label">Missions</span>
+    </a>
+  </mat-toolbar>
+
+  <!-- @if (admin) {
+    <a mat-button routerLink="/games" routerLinkActive="active" aria-label="Games">
+      <mat-icon>games</mat-icon>
+      <span class="label">Games</span>
+    </a>
+  }
+
+  @if (admin) {
+    <a mat-button routerLink="/missions" routerLinkActive="active" aria-label="Missions">
+      <mat-icon>build</mat-icon>
+      <span class="label">Missions</span>
+    </a>
+  } -->

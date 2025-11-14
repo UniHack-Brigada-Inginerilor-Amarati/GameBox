@@ -1,0 +1,75 @@
+<div class="landing-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">Welcome to Gamebox</h1>
+        <p class="hero-subtitle">Your ultimate gaming mission platform</p>
+        <p class="hero-description">
+          Experience immersive gaming challenges, track your progress, and compete with friends 
+          in our innovative mission-based gaming system.
+        </p>
+        
+        <!-- Get Started Button - Show when not authenticated or loading -->
+        @if (!isAuthenticated() || isLoading()) {
+          <div class="hero-actions">
+            <button mat-raised-button color="primary" routerLink="/auth/login" class="login-btn">
+              <mat-icon>login</mat-icon>
+              Get Started
+            </button>
+          </div>
+        }
+        
+        <!-- Welcome back message when authenticated -->
+        @if (isAuthenticated() && !isLoading()) {
+          <div class="hero-actions">
+          <button mat-raised-button color="primary" routerLink="/profile/me" class="login-btn">
+            <mat-icon>person</mat-icon>
+            Go to Profile
+          </button>
+          <button mat-raised-button color="accent" routerLink="/scratch-card" class="cta-button secondary">
+            <mat-icon>style</mat-icon>
+            Scratch Card
+          </button>
+          <button mat-raised-button color="warn" routerLink="/my-reservations" class="cta-button reservation">
+            <mat-icon>event_available</mat-icon>
+            Reservation
+          </button>
+          </div>
+        }
+      </div>
+    </div>
+  
+    <!-- Features Section -->
+    <div class="features-section">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <mat-icon>sports_esports</mat-icon>
+          </div>
+          <h3>Gaming Missions</h3>
+          <p>Complete challenging missions across different gaming categories and abilities.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <mat-icon>leaderboard</mat-icon>
+          </div>
+          <h3>Progress Tracking</h3>
+          <p>Monitor your gaming achievements and compare with other players.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <mat-icon>group</mat-icon>
+          </div>
+          <h3>Community</h3>
+          <p>Connect with fellow gamers and share your achievements.</p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Footer Section -->
+    <div class="footer-section">
+      <p>&copy; 2025 Gamebox. All rights reserved.</p>
+    </div>
+  </div>

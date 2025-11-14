@@ -1,0 +1,128 @@
+  .nav-menu {
+    height: 56px;
+    background: var(--mdc-theme-surface, #161621);
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 4px;
+    z-index: 1000;
+    color: #ffffff; /* default text color for toolbar */
+    overflow-x: auto; /* Allow horizontal scrolling if needed */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+  
+  .position-bottom-fixed {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .position-top {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-top: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  
+  .position-bottom-inline {
+    position: static;
+    margin-top: 12px;
+  }
+  
+  .nav-menu a {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.92);
+    text-decoration: none;
+    font-size: 10px;
+    gap: 1px;
+    height: 100%;
+    min-width: 0; /* Allow buttons to shrink */
+    flex-shrink: 1; /* Allow buttons to shrink */
+    padding: 2px 4px; /* Smaller padding */
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .nav-menu a.active {
+    color: #ffffff;
+    background: rgba(34, 211, 238, 0.16); 
+  }
+  
+  .nav-menu mat-icon { 
+    font-size: 16px; 
+    color: inherit; 
+    opacity: 0.95; 
+    margin: 0;
+  }
+  
+  /* Small screens - make text even smaller */
+  @media (max-width: 480px) {
+    .nav-menu a {
+      font-size: 9px;
+      padding: 1px 2px;
+    }
+    .nav-menu mat-icon {
+      font-size: 14px;
+    }
+    .nav-menu {
+      padding: 0 2px;
+    }
+  }
+
+  /* Very small screens - hide text labels, show only icons */
+  @media (max-width: 360px) {
+    .nav-menu a .label {
+      display: none;
+    }
+    .nav-menu a {
+      padding: 4px;
+    }
+    .nav-menu mat-icon {
+      font-size: 18px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .position-bottom-fixed.nav-menu {
+      width: 240px;
+      left: 16px;
+      right: auto;
+      top: 16px;
+      bottom: auto;
+      border-radius: 12px;
+      height: auto;
+      padding: 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-menu a {
+      width: 100%;
+      flex-direction: row;
+      justify-content: flex-start;
+      padding: 6px 12px;
+      gap: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .nav-menu a.active {
+      background: rgba(34, 211, 238, 0.1);
+    }
+    .nav-menu mat-icon {
+      font-size: 18px;
+    }
+  }
+  
+  .fade-in { animation: fadeIn 300ms ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
