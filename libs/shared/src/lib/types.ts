@@ -11,3 +11,4 @@ export * from './session';
 export * from './reservation';
 export * from './ability-scores';
 export * from './game-config';
+export * from './tournament';

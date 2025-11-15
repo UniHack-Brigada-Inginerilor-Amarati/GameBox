@@ -205,7 +205,6 @@ export interface Game {
     [k: string]: unknown;
   };
   abilities?: (number | Ability)[] | null;
-  tournaments?: (number | Tournament)[] | null;
   repoUrl: string;
   updatedAt: string;
   createdAt: string;
@@ -462,7 +461,6 @@ export interface GamesSelect<T extends boolean = true> {
       };
   guide?: T;
   abilities?: T;
-  tournaments?: T;
   repoUrl?: T;
   updatedAt?: T;
   createdAt?: T;

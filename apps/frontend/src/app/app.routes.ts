@@ -16,6 +16,7 @@ import {
   PlayMissionPageComponent,
   MissionGameplayPageComponent,
 } from './missions';
+import { TournamentsDashboardComponent } from './tournaments';
 import { ReservationForm } from './reservations/components/reservation-form/reservation-form';
 import { MyReservations } from './reservations/components/my-reservations/my-reservations';
 import { ReservationShare } from './reservations/components/reservation-share/reservation-share';
@@ -74,6 +75,12 @@ export const appRoutes: Route[] = [
     path: 'missions/:slug/play/:sessionId',
     component: MissionGameplayPageComponent,
     canActivate: [AuthGuard, AdminGuard],
+  },
+
+  {
+    path: 'tournaments',
+    component: TournamentsDashboardComponent,
+    canActivate: [AuthGuard],
   },
 
   {

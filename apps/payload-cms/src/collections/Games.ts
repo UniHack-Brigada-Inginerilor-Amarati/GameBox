@@ -35,20 +35,6 @@ export const Games: CollectionConfig = {
             });
             doc.abilities = fullAbilities.docs;
           }
-          const eventIds = doc.events as string[];
-          if (eventIds?.length) {
-            const fullEvents = await req.payload.find({
-              collection: 'events',
-              where: {
-                id: {
-                  in: eventIds,
-                },
-              },
-              depth: 2,
-              pagination: false,
-            });
-            doc.events = fullEvents.docs;
-          }
           if (process.env.GITHUB_SKIP_REPO !== 'true') {
             await editRepoAndPush(doc);
             req.payload.logger.info('Creating repo edit and push');
@@ -119,12 +105,6 @@ export const Games: CollectionConfig = {
       name: 'abilities',
       type: 'relationship',
       relationTo: 'abilities',
-      hasMany: true,
-    },
-    {
-      name: 'events',
-      type: 'relationship',
-      relationTo: 'events',
       hasMany: true,
     },
     {
