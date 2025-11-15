@@ -11,6 +11,7 @@ import { GameScore } from './session';
  * Linked to user profile, contains all ranking and progression data
  */
 export interface SpyCard {
+  id: string;
   username: string;
 
   // Standalone stats

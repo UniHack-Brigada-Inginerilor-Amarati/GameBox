@@ -317,12 +317,25 @@ export class AbilityService {
   async getAbilityScoresFromSpyCard(username: string): Promise<AbilityScores> {
     this.logger.debug('Getting ability scores from spy card', { username });
 
-    // Query spy_cards table
-    const { data: spyCard, error } = await this.db.supabaseAdmin
-      .from('spy_cards')
-      .select('*')
+    // First, get user_id from username for better query performance
+    // Fallback to username lookup if user_id is not available
+    const { data: userProfile } = await this.db.supabaseAdmin
+      .from('user_profiles')
+      .select('id')
       .eq('username', username)
       .single();
+
+    // Query spy_cards table by user_id (preferred) or username (fallback)
+    let query = this.db.supabaseAdmin.from('spy_cards').select('*');
+
+    if (userProfile?.id) {
+      query = query.eq('user_id', userProfile.id);
+    } else {
+      // Fallback to username lookup for backward compatibility
+      query = query.eq('username', username);
+    }
+
+    const { data: spyCard, error } = await query.single();
 
     if (error) {
       if (error.code === 'PGRST116') {
