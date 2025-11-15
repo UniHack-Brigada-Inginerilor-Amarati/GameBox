@@ -42,7 +42,10 @@ export class ProfileService {
     return this.httpService.get<GameScore>(url);
   }
 
-  getAbilityScores(): Observable<AbilityScores> {
+  getAbilityScores(username?: string): Observable<AbilityScores> {
+    if (username) {
+      return this.httpService.get<AbilityScores>(`${this.backendUrl}/profiles/${username}/abilities`);
+    }
     return this.httpService.get<AbilityScores>(`${this.backendUrl}/profiles/me/abilities`);
   }
 

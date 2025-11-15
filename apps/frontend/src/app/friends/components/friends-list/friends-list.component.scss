@@ -55,6 +55,7 @@
   border: 1px solid #444;
   border-radius: 10px;
   transition: all 0.2s ease;
+  cursor: pointer;
 
   &:hover {
     border-color: #87a4fa;
@@ -110,15 +111,33 @@
   }
 }
 
-button[mat-icon-button] {
-  color: #f44336;
+.friend-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
 
+button[mat-icon-button] {
   &:hover {
-    background: rgba(244, 67, 54, 0.1);
+    background: rgba(135, 164, 250, 0.1);
   }
 
-  mat-icon {
+  &[color="primary"] {
+    mat-icon {
+      color: #87a4fa;
+    }
+  }
+
+  &[color="warn"] {
     color: #f44336;
+
+    &:hover {
+      background: rgba(244, 67, 54, 0.1);
+    }
+
+    mat-icon {
+      color: #f44336;
+    }
   }
 }
 

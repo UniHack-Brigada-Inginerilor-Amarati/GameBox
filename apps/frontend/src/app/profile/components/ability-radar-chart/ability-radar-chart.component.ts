@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, signal, inject, effect } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, OnChanges, SimpleChanges, ViewChild, ElementRef, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,8 +13,9 @@ import { ProfileService } from '../../services/profile.service';
   templateUrl: './ability-radar-chart.component.html',
   styleUrls: ['./ability-radar-chart.component.scss'],
 })
-export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
+export class AbilityRadarChartComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() userId?: string; // Optional: if not provided, uses current user
+  @Input() username?: string; // Optional: username to fetch abilities for
   @ViewChild('radarChart', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
   readonly abilityScores = signal<AbilityScores | null>(null);
@@ -22,6 +23,7 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
   readonly error = signal<string | null>(null);
 
   private profileService = inject(ProfileService);
+  private previousUsername?: string;
 
   constructor() {
     // Watch for abilityScores changes and redraw chart when both data and view are ready
@@ -40,6 +42,21 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadAbilityScores();
+    this.previousUsername = this.username;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Reload data when username changes (including first change if username is provided)
+    if (changes['username']) {
+      const newUsername = changes['username'].currentValue;
+      if (newUsername !== this.previousUsername) {
+        this.previousUsername = newUsername;
+        // Only reload if not first change (first change is handled by ngOnInit)
+        if (!changes['username'].firstChange) {
+          this.loadAbilityScores();
+        }
+      }
+    }
   }
 
   ngAfterViewInit(): void {
@@ -52,13 +69,22 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
   loadAbilityScores(): void {
     this.isLoading.set(true);
     this.error.set(null);
+    
+    // Clear previous data and canvas
+    this.abilityScores.set(null);
+    if (this.canvasRef?.nativeElement) {
+      const ctx = this.canvasRef.nativeElement.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, this.canvasRef.nativeElement.width, this.canvasRef.nativeElement.height);
+      }
+    }
 
-    this.profileService.getAbilityScores().subscribe({
+    this.profileService.getAbilityScores(this.username).subscribe({
       next: (scores: AbilityScores) => {
         this.abilityScores.set(scores);
         this.isLoading.set(false);
       },
-      error: (err: any) => {
+      error: (err: unknown) => {
         this.error.set('Failed to load ability scores');
         this.isLoading.set(false);
         console.error('Error loading ability scores:', err);

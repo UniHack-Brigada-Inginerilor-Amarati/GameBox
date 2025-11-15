@@ -9,6 +9,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FriendsService } from '../../services/friends.service';
 import { FriendWithProfile } from '@gamebox/shared';
+import { FriendSpyCardDialogComponent } from '../friend-spy-card-dialog/friend-spy-card-dialog.component';
 
 @Component({
   selector: 'app-friends-list',
@@ -66,6 +67,17 @@ export class FriendsListComponent implements OnInit {
         },
       });
     }
+  }
+
+  viewFriendSpyCard(friend: FriendWithProfile): void {
+    this.dialog.open(FriendSpyCardDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      data: {
+        username: friend.username,
+        friendName: friend.username,
+      },
+    });
   }
 }
 

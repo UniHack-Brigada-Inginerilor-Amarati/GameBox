@@ -19,7 +19,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReservationService } from '../../services/reservation.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { MatStepper } from '@angular/material/stepper';
-import { GAME_MODES } from '@gamebox/shared';
+import { Game } from '@gamebox/shared';
+import { GameService } from '../../../games/services/game.service';
 
 @Component({
   selector: 'app-reservation-form',
@@ -49,13 +50,15 @@ export class ReservationForm implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private reservationService = inject(ReservationService);
   private authService = inject(AuthService);
+  private gameService = inject(GameService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
   reservationForm!: FormGroup;
-  gameModes = GAME_MODES;
-  selectedGameMode?: any;
+  games: Game[] = [];
+  selectedGame?: Game;
   isLoading = false;
+  isLoadingGames = false;
   currentUser: any = null;
   isAuthenticated = false;
 
@@ -63,6 +66,7 @@ export class ReservationForm implements OnInit, OnDestroy {
     this.initForm();
     await this.checkAuthentication();
     this.setupAvailabilityRefresh();
+    this.loadGames();
   }
 
   ngOnDestroy(): void {
@@ -152,17 +156,13 @@ export class ReservationForm implements OnInit, OnDestroy {
     return this.reservationForm.get('slot_time')?.value;
   }
 
-  get selectedGameModeId() {
+  get selectedGameSlug() {
     return this.reservationForm.get('game_mode')?.value;
   }
 
-  get selectedLevel() {
-    return this.reservationForm.get('level')?.value;
-  }
-
-  get selectedGameModeName() {
-    const gameModeId = this.selectedGameModeId;
-    return this.gameModes.find(g => g.id === gameModeId)?.name || '';
+  get selectedGameName() {
+    const gameSlug = this.selectedGameSlug;
+    return this.getGameName(gameSlug || '');
   }
 
   get participantsCount() {
@@ -174,7 +174,6 @@ export class ReservationForm implements OnInit, OnDestroy {
       date: ['', [Validators.required, this.futureDateValidator()]],
       slot_time: ['', Validators.required],
       game_mode: ['', Validators.required],
-      level: ['beginner', Validators.required],
       participants: this.fb.array([]),
     });
 
@@ -187,9 +186,9 @@ export class ReservationForm implements OnInit, OnDestroy {
 
     this.reservationForm
       .get('game_mode')
-      ?.valueChanges.subscribe((gameModeId) => {
-        this.selectedGameMode = this.gameModes.find(
-          (gm) => gm.id === gameModeId
+      ?.valueChanges.subscribe((gameSlug) => {
+        this.selectedGame = this.games.find(
+          (game) => game.slug === gameSlug
         );
         this.updateParticipantsValidation();
       });
@@ -264,67 +263,31 @@ export class ReservationForm implements OnInit, OnDestroy {
   }
 
 
-  onGameModeChange(gameModeId: string): void {
-    this.selectedGameMode = this.gameModes.find(gm => gm.id === gameModeId);
-    if (this.selectedGameMode) {
-      this.updateParticipantsValidation();
-    }
+  getGameName(gameSlug: string): string {
+    const game = this.games.find((g) => g.slug === gameSlug);
+    return game ? game.name : 'Unknown';
   }
-
-
-  getGameModeName(gameModeId: string): string {
-    return this.gameModes.find(gm => gm.id === gameModeId)?.name || gameModeId;
-  }
-
-
-  getDifficultyDisplayName(level: string): string {
-    const levelMap: { [key: string]: string } = {
-      'beginner': 'Beginner',
-      'intermediate': 'Intermediate',
-      'advanced': 'Advanced'
-    };
-    return levelMap[level] || level;
-  }
-
-
-  getGameModeDisplayValue(gameModeId: string): string {
-    return this.getGameModeName(gameModeId);
-  }
-
-
-  getDifficultyDisplayValue(level: string): string {
-    return this.getDifficultyDisplayName(level);
-  }
-
-
-  getDifficultyIcon(level: string): string {
-    const iconMap: { [key: string]: string } = {
-      'beginner': 'trending_up',
-      'intermediate': 'trending_up',
-      'advanced': 'trending_up'
-    };
-    return iconMap[level] || 'trending_up';
-  }
-
 
   private updateParticipantsValidation(): void {
-    if (!this.selectedGameMode) return;
-
-    const currentCount = this.participants.length;
-    const minPlayers = this.selectedGameMode.min_players;
-    const maxPlayers = this.selectedGameMode.max_players;
-
-
-    while (this.participants.length < minPlayers) {
-      this.addParticipant();
-    }
-
-
-    while (this.participants.length > maxPlayers) {
-      this.removeParticipant(this.participants.length - 1);
-    }
+    // Removed participant validation based on game mode - no longer needed
   }
 
+  private loadGames(): void {
+    this.isLoadingGames = true;
+    this.gameService.getGames().subscribe({
+      next: (games) => {
+        this.games = games;
+        this.isLoadingGames = false;
+      },
+      error: (error) => {
+        console.error('Error loading games:', error);
+        this.snackBar.open('Error loading games. Please try again.', 'Close', {
+          duration: 3000,
+        });
+        this.isLoadingGames = false;
+      },
+    });
+  }
 
   // Removed loadAvailableTimeSlots and related methods - time slots are now manually entered
 
@@ -380,7 +343,6 @@ export class ReservationForm implements OnInit, OnDestroy {
         date: selectedDate,
         slot_time: selectedTime,
         game_mode: formValue.game_mode,
-        level: formValue.level,
         participants: formValue.participants,
       };
 
