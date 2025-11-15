@@ -12,6 +12,7 @@ import { ScratchCardModule } from './scratch-card/scratch-card.module';
 import { PlayerResultModule } from './player-results/player-result.module';
 import { FriendsModule } from './friends/friends.module';
 import { TournamentModule } from './tournaments/tournament.module';
+import { RiotModule } from './riot/riot.module';
 import { GeminiModule } from './gemini/gemini.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { GeminiModule } from './gemini/gemini.module';
     PlayerResultModule,
     FriendsModule,
     TournamentModule,
+    RiotModule,
     GeminiModule,
   ],
   controllers: [],
