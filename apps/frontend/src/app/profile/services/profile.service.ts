@@ -34,6 +34,7 @@ export class ProfileService {
       formData,
     );
   }
+
   getAbilityScores(): Observable<AbilityScores> {
     return this.httpService.get<AbilityScores>(`${this.backendUrl}/profiles/me/abilities`);
   }

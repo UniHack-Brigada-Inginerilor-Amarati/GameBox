@@ -137,10 +137,9 @@ export class ProfileController {
   @UseGuards(AuthGuard)
   async getCurrentUserAbilities(@Request() req: any): Promise<AbilityScores> {
     this.logger.debug('GET /profiles/me/abilities - Fetching ability scores', {
-      userId: req.user.id,
+      username: req.user.username,
     });
-    const profile = await this.profileService.getProfileByUsername(req.user.username);
-    return this.abilityService.calculateAbilityScores(profile.id);
+    return this.abilityService.calculateAbilityScores(req.user.username);
   }
 
   @Get(':username/abilities')
@@ -149,7 +148,6 @@ export class ProfileController {
     this.logger.debug('GET /profiles/:username/abilities - Fetching ability scores', {
       username,
     });
-    const profile = await this.profileService.getProfileByUsername(username);
-    return this.abilityService.calculateAbilityScores(profile.id);
+    return this.abilityService.calculateAbilityScores(username);
   }
 }
