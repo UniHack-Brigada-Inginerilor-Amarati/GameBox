@@ -384,6 +384,31 @@
   border-radius: 12px !important;
   margin-bottom: 24px;
   overflow: hidden;
+  
+  // Enable horizontal scrolling for tables with many columns
+  .table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(135, 164, 250, 0.3);
+      border-radius: 4px;
+      
+      &:hover {
+        background: rgba(135, 164, 250, 0.5);
+      }
+    }
+  }
 }
 
 .mission-header {
@@ -487,7 +512,9 @@
 
 .players-table {
   width: 100%;
+  min-width: 1200px; // Ensure minimum width for all columns to be visible
   background: transparent;
+  table-layout: auto;
 }
 
 .players-table th {
@@ -599,6 +626,26 @@
     .mdc-notched-outline--focused .mdc-notched-outline__trailing {
       border-color: #87a4fa !important;
     }
+  }
+}
+
+.actions-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.calculate-lol-score-button {
+  color: #87a4fa !important;
+
+  &:hover:not(:disabled) {
+    background: rgba(135, 164, 250, 0.1) !important;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 

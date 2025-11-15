@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Logger, UseGuards, Request, Patch, Body, Post } from '@nestjs/common';
+import { Controller, Get, Param, Logger, UseGuards, Request, Patch, Body, Post, Query } from '@nestjs/common';
 import { MissionService } from './mission.service';
 import { Mission } from '@gamebox/shared';
 import { AdminGuard } from '../admin/admin.guard';
@@ -113,5 +113,20 @@ export class MissionController {
       slug,
     });
     return this.missionsService.getMission(slug);
+  }
+
+  @Post(':slug/players/:playerId/calculate-league-score')
+  @UseGuards(AdminGuard)
+  async calculateLeagueScoreForPlayer(
+    @Param('slug') slug: string,
+    @Param('playerId') playerId: string,
+    @Query('region') region?: string,
+  ) {
+    this.logger.debug('POST /missions/:slug/players/:playerId/calculate-league-score - Calculating League score for player', {
+      slug,
+      playerId,
+      region: region || 'europe',
+    });
+    return this.missionsService.calculateAndUpdateLeagueScore(slug, playerId, region || 'europe');
   }
 }

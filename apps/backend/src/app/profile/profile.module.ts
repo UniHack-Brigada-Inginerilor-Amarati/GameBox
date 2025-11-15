@@ -21,6 +21,6 @@ import { GeminiModule } from '../gemini/gemini.module';
   ],
   controllers: [ProfileController],
   providers: [ProfileService, Logger, AbilityService, LeagueScoreService],
-  exports: [ProfileService, AbilityService],
+  exports: [ProfileService, AbilityService, LeagueScoreService],
 })
 export class ProfileModule {}

@@ -83,6 +83,15 @@ export class MissionService {
       { playerScores },
     );
   }
+
+  calculateLeagueScoreForPlayer(
+    slug: string,
+    playerId: string,
+    region?: string,
+  ): Observable<MissionPlayer> {
+    const url = `${this.apiUrl}/missions/${slug}/players/${playerId}/calculate-league-score${region ? `?region=${region}` : ''}`;
+    return this.http.post<MissionPlayer>(url, {});
+  }
 }
 
 export interface MissionPlayer {
