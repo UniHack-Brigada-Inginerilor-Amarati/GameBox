@@ -54,6 +54,13 @@ export interface MissionPlayer {
   email: string;
   avatar_url: string | null;
   score: number | null;
+  mental_fortitude_composure_score?: number | null;
+  adaptability_decision_making_score?: number | null;
+  aim_mechanical_skill_score?: number | null;
+  game_sense_awareness_score?: number | null;
+  teamwork_communication_score?: number | null;
+  strategy_score?: number | null;
+  state?: 'playing' | 'completed';
   created_at: string;
   updated_at: string;
 }

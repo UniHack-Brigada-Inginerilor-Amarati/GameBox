@@ -9,9 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
-import { Mission } from '@gamebox/shared';
+import { Mission, AdminRoles } from '@gamebox/shared';
 import { MissionService, MissionPlayer } from '../../services/mission.service';
 import { MissionCardComponent } from '../mission-card/mission-card.component';
+import { ProfileService } from '../../../profile/services/profile.service';
 
 interface MissionWithPlayers {
   mission: Mission;
@@ -44,14 +45,39 @@ export class MissionDashboardComponent implements OnInit {
   loading = false;
   loadingPlayers = false;
   error: string | null = null;
-  displayedColumns: string[] = ['player', 'score', 'actions'];
+  displayedColumns: string[] = [
+    'player',
+    'mental_fortitude_composure_score',
+    'adaptability_decision_making_score',
+    'aim_mechanical_skill_score',
+    'game_sense_awareness_score',
+    'teamwork_communication_score',
+    'strategy_score',
+    'state',
+    'score',
+    'actions',
+  ];
+  isAdmin = false;
 
   private missionService: MissionService = inject(MissionService);
   private snackBar: MatSnackBar = inject(MatSnackBar);
   private router: Router = inject(Router);
+  private profileService: ProfileService = inject(ProfileService);
 
   ngOnInit(): void {
+    this.checkAdminStatus();
     this.loadMissions();
+  }
+
+  private checkAdminStatus(): void {
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.isAdmin = AdminRoles.includes(profile.role);
+      },
+      error: () => {
+        this.isAdmin = false;
+      },
+    });
   }
 
   loadMissions(): void {

@@ -65,9 +65,67 @@
             </td>
           </ng-container>
 
-          <!-- Score Column -->
+          <!-- Mental Fortitude / Composure Score Column -->
+          <ng-container matColumnDef="mental_fortitude_composure_score">
+            <th mat-header-cell *matHeaderCellDef>Mental Fortitude / Composure</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="ability-score">{{ player.mental_fortitude_composure_score ?? '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Adaptability / Decision Making Score Column -->
+          <ng-container matColumnDef="adaptability_decision_making_score">
+            <th mat-header-cell *matHeaderCellDef>Adaptability / Decision Making</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="ability-score">{{ player.adaptability_decision_making_score ?? '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Aim / Mechanical Skill Score Column -->
+          <ng-container matColumnDef="aim_mechanical_skill_score">
+            <th mat-header-cell *matHeaderCellDef>Aim / Mechanical Skill</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="ability-score">{{ player.aim_mechanical_skill_score ?? '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Game Sense / Awareness Score Column -->
+          <ng-container matColumnDef="game_sense_awareness_score">
+            <th mat-header-cell *matHeaderCellDef>Game Sense / Awareness</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="ability-score">{{ player.game_sense_awareness_score ?? '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Teamwork / Communication Score Column -->
+          <ng-container matColumnDef="teamwork_communication_score">
+            <th mat-header-cell *matHeaderCellDef>Teamwork / Communication</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="ability-score">{{ player.teamwork_communication_score ?? '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Strategy Score Column -->
+          <ng-container matColumnDef="strategy_score">
+            <th mat-header-cell *matHeaderCellDef>Strategy</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="ability-score">{{ player.strategy_score ?? '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- State Column -->
+          <ng-container matColumnDef="state">
+            <th mat-header-cell *matHeaderCellDef>State</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="state-badge" [class.playing]="player.state === 'playing'" [class.completed]="player.state === 'completed'">
+                {{ player.state === 'playing' ? 'Is playing' : (player.state === 'completed' ? 'Completed' : '-') }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Overall Score Column -->
           <ng-container matColumnDef="score">
-            <th mat-header-cell *matHeaderCellDef>Score</th>
+            <th mat-header-cell *matHeaderCellDef>Overall Score</th>
             <td mat-cell *matCellDef="let player">
               <mat-form-field appearance="outline" class="score-input">
                 <input

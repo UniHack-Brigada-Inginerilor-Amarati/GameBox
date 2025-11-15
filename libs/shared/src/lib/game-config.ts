@@ -3,11 +3,6 @@
  * Contains difficulty multipliers, ranking system, and rank modifiers for the Spy Card scoring system
  */
 
-export enum Difficulty {
-  EASY = 'easy',
-  MEDIUM = 'medium',
-  HARD = 'hard',
-}
 
 export enum AbilityRank {
   S = 1, // S-tier (highest)
@@ -26,24 +21,6 @@ export enum AbilityType {
   STRATEGY = 'strategy',
 }
 
-/**
- * Difficulty Multipliers
- * Applied to base scores based on game difficulty level
- */
-export const DIFFICULTY_MULTIPLIERS = {
-  [Difficulty.EASY]: {
-    winMultiplier: 1.0,
-    lossMultiplier: 0.0,
-  },
-  [Difficulty.MEDIUM]: {
-    winMultiplier: 1.5,
-    lossMultiplier: 1.0,
-  },
-  [Difficulty.HARD]: {
-    winMultiplier: 2.0,
-    lossMultiplier: 1.5,
-  },
-} as const;
 
 /**
  * Ability Rank Modifiers

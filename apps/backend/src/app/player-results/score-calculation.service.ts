@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  Difficulty,
   AbilityRank,
-  DIFFICULTY_MULTIPLIERS,
   ABILITY_RANK_MODIFIERS,
   SCORE_CONFIG,
   GameScore,
@@ -29,7 +27,6 @@ export interface PlayerRanks {
 
 export interface ScoreCalculationInput {
   baseScore: number;
-  difficulty: Difficulty;
   isWin: boolean;
   playerRanks: PlayerRanks;
   gameAbilityRatios: GameAbilityRatios;
@@ -41,33 +38,27 @@ export class ScoreCalculationService {
 
   calculateAbilityScore(
     baseScore: number,
-    difficulty: Difficulty,
     playerRank: AbilityRank,
     gameAbilityRatio: number,
     isWin: boolean,
   ): number {
-    const difficultyMultiplier = isWin
-      ? DIFFICULTY_MULTIPLIERS[difficulty].winMultiplier
-      : DIFFICULTY_MULTIPLIERS[difficulty].lossMultiplier;
-
     const rankModifier = ABILITY_RANK_MODIFIERS[playerRank];
 
     const finalScore = Math.round(
-      baseScore * difficultyMultiplier * rankModifier * gameAbilityRatio,
+      baseScore * rankModifier * gameAbilityRatio,
     );
 
     return Math.max(SCORE_CONFIG.MIN_SCORE, Math.min(SCORE_CONFIG.MAX_SCORE, finalScore));
   }
 
   calculateGameScore(input: ScoreCalculationInput): GameScore {
-    const { baseScore, difficulty, isWin, playerRanks, gameAbilityRatios } = input;
+    const { baseScore, isWin, playerRanks, gameAbilityRatios } = input;
 
     const gameScore: GameScore = {};
 
     if (gameAbilityRatios.mentalFortitudeComposure) {
       gameScore.mentalFortitudeComposure = this.calculateAbilityScore(
         baseScore,
-        difficulty,
         playerRanks.mentalFortitudeComposureRank,
         gameAbilityRatios.mentalFortitudeComposure,
         isWin,
@@ -77,7 +68,6 @@ export class ScoreCalculationService {
     if (gameAbilityRatios.adaptabilityDecisionMaking) {
       gameScore.adaptabilityDecisionMaking = this.calculateAbilityScore(
         baseScore,
-        difficulty,
         playerRanks.adaptabilityDecisionMakingRank,
         gameAbilityRatios.adaptabilityDecisionMaking,
         isWin,
@@ -87,7 +77,6 @@ export class ScoreCalculationService {
     if (gameAbilityRatios.aimMechanicalSkill) {
       gameScore.aimMechanicalSkill = this.calculateAbilityScore(
         baseScore,
-        difficulty,
         playerRanks.aimMechanicalSkillRank,
         gameAbilityRatios.aimMechanicalSkill,
         isWin,
@@ -97,7 +86,6 @@ export class ScoreCalculationService {
     if (gameAbilityRatios.gameSenseAwareness) {
       gameScore.gameSenseAwareness = this.calculateAbilityScore(
         baseScore,
-        difficulty,
         playerRanks.gameSenseAwarenessRank,
         gameAbilityRatios.gameSenseAwareness,
         isWin,
@@ -107,7 +95,6 @@ export class ScoreCalculationService {
     if (gameAbilityRatios.teamworkCommunication) {
       gameScore.teamworkCommunication = this.calculateAbilityScore(
         baseScore,
-        difficulty,
         playerRanks.teamworkCommunicationRank,
         gameAbilityRatios.teamworkCommunication,
         isWin,
@@ -117,7 +104,6 @@ export class ScoreCalculationService {
     if (gameAbilityRatios.strategy) {
       gameScore.strategy = this.calculateAbilityScore(
         baseScore,
-        difficulty,
         playerRanks.strategyRank,
         gameAbilityRatios.strategy,
         isWin,

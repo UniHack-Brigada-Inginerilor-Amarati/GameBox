@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ScoreCalculationService, PlayerRanks } from './score-calculation.service';
 import { GameService } from '../games/game.service';
-import { PlayerGameResult, GameScore, Difficulty } from '@gamebox/shared';
+import { PlayerGameResult, GameScore} from '@gamebox/shared';
 import { GeminiService } from '../gemini/gemini.service';
 
 export interface CreatePlayerResultDto {
@@ -36,7 +36,6 @@ export class PlayerResultService {
 
     const gameScore = this.scoreCalculationService.calculateGameScore({
       baseScore,
-      difficulty: gameResult.difficulty as Difficulty,
       isWin,
       playerRanks,
       gameAbilityRatios,

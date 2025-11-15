@@ -47,7 +47,19 @@ export class MissionPageComponent implements OnInit {
   isLoadingPlayers = false;
   missionSlug: string | null = null;
   
-  displayedColumns: string[] = ['player', 'score', 'joined', 'actions'];
+  displayedColumns: string[] = [
+    'player',
+    'mental_fortitude_composure_score',
+    'adaptability_decision_making_score',
+    'aim_mechanical_skill_score',
+    'game_sense_awareness_score',
+    'teamwork_communication_score',
+    'strategy_score',
+    'state',
+    'score',
+    'joined',
+    'actions',
+  ];
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
