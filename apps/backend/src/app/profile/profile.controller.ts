@@ -26,6 +26,8 @@ export class ProfileController {
   constructor(
     private readonly profileService: ProfileService,
     private readonly abilityService: AbilityService,
+    private readonly missionService: MissionService,
+    private readonly leagueScoreService: LeagueScoreService,
   ) {}
   private readonly logger = new Logger(ProfileController.name);
 
