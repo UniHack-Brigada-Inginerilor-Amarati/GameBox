@@ -37,44 +37,16 @@
               </div>
 
               <div class="form-row">
-                <div class="time-slot-selector">
-                  <label class="time-slot-label">Time Slot *</label>
-                  <div class="time-slot-grid">
-                    @for (slot of availableTimeSlots; track slot.time) {
-                      <div class="time-slot-card"
-                      [class.available]="slot.available"
-                      [class.booked]="!slot.available && slot.reservation_id"
-                      [class.past]="!slot.available && !slot.reservation_id"
-                      [class.selected]="reservationForm.get('slot_time')?.value === slot.time"
-                      (click)="selectTimeSlot(slot)"
-                      [class.disabled]="!slot.available">
-                      <div class="time-slot-content">
-                        <span class="time-slot-time">{{ slot.time }}</span>
-                        <span class="time-slot-status" [class]="slot.available ? 'status-available' : (slot.reservation_id ? 'status-booked' : 'status-past')">
-                          @if (slot.available) {
-                            <span class="status-text">Available</span>
-                          }
-                          @if (!slot.available && slot.reservation_id) {
-                            <span class="status-text">Booked</span>
-                          }
-                          @if (!slot.available && !slot.reservation_id) {
-                            <span class="status-text">Past</span>
-                          }
-                        </span>
-                      </div>
-
-                    </div>
-                  }
-                  </div>
-                  <div class="time-slot-hint">
-                    {{ getTimeSlotSummary() }}
-                  </div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Time Slot</mat-label>
+                  <input matInput formControlName="slot_time" placeholder="e.g., 10:00, 14:30" type="text">
+                  <mat-hint>Enter time in 24-hour format (e.g., 10:00, 14:30, 18:00)</mat-hint>
                   @if (reservationForm.get('slot_time')?.hasError('required')) {
-                    <mat-error class="time-slot-error">
+                    <mat-error>
                       Time slot is required
                     </mat-error>
                   }
-                </div>
+                </mat-form-field>
               </div>
             </div>
 

@@ -6,15 +6,15 @@ import { SupabaseService } from '../supabase/supabase.service';
 export class ReservationService {
   constructor(private readonly supabaseService: SupabaseService) {}
   private readonly logger = new Logger(ReservationService.name);
-  private supabase = this.supabaseService.supabase;
 
-  async createReservation(createReservationDto: any, username: string): Promise<any> {
+  async createReservation(createReservationDto: any, userId: string): Promise<any> {
     try {
-      const { data: reservation, error: reservationError } = await this.supabase
+      // Use supabaseAdmin to bypass RLS policies
+      const { data: reservation, error: reservationError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .insert({
-          owner_id: username,
+          owner_id: userId, // userId is a UUID from auth.users
           date: createReservationDto.date,
           slot_time: createReservationDto.slot_time,
           game_mode: createReservationDto.game_mode,
@@ -34,7 +34,7 @@ export class ReservationService {
         reservation_uuid: reservation.id,
         participant_email: createReservationDto.owner_email,
         participant_name: createReservationDto.owner_name,
-        added_by_user_id: username,
+        added_by_user_id: userId,
       });
 
       try {
@@ -42,7 +42,7 @@ export class ReservationService {
           reservation.id,
           createReservationDto.owner_email,
           createReservationDto.owner_name,
-          username,
+          userId,
         );
 
         this.logger.debug('Owner added as participant successfully');
@@ -57,19 +57,20 @@ export class ReservationService {
     }
   }
 
-  async getReservations(username: string | null): Promise<Reservation[]> {
+  async getReservations(userId: string | null): Promise<Reservation[]> {
     try {
-      if (!username) {
+      if (!userId) {
         return [];
       }
 
-      this.logger.debug(`Fetching all reservations for user: ${username}`);
+      this.logger.debug(`Fetching all reservations for user: ${userId}`);
 
-      const { data: ownedReservations, error: ownedError } = await this.supabase
+      // Use supabaseAdmin to bypass RLS policies
+      const { data: ownedReservations, error: ownedError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('*')
-        .eq('owner_id', username)
+        .eq('owner_id', userId)
         .order('date', { ascending: false })
         .order('slot_time', { ascending: false });
 
@@ -78,7 +79,7 @@ export class ReservationService {
         throw new Error(`Failed to fetch owned reservations: ${ownedError.message}`);
       }
 
-      const { data: participantReservations, error: participantError } = await this.supabase
+      const { data: participantReservations, error: participantError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservation_participants')
         .select(
@@ -87,8 +88,8 @@ export class ReservationService {
           reservations (*)
         `,
         )
-        .eq('email', (await this.getUserEmail(username)) || '')
-        .neq('reservations.owner_id', username);
+        .eq('email', (await this.getUserEmail(userId)) || '')
+        .neq('reservations.owner_id', userId);
 
       if (participantError) {
         this.logger.error('Supabase error fetching participant reservations:', participantError);
@@ -123,7 +124,7 @@ export class ReservationService {
       const reservationsWithData = await Promise.all(
         allReservations.map(async (reservation: any) => {
           try {
-            const { data: participants, error: participantsError } = await this.supabase
+            const { data: participants, error: participantsError } = await this.supabaseService.supabaseAdmin
               .schema('gamebox')
               .from('reservation_participants')
               .select('*')
@@ -140,7 +141,7 @@ export class ReservationService {
             const reservationWithData = {
               ...reservation,
               participants: participants || [],
-              is_owner: reservation.owner_id === username,
+              is_owner: reservation.owner_id === userId,
             };
 
             if (participants && participants.length > 0) {
@@ -160,7 +161,7 @@ export class ReservationService {
               participants_count: reservationWithData.participants.length,
               has_token: !!reservationWithData.share_token,
               status: reservationWithData.status,
-              is_owner: reservation.owner_id === username,
+              is_owner: reservation.owner_id === userId,
             });
 
             return reservationWithData;
@@ -185,7 +186,8 @@ export class ReservationService {
 
   async getReservation(id: string): Promise<any> {
     try {
-      const { data: reservation, error: reservationError } = await this.supabase
+      // Use supabaseAdmin to bypass RLS policies
+      const { data: reservation, error: reservationError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('*')
@@ -197,7 +199,7 @@ export class ReservationService {
         throw new Error('Reservation not found');
       }
 
-      const { data: participants, error: participantsError } = await this.supabase
+      const { data: participants, error: participantsError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservation_participants')
         .select('*')
@@ -221,7 +223,8 @@ export class ReservationService {
   async getReservationByID(reservationId: string): Promise<Reservation> {
     try {
       // Directly get reservation by ID (no more tokens) - public access
-      const { data: reservation, error } = await this.supabase
+      // Use supabaseAdmin to bypass RLS policies for public access
+      const { data: reservation, error } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('*')
@@ -240,7 +243,7 @@ export class ReservationService {
         throw new NotFoundException('Reservation not found');
       }
 
-      const { data: participants, error: participantsError } = await this.supabase
+      const { data: participants, error: participantsError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservation_participants')
         .select('*')
@@ -271,7 +274,8 @@ export class ReservationService {
     try {
       await this.getReservationByID(reservationId);
 
-      const { data: reservation, error } = await this.supabase
+      // Use supabaseAdmin to bypass RLS policies
+      const { data: reservation, error } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .update(request)
@@ -303,7 +307,7 @@ export class ReservationService {
 
   async updateReservationStatusIfAllConfirmed(reservationId: string): Promise<void> {
     try {
-      const { data: reservation, error: reservationError } = await this.supabase
+      const { data: reservation, error: reservationError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('status')
@@ -319,7 +323,7 @@ export class ReservationService {
         return;
       }
 
-      const { data: participants, error: participantsError } = await this.supabase
+      const { data: participants, error: participantsError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservation_participants')
         .select('confirmed')
@@ -338,7 +342,7 @@ export class ReservationService {
             `All participants confirmed for reservation ${reservationId}, updating status to confirmed`,
           );
 
-          const { error: statusUpdateError } = await this.supabase
+          const { error: statusUpdateError } = await this.supabaseService.supabaseAdmin
             .schema('gamebox')
             .from('reservations')
             .update({ status: 'confirmed' })
@@ -479,7 +483,7 @@ export class ReservationService {
 
   async getAvailableTimeSlots(date: string): Promise<any[]> {
     try {
-      const { data: reservations, error } = await this.supabase
+      const { data: reservations, error } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('id, slot_time, status, owner_id')
@@ -560,7 +564,7 @@ export class ReservationService {
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + 30);
 
-      const { data: reservations, error } = await this.supabase
+      const { data: reservations, error } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('date, slot_time, status')
@@ -611,7 +615,7 @@ export class ReservationService {
         }`,
       );
 
-      const { data: reservation, error } = await this.supabase
+      const { data: reservation, error } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('id, status, owner_id, slot_time')
@@ -645,7 +649,7 @@ export class ReservationService {
     userId?: string,
   ): Promise<any> {
     try {
-      const { data: reservation, error: reservationError } = await this.supabase
+      const { data: reservation, error: reservationError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .select('is_public, owner_id')
@@ -675,7 +679,7 @@ export class ReservationService {
   }
 
   private async getUserEmail(userId: string): Promise<string | null> {
-    const { data: user, error } = await this.supabase
+    const { data: user, error } = await this.supabaseService.supabaseAdmin
       .schema('gamebox')
       .from('user_profiles')
       .select('email')
@@ -704,7 +708,8 @@ export class ReservationService {
         max_participants: createReservationDto.max_participants || 4,
       });
 
-      const { data: reservation, error: reservationError } = await this.supabase
+      // Use supabaseAdmin to bypass RLS policies
+      const { data: reservation, error: reservationError } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservations')
         .insert({
@@ -739,7 +744,7 @@ export class ReservationService {
       });
 
       try {
-        const { error: participantError } = await this.supabase
+        const { error: participantError } = await this.supabaseService.supabaseAdmin
           .schema('gamebox')
           .from('reservation_participants')
           .insert({
@@ -773,47 +778,7 @@ export class ReservationService {
         throw participantError;
       }
 
-      this.logger.debug('🔓 Generating share token for public reservation:', reservation.id);
-      try {
-        const gameDate = new Date(reservation.date);
-        const [hours, minutes] = reservation.slot_time.split(':').map(Number);
-        gameDate.setHours(hours, minutes, 0, 0);
-        const expirationTime = new Date(gameDate.getTime() - 60000);
-
-        this.logger.debug('🔓 Game date:', gameDate);
-        this.logger.debug('🔓 Token expiration:', expirationTime);
-
-        const { data: tokenData, error: tokenError } = await this.supabase
-          .schema('gamebox')
-          .from('reservations')
-          .insert({
-            id: reservation.id,
-            share_token: crypto.randomUUID(),
-            share_token_expires_at: expirationTime.toISOString(),
-          })
-          .select('token')
-          .single();
-
-        if (tokenError) {
-          this.logger.error('🔓 Error creating share token directly:', tokenError);
-          this.logger.error('🔓 Token error details:', {
-            code: tokenError.code,
-            message: tokenError.message,
-            details: tokenError.details,
-            hint: tokenError.hint,
-          });
-
-          this.logger.debug('🔓 Continuing without share token');
-        } else {
-          this.logger.debug('🔓 Share token created successfully:', tokenData.token);
-
-          reservation.share_token = tokenData.token;
-        }
-      } catch (tokenError) {
-        this.logger.error('🔓 Exception while creating share token:', tokenError);
-
-        this.logger.debug('🔓 Continuing without share token');
-      }
+      // Note: Share token generation removed - using direct reservation IDs for share links
 
       return reservation;
     } catch (error) {
@@ -828,7 +793,7 @@ export class ReservationService {
     confirmed: boolean,
   ): Promise<any> {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabaseService.supabaseAdmin
         .schema('gamebox')
         .from('reservation_participants')
         .update({ confirmed })
@@ -843,7 +808,7 @@ export class ReservationService {
       }
 
       if (confirmed) {
-        const { data: participants } = await this.supabase
+        const { data: participants } = await this.supabaseService.supabaseAdmin
           .schema('gamebox')
           .from('reservation_participants')
           .select('confirmed')

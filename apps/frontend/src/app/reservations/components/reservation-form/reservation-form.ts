@@ -19,7 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReservationService } from '../../services/reservation.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { MatStepper } from '@angular/material/stepper';
-import { GAME_MODES, TIME_SLOTS } from '@gamebox/shared';
+import { GAME_MODES } from '@gamebox/shared';
 
 @Component({
   selector: 'app-reservation-form',
@@ -54,13 +54,10 @@ export class ReservationForm implements OnInit, OnDestroy {
 
   reservationForm!: FormGroup;
   gameModes = GAME_MODES;
-  timeSlots = TIME_SLOTS;
-  availableTimeSlots: any[] = [];
   selectedGameMode?: any;
   isLoading = false;
   currentUser: any = null;
   isAuthenticated = false;
-  private availabilityRefreshInterval: any;
 
   async ngOnInit(): Promise<void> {
     this.initForm();
@@ -69,18 +66,11 @@ export class ReservationForm implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.availabilityRefreshInterval) {
-      clearInterval(this.availabilityRefreshInterval);
-    }
+    // No cleanup needed - removed availability refresh interval
   }
 
   private setupAvailabilityRefresh(): void {
-    this.availabilityRefreshInterval = setInterval(() => {
-      const selectedDate = this.reservationForm.get('date')?.value;
-      if (selectedDate) {
-        this.loadAvailableTimeSlots(selectedDate);
-      }
-    }, 30000);
+    // Removed - no longer needed since time slots are manually entered
   }
 
   private async checkAuthentication(): Promise<void> {
@@ -192,13 +182,7 @@ export class ReservationForm implements OnInit, OnDestroy {
     this.addParticipant();
 
 
-    this.reservationForm.get('date')?.valueChanges.subscribe((date) => {
-      if (date) {
-        this.loadAvailableTimeSlots(date);
-
-        this.reservationForm.patchValue({ slot_time: '' });
-      }
-    });
+    // Removed automatic time slot loading - user can now enter time manually
 
 
     this.reservationForm
@@ -342,77 +326,7 @@ export class ReservationForm implements OnInit, OnDestroy {
   }
 
 
-  private loadAvailableTimeSlots(date: Date): void {
-    const dateString = this.formatDateForBackend(date);
-    this.isLoading = true;
-
-    this.reservationService.getAvailableTimeSlots(dateString).subscribe({
-      next: (slots) => {
-        this.availableTimeSlots = slots;
-        this.isLoading = false;
-
-
-        const todayString = this.getCurrentDate();
-        const selectedDateString = dateString;
-        const isToday = todayString === selectedDateString;
-
-
-        if (slots.length === 0 && !isToday) {
-          this.snackBar.open('No time slots available for this date', 'Close', {
-            duration: 3000,
-          });
-        }
-      },
-      error: (error) => {
-        console.error('Error loading time slots:', error);
-        this.snackBar.open('Error loading available time slots', 'Close', {
-          duration: 3000,
-        });
-        this.isLoading = false;
-      },
-    });
-  }
-
-
-  isTimeSlotAvailable(time: string): boolean {
-    const slot = this.availableTimeSlots.find((s) => s.time === time);
-    return slot?.available ?? false;
-  }
-
-
-  getAvailableTimeSlots(): any[] {
-    return this.availableTimeSlots.filter(slot => slot.status === 'available');
-  }
-
-
-  getAvailableSlotsCount(): number {
-    return this.availableTimeSlots.filter(slot => slot.status === 'available').length;
-  }
-
-
-  getBookedSlotsCount(): number {
-    return this.availableTimeSlots.filter(slot => slot.status === 'booked').length;
-  }
-
-
-  getPastSlotsCount(): number {
-    return this.availableTimeSlots.filter(slot => slot.status === 'past').length;
-  }
-
-
-  getTimeSlotSummary(): string {
-    const available = this.getAvailableSlotsCount();
-    const booked = this.getBookedSlotsCount();
-    const past = this.getPastSlotsCount();
-
-    return `${available} available, ${booked} booked, ${past} past`;
-  }
-
-
-  getTimeSlotStatus(time: string): string {
-    const slot = this.availableTimeSlots.find((s) => s.time === time);
-    return slot?.status || 'unknown';
-  }
+  // Removed loadAvailableTimeSlots and related methods - time slots are now manually entered
 
 
   getCurrentTime(): string {
@@ -440,49 +354,7 @@ export class ReservationForm implements OnInit, OnDestroy {
   }
 
 
-  isTimeSlotPast(time: string): boolean {
-    const selectedDate = this.reservationForm.get('date')?.value;
-
-    if (!selectedDate) return false;
-
-
-    const todayString = this.getCurrentDate();
-    const selectedDateString = this.formatDateForBackend(selectedDate);
-
-    if (todayString !== selectedDateString) {
-      return false;
-    }
-
-
-    const currentTime = this.getCurrentTime();
-    return time < currentTime;
-  }
-
-
-  selectTimeSlot(slot: any): void {
-    if (slot.available) {
-      this.reservationForm.patchValue({ slot_time: slot.time });
-    } else if (slot.reservation_id) {
-
-      this.snackBar.open(`Time slot ${slot.time} is already booked`, 'Close', {
-        duration: 3000,
-      });
-    } else {
-
-      this.snackBar.open(`Cannot select past time slot ${slot.time}`, 'Close', {
-        duration: 3000,
-      });
-    }
-  }
-
-
-  isSelectedTimeSlotAvailable(): boolean {
-    const selectedTime = this.reservationForm.get('slot_time')?.value;
-    if (!selectedTime) return true;
-
-    const slot = this.availableTimeSlots.find((s) => s.time === selectedTime);
-    return slot?.available === true;
-  }
+  // Removed time slot selection and validation methods - time slots are now manually entered
 
 
   onSubmit(): void {
@@ -494,16 +366,11 @@ export class ReservationForm implements OnInit, OnDestroy {
       const selectedDate = this.formatDateForBackend(formValue.date);
       const selectedTime = formValue.slot_time;
 
-
-
-      const selectedSlot = this.availableTimeSlots.find(slot => slot.time === selectedTime);
-      if (!selectedSlot || !selectedSlot.available) {
-        this.snackBar.open('Selected time slot is no longer available. Please choose another time.', 'Close', {
+      // Validate time format (HH:MM)
+      if (selectedTime && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(selectedTime)) {
+        this.snackBar.open('Please enter time in 24-hour format (e.g., 10:00, 14:30)', 'Close', {
           duration: 5000,
         });
-
-        this.loadAvailableTimeSlots(formValue.date);
-        this.reservationForm.patchValue({ slot_time: '' });
         return;
       }
 
@@ -525,7 +392,7 @@ export class ReservationForm implements OnInit, OnDestroy {
           });
 
 
-          this.loadAvailableTimeSlots(formValue.date);
+          // Removed - no longer loading time slots
 
 
           this.ensureShareLinkAndNavigate(reservation);
@@ -540,8 +407,7 @@ export class ReservationForm implements OnInit, OnDestroy {
               duration: 5000,
             });
 
-            this.loadAvailableTimeSlots(formValue.date);
-            this.reservationForm.patchValue({ slot_time: '' });
+            // Removed - no longer loading time slots
           } else {
             this.snackBar.open(
               'Error creating reservation. Please try again.',
