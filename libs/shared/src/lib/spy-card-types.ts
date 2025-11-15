@@ -4,41 +4,7 @@
  */
 
 import { AbilityRank, AbilityType } from './game-config';
-
-/**
- * Game result data structure
- * Stores the raw result data from a completed game
- */
-export interface GameResult {
-  game_result_id: string; // primary key
-  game_slug: string;
-  session_id: string;
-  game_result: any; // JSONB field for game-specific results
-}
-
-/**
- * Individual player's result for a specific game
- * Links a player to a game result with their computed score
- */
-export interface PlayerGameResult {
-  player_game_result_id: string; // primary key
-  game_result_id: string; // foreign key to game_results table
-  player_name: string;
-  game_score: GameScore;
-}
-
-/**
- * Computed scores for each ability type
- * Score is computed from the game_result after the game is completed
- */
-export interface GameScore {
-  mentalFortitudeComposure?: number;
-  adaptabilityDecisionMaking?: number;
-  aimMechanicalSkill?: number;
-  gameSenseAwareness?: number;
-  teamworkCommunication?: number;
-  strategy?: number;
-}
+import { GameScore } from './session';
 
 /**
  * User's Spy Card profile

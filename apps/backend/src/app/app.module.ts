@@ -13,6 +13,7 @@ import { PlayerResultModule } from './player-results/player-result.module';
 import { FriendsModule } from './friends/friends.module';
 import { TournamentModule } from './tournaments/tournament.module';
 import { RiotModule } from './riot/riot.module';
+import { GeminiModule } from './gemini/gemini.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { RiotModule } from './riot/riot.module';
     FriendsModule,
     TournamentModule,
     RiotModule,
+    GeminiModule,
   ],
   controllers: [],
   providers: [],

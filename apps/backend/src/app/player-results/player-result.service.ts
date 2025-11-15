@@ -3,6 +3,7 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { ScoreCalculationService, PlayerRanks } from './score-calculation.service';
 import { GameService } from '../games/game.service';
 import { PlayerGameResult, GameScore, Difficulty } from '@gamebox/shared';
+import { GeminiService } from '../gemini/gemini.service';
 
 export interface CreatePlayerResultDto {
   gameResultId: string;
@@ -20,6 +21,7 @@ export class PlayerResultService {
     private readonly supabaseService: SupabaseService,
     private readonly scoreCalculationService: ScoreCalculationService,
     private readonly gameService: GameService,
+    private readonly geminiService: GeminiService,
   ) {}
 
   async createPlayerResult(dto: CreatePlayerResultDto): Promise<PlayerGameResult> {
@@ -240,6 +242,27 @@ export class PlayerResultService {
     }
 
     this.logger.log(`Created ${results.length} player results for game ${gameResultId}`);
+
     return results;
+  }
+
+  async analyzeWithAI(playerGameResultId: string): Promise<GameScore> {
+    this.logger.log(`Analyzing player result ${playerGameResultId} with AI`);
+
+    // Get the player result to find the game_result_id
+    const playerResult = await this.getPlayerResult(playerGameResultId);
+    
+    // Get the game result with the game_result JSONB field
+    const gameResult = await this.getGameResult(playerResult.game_result_id);
+
+    if (!gameResult.game_result) {
+      throw new NotFoundException(`Game result data not found for player result ${playerGameResultId}`);
+    }
+
+    // Analyze the game_result JSONB with Gemini AI
+    const aiScore = await this.geminiService.analyzeGameResult(gameResult.game_result);
+
+    this.logger.log(`AI analysis completed for player result ${playerGameResultId}`);
+    return aiScore;
   }
 }
