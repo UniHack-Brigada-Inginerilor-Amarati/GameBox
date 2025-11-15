@@ -2,6 +2,23 @@ import { ConsoleLogger, Logger, LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { json, urlencoded } from 'express';
+import * as dotenv from 'dotenv';
+import { resolve } from 'path';
+import { existsSync } from 'fs';
+
+// Load environment variables from .env file
+// Try backend directory first, then project root
+const backendEnvPath = resolve(__dirname, '../.env');
+const rootEnvPath = resolve(__dirname, '../../.env');
+
+if (existsSync(backendEnvPath)) {
+  dotenv.config({ path: backendEnvPath });
+} else if (existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+} else {
+  // Fallback to default dotenv behavior (looks for .env in current working directory)
+  dotenv.config();
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

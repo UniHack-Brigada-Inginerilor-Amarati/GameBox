@@ -1,0 +1,31 @@
+### Test Riot API Integration
+### This file can be used with REST Client extension in VS Code or similar tools
+
+@baseUrl = http://localhost:3111/api
+@riotUsername = YourGameName#TagLine
+@authToken = YOUR_SUPABASE_ACCESS_TOKEN
+
+### Test League of Legends Last Match (requires auth)
+GET {{baseUrl}}/riot/league/last-match?riotUsername={{riotUsername}}
+Authorization: Bearer {{authToken}}
+
+### Test Valorant Last Match (requires auth)
+GET {{baseUrl}}/riot/valorant/last-match?riotUsername={{riotUsername}}
+Authorization: Bearer {{authToken}}
+
+### Test League of Legends with path parameter
+GET {{baseUrl}}/riot/league/last-match/{{riotUsername}}
+Authorization: Bearer {{authToken}}
+
+### Test Valorant with path parameter
+GET {{baseUrl}}/riot/valorant/last-match/{{riotUsername}}
+Authorization: Bearer {{authToken}}
+
+### Test with region parameter (League)
+GET {{baseUrl}}/riot/league/last-match?riotUsername={{riotUsername}}&region=americas
+Authorization: Bearer {{authToken}}
+
+### Test with region parameter (Valorant)
+GET {{baseUrl}}/riot/valorant/last-match?riotUsername={{riotUsername}}&region=na
+Authorization: Bearer {{authToken}}
+
