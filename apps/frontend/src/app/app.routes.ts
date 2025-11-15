@@ -22,6 +22,7 @@ import { MyReservations } from './reservations/components/my-reservations/my-res
 import { ReservationShare } from './reservations/components/reservation-share/reservation-share';
 import { LandingPageComponent } from './landing';
 import { ScratchCardComponent } from './profile';
+import { FriendsPageComponent } from './friends';
 
 export const appRoutes: Route[] = [
   {
@@ -45,6 +46,12 @@ export const appRoutes: Route[] = [
   {
     path: 'profile/me',
     component: ProfilePageComponent,
+    canActivate: [AuthGuard],
+  },
+
+  {
+    path: 'friends',
+    component: FriendsPageComponent,
     canActivate: [AuthGuard],
   },
 

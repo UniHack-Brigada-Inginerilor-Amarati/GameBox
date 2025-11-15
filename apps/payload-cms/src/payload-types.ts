@@ -204,6 +204,30 @@ export interface Game {
     };
     [k: string]: unknown;
   };
+  /**
+   * Score from 0 to 100 for Mental Fortitude / Composure
+   */
+  mentalFortitudeComposureScore?: number | null;
+  /**
+   * Score from 0 to 100 for Adaptability / Decision Making
+   */
+  adaptabilityDecisionMakingScore?: number | null;
+  /**
+   * Score from 0 to 100 for Aim / Mechanical Skill
+   */
+  aimMechanicalSkillScore?: number | null;
+  /**
+   * Score from 0 to 100 for Game Sense / Awareness
+   */
+  gameSenseAwarenessScore?: number | null;
+  /**
+   * Score from 0 to 100 for Teamwork / Communication
+   */
+  teamworkCommunicationScore?: number | null;
+  /**
+   * Score from 0 to 100 for Strategy
+   */
+  strategyScore?: number | null;
   abilities?: (number | Ability)[] | null;
   repoUrl: string;
   updatedAt: string;
@@ -460,6 +484,12 @@ export interface GamesSelect<T extends boolean = true> {
         id?: T;
       };
   guide?: T;
+  mentalFortitudeComposureScore?: T;
+  adaptabilityDecisionMakingScore?: T;
+  aimMechanicalSkillScore?: T;
+  gameSenseAwarenessScore?: T;
+  teamworkCommunicationScore?: T;
+  strategyScore?: T;
   abilities?: T;
   repoUrl?: T;
   updatedAt?: T;

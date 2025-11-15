@@ -1,0 +1,98 @@
+.friends-page {
+  min-height: 100vh;
+  background: rgba(10, 10, 10, 0.91);
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  // Text selection styling for better readability
+  ::selection {
+    background: #87a4fa;
+    color: #ffffff;
+  }
+
+  ::-moz-selection {
+    background: #87a4fa;
+    color: #ffffff;
+  }
+}
+
+.friends-card {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  padding: 0;
+
+  mat-card-header {
+    margin-bottom: 0;
+    border-bottom: 1px solid #444;
+    padding: 1.5rem 2rem;
+    background: #1f1f1f;
+    border-radius: 12px 12px 0 0;
+    
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+
+      mat-icon {
+        color: #87a4fa;
+        font-size: 1.75rem;
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  }
+
+  mat-card-content {
+    color: #ffffff;
+    padding: 2rem !important;
+  }
+}
+
+// Material tabs dark theme
+::ng-deep .mat-mdc-tab-group {
+  --mat-tab-inactive-label-text-color: #ffffff;
+  --mat-sys-on-surface: #ffffff;
+
+  .mat-mdc-tab-header {
+    background: #232323;
+    border-radius: 8px;
+    border: 1px solid #444;
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+  }
+
+  .mat-mdc-tab-label {
+    color: #ffffff !important;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0 1.5rem;
+    min-width: 120px;
+    
+    &.mdc-tab--active {
+      color: #87a4fa !important;
+      font-weight: 600;
+    }
+
+    &:hover {
+      color: #ffffff !important;
+    }
+  }
+
+  .mat-mdc-tab-header-pagination-chevron {
+    color: #87a4fa;
+  }
+
+  .mdc-tab-indicator__content--underline {
+    border-color: #87a4fa;
+    border-width: 3px;
+  }
+}
+

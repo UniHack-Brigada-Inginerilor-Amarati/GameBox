@@ -1,0 +1,65 @@
+<div class="user-search">
+  <mat-form-field appearance="fill" class="search-field" [style.--mat-form-field-filled-input-text-color]="'#1a1a1a'">
+    <mat-label>Search users by username or email</mat-label>
+    <input
+      matInput
+      type="text"
+      [value]="searchQuery()"
+      (input)="onSearchInput($event)"
+      placeholder="Type at least 2 characters..."
+    />
+    <mat-icon matPrefix>search</mat-icon>
+  </mat-form-field>
+
+  @if (isSearching()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+
+  @if (hasSearched() && !isSearching() && searchResults().length === 0) {
+    <div class="no-results">
+      <mat-icon>person_off</mat-icon>
+      <p>No users found</p>
+    </div>
+  }
+
+  @if (searchResults().length > 0) {
+    <div class="results">
+      @for (user of searchResults(); track user.id) {
+        <mat-card class="user-card">
+          <mat-card-content>
+            <div class="user-info">
+              <img [src]="user.avatar_url || '/assets/default-avatar.png'" [alt]="user.username" class="avatar" />
+              <div class="user-details">
+                <h3>{{ user.username }}</h3>
+                <p class="email">{{ user.email }}</p>
+              </div>
+            </div>
+            <div class="user-actions">
+              @if (user.is_friend) {
+                <mat-chip>Friends</mat-chip>
+              } @else if (user.has_pending_request) {
+                @if (user.request_sent_by_me) {
+                  <mat-chip color="accent">Request Sent</mat-chip>
+                } @else {
+                  <mat-chip color="warn">Pending</mat-chip>
+                }
+              } @else {
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="sendFriendRequest(user.id)"
+                >
+                  <mat-icon>person_add</mat-icon>
+                  Add Friend
+                </button>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>
+
