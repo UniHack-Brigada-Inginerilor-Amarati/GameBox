@@ -92,6 +92,9 @@ export class CurrentGameComponent {
           this.missionCompletedUpdate.emit(true);
           this.loadingUpdate.emit(false);
 
+          // Reload game results to get the final scores
+          this.gameResultsUpdated.emit([]);
+
           this.snackBar.open('Mission completed successfully!', 'Close', {
             duration: 5000,
           });

@@ -1,0 +1,98 @@
+<div class="tournament-card">
+  <!-- Tournament Game Image -->
+  @if (tournament.game) {
+  <div class="tournament-media">
+    <img
+      [src]="gameImageUrl"
+      [alt]="tournament.game.name || 'Tournament game'"
+      class="media-image"
+      (error)="onImageError($event)"
+    />
+    <div class="game-badge">
+      <mat-icon>sports_esports</mat-icon>
+      <span>{{ tournament.game.name }}</span>
+    </div>
+  </div>
+  }
+
+    <!-- Tournament Content -->
+    <div class="tournament-content">
+      <div class="tournament-header">
+        <h2 class="tournament-name">{{ tournament.name }}</h2>
+        @if (isRegistered) {
+        <span class="registered-badge">
+          <mat-icon>check_circle</mat-icon>
+          <span>Registered</span>
+        </span>
+        }
+      </div>
+
+    <!-- Tournament Date & Time -->
+    <div class="tournament-datetime">
+      <div class="datetime-item">
+        <mat-icon>calendar_today</mat-icon>
+        <span>{{ formattedDate }}</span>
+      </div>
+      <div class="datetime-item">
+        <mat-icon>schedule</mat-icon>
+        <span>{{ formattedTime }}</span>
+      </div>
+    </div>
+
+    <!-- Tournament Description -->
+    @if (showDescription && tournament.description) {
+    <p class="tournament-description">{{ tournament.description }}</p>
+    }
+
+    <!-- Player Count & Availability -->
+    <div class="tournament-availability">
+      <div class="availability-info">
+        <mat-icon [class.full]="isFull">people</mat-icon>
+        <span class="player-count">
+          <span class="current">{{ currentPlayers }}</span>
+          <span class="separator">/</span>
+          <span class="max">{{ tournament.maxPlayers }}</span>
+          <span class="label">players</span>
+        </span>
+      </div>
+      <div class="availability-status" [class.full]="isFull" [class.available]="canJoin">
+        @if (isFull) {
+        <span class="status-text">Full</span>
+        } @else {
+        <span class="status-text">{{ availableSpots }} spots available</span>
+        }
+      </div>
+    </div>
+
+    <!-- Join/Leave Button -->
+    @if (showJoinButton) {
+      @if (isRegistered) {
+        <button
+          mat-raised-button
+          color="warn"
+          (click)="onLeaveTournament($event)"
+          class="join-button leave-button"
+        >
+          <mat-icon>person_remove</mat-icon>
+          <span>Leave Tournament</span>
+        </button>
+      } @else {
+        <button
+          mat-raised-button
+          [color]="canJoin ? 'primary' : 'accent'"
+          [disabled]="!canJoin"
+          (click)="onJoinTournament($event)"
+          class="join-button"
+        >
+          <mat-icon>person_add</mat-icon>
+          @if (isFull) {
+          <span>Tournament Full</span>
+          } @else {
+          <span>Join Tournament</span>
+          }
+        </button>
+      }
+    }
+  </div>
+</div>
+

@@ -182,4 +182,12 @@ export class MissionGameplayPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  onMissionCompletedUpdate(completed: boolean): void {
+    this.missionCompleted = completed;
+    // Reload game results when mission is completed to get final scores
+    if (completed && this.gameplayData) {
+      this.loadGameResults();
+    }
+  }
+
 }

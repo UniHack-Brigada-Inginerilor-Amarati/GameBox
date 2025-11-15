@@ -64,19 +64,30 @@ export const Games: CollectionConfig = {
     afterChange: [
       async ({ doc, operation, req }) => {
         if (operation === 'create') {
-          const eventIds = doc.events as string[];
-          if (eventIds?.length) {
-            const fullEvents = await req.payload.find({
-              collection: 'events',
-              where: {
-                id: {
-                  in: eventIds,
+          // Handle abilities array with scores
+          if (doc.abilities && Array.isArray(doc.abilities)) {
+            const abilityIds = doc.abilities
+              .map((item: any) => (typeof item === 'object' ? item.ability : item))
+              .filter((id: any) => id);
+            if (abilityIds.length > 0) {
+              const fullAbilities = await req.payload.find({
+                collection: 'abilities',
+                where: {
+                  id: {
+                    in: abilityIds,
+                  },
                 },
-              },
-              depth: 2,
-              pagination: false,
-            });
-            doc.events = fullEvents.docs;
+                depth: 2,
+                pagination: false,
+              });
+              // Map abilities back with their scores
+              doc.abilities = doc.abilities.map((item: any) => {
+                const abilityId = typeof item === 'object' ? item.ability : item;
+                const score = typeof item === 'object' ? item.score : undefined;
+                const ability = fullAbilities.docs.find((a: any) => a.id === abilityId);
+                return ability ? { ...ability, score: score || 0 } : null;
+              }).filter((item: any) => item !== null);
+            }
           }
           if (process.env.GITHUB_SKIP_REPO !== 'true') {
             await editRepoAndPush(doc);
@@ -205,9 +216,9 @@ export const Games: CollectionConfig = {
       },
     },
     {
-      name: 'events',
+      name: 'abilities',
       type: 'relationship',
-      relationTo: 'events',
+      relationTo: 'abilities',
       hasMany: true,
     },
     {

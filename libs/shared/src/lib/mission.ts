@@ -9,11 +9,11 @@ export interface Mission {
       alt?: string;
     };
     games: {
-      mentalFortitudeComposure: Game;
-      adaptabilityDecisionMaking: Game;
-      aimMechanicalSkill: Game;
-      gameSenseAwareness: Game;
-      teamworkCommunication: Game;
-      strategy: Game;
+      mentalFortitudeComposure?: Game;
+      adaptabilityDecisionMaking?: Game;
+      aimMechanicalSkill?: Game;
+      gameSenseAwareness?: Game;
+      teamworkCommunication?: Game;
+      strategy?: Game;
     };
 }

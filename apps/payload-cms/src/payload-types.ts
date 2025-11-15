@@ -71,7 +71,7 @@ export interface Config {
     media: Media;
     games: Game;
     abilities: Ability;
-    events: Event;
+    tournaments: Tournament;
     missions: Mission;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -83,7 +83,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
     abilities: AbilitiesSelect<false> | AbilitiesSelect<true>;
-    events: EventsSelect<false> | EventsSelect<true>;
+    tournaments: TournamentsSelect<false> | TournamentsSelect<true>;
     missions: MissionsSelect<false> | MissionsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -228,21 +228,8 @@ export interface Game {
    * Score from 0 to 100 for Strategy
    */
   strategyScore?: number | null;
-  events?: (number | Event)[] | null;
+  abilities?: (number | Ability)[] | null;
   repoUrl: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events".
- */
-export interface Event {
-  id: number;
-  slug: string;
-  name: string;
-  description: string;
-  type: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -260,7 +247,46 @@ export interface Ability {
   createdAt: string;
 }
 /**
- * Create mission packs with 6 games covering all core abilities
+ * Manage tournaments and competitive events
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tournaments".
+ */
+export interface Tournament {
+  id: number;
+  /**
+   * URL-friendly identifier for this tournament (e.g., "summer-championship-2024")
+   */
+  slug: string;
+  /**
+   * Give your tournament a descriptive name
+   */
+  name: string;
+  /**
+   * Describe the tournament, rules, and prizes
+   */
+  description: string;
+  /**
+   * The date when the tournament will take place
+   */
+  date: string;
+  /**
+   * The time when the tournament will start (e.g., "14:30" or "2:30 PM")
+   */
+  time: string;
+  /**
+   * Select the game for this tournament
+   */
+  game: number | Game;
+  /**
+   * Maximum number of players that can participate in this tournament
+   */
+  maxPlayers: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Create mission packs with 1-6 games covering core abilities
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "missions".
@@ -291,31 +317,31 @@ export interface Mission {
     [k: string]: unknown;
   };
   media?: (number | null) | Media;
-  games: {
+  games?: {
     /**
      * Select a game that focuses on mental fortitude and composure
      */
-    mentalFortitudeComposure: number | Game;
+    mentalFortitudeComposure?: (number | null) | Game;
     /**
      * Select a game that focuses on adaptability and decision making
      */
-    adaptabilityDecisionMaking: number | Game;
+    adaptabilityDecisionMaking?: (number | null) | Game;
     /**
      * Select a game that focuses on aim and mechanical skill
      */
-    aimMechanicalSkill: number | Game;
+    aimMechanicalSkill?: (number | null) | Game;
     /**
      * Select a game that focuses on game sense and awareness
      */
-    gameSenseAwareness: number | Game;
+    gameSenseAwareness?: (number | null) | Game;
     /**
      * Select a game that focuses on teamwork and communication
      */
-    teamworkCommunication: number | Game;
+    teamworkCommunication?: (number | null) | Game;
     /**
      * Select a game that focuses on strategy
      */
-    strategy: number | Game;
+    strategy?: (number | null) | Game;
   };
   updatedAt: string;
   createdAt: string;
@@ -344,8 +370,8 @@ export interface PayloadLockedDocument {
         value: number | Ability;
       } | null)
     | ({
-        relationTo: 'events';
-        value: number | Event;
+        relationTo: 'tournaments';
+        value: number | Tournament;
       } | null)
     | ({
         relationTo: 'missions';
@@ -464,7 +490,7 @@ export interface GamesSelect<T extends boolean = true> {
   gameSenseAwarenessScore?: T;
   teamworkCommunicationScore?: T;
   strategyScore?: T;
-  events?: T;
+  abilities?: T;
   repoUrl?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -483,13 +509,16 @@ export interface AbilitiesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events_select".
+ * via the `definition` "tournaments_select".
  */
-export interface EventsSelect<T extends boolean = true> {
+export interface TournamentsSelect<T extends boolean = true> {
   slug?: T;
   name?: T;
   description?: T;
-  type?: T;
+  date?: T;
+  time?: T;
+  game?: T;
+  maxPlayers?: T;
   updatedAt?: T;
   createdAt?: T;
 }

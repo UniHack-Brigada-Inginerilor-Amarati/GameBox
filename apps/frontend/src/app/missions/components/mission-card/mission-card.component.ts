@@ -37,4 +37,68 @@ export class MissionCardComponent {
     event.stopPropagation();
     this.playMission.emit(this.mission);
   }
+
+  /**
+   * Get array of games that exist in the mission
+   * Returns games with their ability information
+   */
+  getExistingGames(): Array<{ game: any; abilityName: string; abilityIcon: string; abilityClass: string }> {
+    const games: Array<{ game: any; abilityName: string; abilityIcon: string; abilityClass: string }> = [];
+
+    if (this.mission.games.mentalFortitudeComposure) {
+      games.push({
+        game: this.mission.games.mentalFortitudeComposure,
+        abilityName: 'Mental Fortitude & Composure',
+        abilityIcon: '🧠',
+        abilityClass: 'mental',
+      });
+    }
+
+    if (this.mission.games.adaptabilityDecisionMaking) {
+      games.push({
+        game: this.mission.games.adaptabilityDecisionMaking,
+        abilityName: 'Adaptability & Decision Making',
+        abilityIcon: '🔄',
+        abilityClass: 'adaptability',
+      });
+    }
+
+    if (this.mission.games.aimMechanicalSkill) {
+      games.push({
+        game: this.mission.games.aimMechanicalSkill,
+        abilityName: 'Aim & Mechanical Skill',
+        abilityIcon: '🎯',
+        abilityClass: 'aim',
+      });
+    }
+
+    if (this.mission.games.gameSenseAwareness) {
+      games.push({
+        game: this.mission.games.gameSenseAwareness,
+        abilityName: 'Game Sense & Awareness',
+        abilityIcon: '👁️',
+        abilityClass: 'awareness',
+      });
+    }
+
+    if (this.mission.games.teamworkCommunication) {
+      games.push({
+        game: this.mission.games.teamworkCommunication,
+        abilityName: 'Teamwork & Communication',
+        abilityIcon: '💬',
+        abilityClass: 'communication',
+      });
+    }
+
+    if (this.mission.games.strategy) {
+      games.push({
+        game: this.mission.games.strategy,
+        abilityName: 'Strategy',
+        abilityIcon: '🧩',
+        abilityClass: 'strategy',
+      });
+    }
+
+    return games;
+  }
 }

@@ -142,11 +142,8 @@ async function makeEdgeFunctions(game: Game) {
   await fs.ensureDir(edgeFunctionsPath);
   const edgeFunctionTemplatePath = process.cwd() + '/src/functions/edge-function-template.ts';
   const edgeFunctionContent = await fs.readFile(edgeFunctionTemplatePath, 'utf8');
-  for (const events of game.events || []) {
-    if (typeof events === 'object' && events.name) {
-      await fs.writeFile(`${edgeFunctionsPath}/${events.name}.ts`, edgeFunctionContent, 'utf8');
-    }
-  }
+  // Edge functions can be created based on game configuration if needed
+  // Currently, no automatic edge function generation is implemented
 }
 
 async function editReadme(game: Game) {

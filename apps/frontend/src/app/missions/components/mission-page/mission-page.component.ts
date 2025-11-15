@@ -55,10 +55,11 @@ export class MissionPageComponent implements OnInit {
     return RichTextUtils.getDescriptionText(description);
   }
 
-  getGameForCard(game: Game | null | undefined, category: string): Game | null {
+  getGameForCard(game: Game | undefined, category: string): (Game & { category: string }) | null {
     if (!game) {
       return null;
     }
+  
     return {
       ...game,
       category: category

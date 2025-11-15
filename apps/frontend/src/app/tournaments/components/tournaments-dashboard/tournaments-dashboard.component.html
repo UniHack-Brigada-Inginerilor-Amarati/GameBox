@@ -1,0 +1,51 @@
+<div class="tournaments-dashboard-container">
+  <!-- Header Section -->
+  <div class="tournaments-dashboard-header">
+    <h1 class="tournaments-dashboard-title">Tournaments</h1>
+    <p class="tournaments-dashboard-subtitle">Compete in exciting tournaments and test your skills</p>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+  <div class="tournaments-dashboard-loading">
+    <div class="loading-spinner"></div>
+    <h3>Loading tournaments...</h3>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error && !loading) {
+  <div class="tournaments-dashboard-error">
+    <div class="error-icon">⚠️</div>
+    <h3>Error loading tournaments</h3>
+    <p class="error-message">{{ error }}</p>
+    <button (click)="loadTournaments()" class="retry-button">Try Again</button>
+  </div>
+  }
+
+  <!-- No Tournaments State -->
+  @if (!loading && !error && tournaments.length === 0) {
+  <div class="tournaments-dashboard-empty">
+    <div class="empty-icon">🏆</div>
+    <h3>No tournaments available</h3>
+    <p>Check back later for upcoming tournaments!</p>
+  </div>
+  }
+
+  <!-- Tournaments Grid -->
+  @if (!loading && !error && tournaments.length > 0) {
+  <div class="tournaments-dashboard-grid">
+    @for (tournament of tournaments; track trackByTournamentSlug($index, tournament)) {
+    <app-tournament-card
+      [tournament]="tournament"
+      [showDescription]="true"
+      [showJoinButton]="true"
+      (joinTournament)="onJoinTournament($event)"
+      (leaveTournament)="onLeaveTournament($event)"
+    >
+    </app-tournament-card>
+    }
+  </div>
+  }
+</div>
+
