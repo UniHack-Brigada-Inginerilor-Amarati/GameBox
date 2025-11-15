@@ -18,15 +18,14 @@ import { ProfileService } from './profile.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../admin/admin.guard';
 import { AbilityService } from './ability.service';
+import { UserProfile, UserProfileDTO, AbilityScores,GameScore } from '@gamebox/shared';
+import { LeagueScoreService } from './league-score.service';
 import { MissionService } from '../missions/mission.service';
-import { UserProfile, UserProfileDTO, AbilityScores } from '@gamebox/shared';
-
 @Controller('profiles')
 export class ProfileController {
   constructor(
     private readonly profileService: ProfileService,
     private readonly abilityService: AbilityService,
-    private readonly missionService: MissionService,
   ) {}
   private readonly logger = new Logger(ProfileController.name);
 
@@ -200,5 +199,21 @@ export class ProfileController {
     }
 
     return this.missionService.recalculateSpyCardFromMissions(username);
+  }
+
+  @Get('me/league-score')
+  @UseGuards(AuthGuard)
+  async getCurrentUserLeagueScore(
+    @Request() req: any,
+    @Query('region') region?: string,
+  ): Promise<GameScore> {
+    this.logger.debug('GET /profiles/me/league-score - Calculating League match score', {
+      userId: req.user.id,
+      region: region || 'europe',
+    });
+    return this.leagueScoreService.calculateScoreFromLastMatch(
+      req.user.id,
+      region || 'europe',
+    );
   }
 }

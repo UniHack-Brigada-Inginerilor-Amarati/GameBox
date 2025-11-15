@@ -1,0 +1,20 @@
+### Test League Score Calculation Service
+### This file can be used with REST Client extension in VS Code or similar tools
+
+@baseUrl = http://localhost:3111/api
+@authToken = YOUR_SUPABASE_ACCESS_TOKEN
+
+### Test League Score Calculation (requires auth)
+### This endpoint uses the authenticated user's Riot username from their profile
+### Make sure your profile has a riot_username configured!
+GET {{baseUrl}}/profiles/me/league-score
+Authorization: Bearer {{authToken}}
+
+### Test League Score Calculation with region parameter (default is europe)
+GET {{baseUrl}}/profiles/me/league-score?region=europe
+Authorization: Bearer {{authToken}}
+
+### Test League Score Calculation with different region (americas)
+GET {{baseUrl}}/profiles/me/league-score?region=americas
+Authorization: Bearer {{authToken}}
+

@@ -234,8 +234,26 @@
     }
 
     .mat-mdc-form-field-input-control input {
-      color: #f1f1f1;
+      color: #f5f5f5 !important;
       font-size: 0.95rem;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.8) !important;
+      }
+    }
+
+    input.mat-mdc-input-element {
+      color: #f5f5f5 !important;
+    }
+
+    .mat-mdc-form-field-label,
+    .mat-mdc-floating-label {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .mat-mdc-text-field-input::placeholder {
+      color: rgba(255, 255, 255, 0.8) !important;
+      opacity: 1 !important;
     }
 
     .mat-mdc-form-field-focus-overlay {

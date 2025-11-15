@@ -1,0 +1,95 @@
+<div class="lol-score-container">
+  <mat-card class="score-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>sports_esports</mat-icon>
+        League of Legends Score Analysis
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (isLoading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Analyzing your last match with AI...</p>
+      </div>
+      } @else if (error()) {
+      <div class="error-state">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <h3>Error Loading Score</h3>
+        <p>{{ error() }}</p>
+        <button mat-raised-button color="primary" (click)="refreshScore()">
+          <mat-icon>refresh</mat-icon>
+          Try Again
+        </button>
+        <button mat-stroked-button routerLink="/profile/me" class="back-btn">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Profile
+        </button>
+      </div>
+      } @else if (score()) {
+      <div class="score-content">
+        <div class="score-header">
+          <p class="score-description">
+            Your performance analysis from your last League of Legends match, evaluated across 6 key abilities.
+          </p>
+          <button mat-icon-button (click)="refreshScore()" matTooltip="Refresh Score">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+
+        <div class="scores-grid">
+          @for (ability of abilities; track ability) {
+          @if (getScoreForAbility(ability) !== undefined) {
+          <div class="score-item">
+            <div class="score-item-header">
+              <mat-icon [style.color]="getScoreColor(getScoreForAbility(ability))">
+                {{ getIconForAbility(ability) }}
+              </mat-icon>
+              <h3>{{ getAbilityName(ability) }}</h3>
+            </div>
+            <div class="score-value" [style.color]="getScoreColor(getScoreForAbility(ability))">
+              <span class="score-number">{{ getScoreForAbility(ability) }}</span>
+              <span class="score-label">{{ getScoreLabel(getScoreForAbility(ability)) }}</span>
+            </div>
+            <div class="score-bar">
+              <div
+                class="score-bar-fill"
+                [style.width.%]="getScorePercentage(getScoreForAbility(ability))"
+                [style.background-color]="getScoreColor(getScoreForAbility(ability))"
+              ></div>
+            </div>
+          </div>
+          }
+          }
+        </div>
+
+        <div class="score-info">
+          <mat-icon>info</mat-icon>
+          <p>
+            Scores range from <strong>-100 to 100</strong>. Positive scores indicate good performance, while negative
+            scores indicate areas for improvement.
+          </p>
+        </div>
+
+        <div class="actions">
+          <button mat-raised-button color="primary" routerLink="/profile/me">
+            <mat-icon>person</mat-icon>
+            View Profile
+          </button>
+          <button mat-stroked-button (click)="refreshScore()">
+            <mat-icon>refresh</mat-icon>
+            Refresh Score
+          </button>
+        </div>
+      </div>
+      } @else {
+      <div class="no-data-state">
+        <mat-icon>info_outline</mat-icon>
+        <p>No score data available</p>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
+

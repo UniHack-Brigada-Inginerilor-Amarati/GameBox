@@ -337,6 +337,18 @@ export class AbilityService {
       error = result.error;
     }
 
+    // Query spy_cards table by user_id (preferred) or username (fallback)
+    let query = this.db.supabaseAdmin.from('spy_cards').select('*');
+
+    if (userProfile?.id) {
+      query = query.eq('user_id', userProfile.id);
+    } else {
+      // Fallback to username lookup for backward compatibility
+      query = query.eq('username', username);
+    }
+
+    const { data: spyCard, error } = await query.single();
+
     if (error) {
       if (error.code === 'PGRST116') {
         // Spy card doesn't exist

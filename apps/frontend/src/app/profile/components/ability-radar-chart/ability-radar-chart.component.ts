@@ -54,11 +54,11 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
     this.error.set(null);
 
     this.profileService.getAbilityScores().subscribe({
-      next: (scores) => {
+      next: (scores: AbilityScores) => {
         this.abilityScores.set(scores);
         this.isLoading.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.error.set('Failed to load ability scores');
         this.isLoading.set(false);
         console.error('Error loading ability scores:', err);

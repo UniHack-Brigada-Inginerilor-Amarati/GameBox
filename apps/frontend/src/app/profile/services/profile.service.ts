@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserProfileDTO, AbilityScores } from '@gamebox/shared';
+import { UserProfileDTO, GameScore, AbilityScores } from '@gamebox/shared';
 import { HttpService } from '../../shared/services/http.service';
 import { environment } from '../../../environments/environment';
 
@@ -33,6 +33,13 @@ export class ProfileService {
       `${this.backendUrl}/profiles/me/avatar`,
       formData,
     );
+  }
+
+  getLeagueScore(region?: string): Observable<GameScore> {
+    const url = region
+      ? `${this.backendUrl}/profiles/me/league-score?region=${region}`
+      : `${this.backendUrl}/profiles/me/league-score`;
+    return this.httpService.get<GameScore>(url);
   }
 
   getAbilityScores(): Observable<AbilityScores> {
