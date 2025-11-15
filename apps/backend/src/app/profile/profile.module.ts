@@ -11,6 +11,6 @@ import { GameModule } from '../games/game.module';
   imports: [SupabaseModule, AuthModule, MissionModule, GameModule],
   controllers: [ProfileController],
   providers: [ProfileService, Logger, AbilityService],
-  exports: [ProfileService,AbilityService]
+  exports: [ProfileService, AbilityService],
 })
 export class ProfileModule {}

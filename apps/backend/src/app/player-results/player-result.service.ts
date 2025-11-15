@@ -240,6 +240,7 @@ export class PlayerResultService {
     }
 
     this.logger.log(`Created ${results.length} player results for game ${gameResultId}`);
+
     return results;
   }
 }

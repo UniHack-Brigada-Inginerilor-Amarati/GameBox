@@ -309,4 +309,161 @@ export class AbilityService {
       totalGames,
     };
   }
+
+  /**
+   * Get ability scores from spy_cards table
+   * Retrieves stored scores from the database and maps them to AbilityScores format
+   */
+  async getAbilityScoresFromSpyCard(username: string): Promise<AbilityScores> {
+    this.logger.debug('Getting ability scores from spy card', { username });
+
+    // Query spy_cards table
+    const { data: spyCard, error } = await this.db.supabaseAdmin
+      .from('spy_cards')
+      .select('*')
+      .eq('username', username)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Spy card doesn't exist
+        this.logger.warn('Spy card not found for user', { username });
+        throw new Error(`Spy card not found for user: ${username}`);
+      }
+      this.logger.error('Error fetching spy card', { username, error: error.message });
+      throw new Error(`Failed to get spy card: ${error.message}`);
+    }
+
+    if (!spyCard) {
+      throw new Error(`Spy card not found for user: ${username}`);
+    }
+
+    // Get game counts per ability from player_results
+    const gameCounts = await this.getGameCountsPerAbility(username);
+
+    // Map ability names
+    const abilityNames: Record<string, string> = {
+      mentalFortitudeComposure: 'Mental Fortitude / Composure',
+      adaptabilityDecisionMaking: 'Adaptability / Decision Making',
+      aimMechanicalSkill: 'Aim / Mechanical Skill',
+      gameSenseAwareness: 'Game Sense / Awareness',
+      teamworkCommunication: 'Teamwork / Communication',
+      strategy: 'Strategy',
+    };
+
+    // Map database columns to AbilityScores structure
+    const abilityScores: Omit<AbilityScores, 'overall'> = {
+      mentalFortitudeComposure: {
+        abilitySlug: 'mentalFortitudeComposure',
+        abilityName: abilityNames.mentalFortitudeComposure,
+        score: Number(spyCard.mental_fortitude_composure_score) || 0,
+        gameCount: gameCounts.mentalFortitudeComposure || 0,
+        averageScore: Number(spyCard.mental_fortitude_composure_score) || 0,
+      },
+      adaptabilityDecisionMaking: {
+        abilitySlug: 'adaptabilityDecisionMaking',
+        abilityName: abilityNames.adaptabilityDecisionMaking,
+        score: Number(spyCard.adaptability_decision_making_score) || 0,
+        gameCount: gameCounts.adaptabilityDecisionMaking || 0,
+        averageScore: Number(spyCard.adaptability_decision_making_score) || 0,
+      },
+      aimMechanicalSkill: {
+        abilitySlug: 'aimMechanicalSkill',
+        abilityName: abilityNames.aimMechanicalSkill,
+        score: Number(spyCard.aim_mechanical_skill_score) || 0,
+        gameCount: gameCounts.aimMechanicalSkill || 0,
+        averageScore: Number(spyCard.aim_mechanical_skill_score) || 0,
+      },
+      gameSenseAwareness: {
+        abilitySlug: 'gameSenseAwareness',
+        abilityName: abilityNames.gameSenseAwareness,
+        score: Number(spyCard.game_sense_awareness_score) || 0,
+        gameCount: gameCounts.gameSenseAwareness || 0,
+        averageScore: Number(spyCard.game_sense_awareness_score) || 0,
+      },
+      teamworkCommunication: {
+        abilitySlug: 'teamworkCommunication',
+        abilityName: abilityNames.teamworkCommunication,
+        score: Number(spyCard.teamwork_communication_score) || 0,
+        gameCount: gameCounts.teamworkCommunication || 0,
+        averageScore: Number(spyCard.teamwork_communication_score) || 0,
+      },
+      strategy: {
+        abilitySlug: 'strategy',
+        abilityName: abilityNames.strategy,
+        score: Number(spyCard.strategy_score) || 0,
+        gameCount: gameCounts.strategy || 0,
+        averageScore: Number(spyCard.strategy_score) || 0,
+      },
+    };
+
+    // Calculate overall stats
+    const overall = this.calculateOverall(abilityScores);
+
+    return {
+      ...abilityScores,
+      overall,
+    };
+  }
+
+  /**
+   * Get game counts per ability for a user
+   * Queries player_results with a join to game_results to get game_slug, then maps to abilities
+   */
+  private async getGameCountsPerAbility(username: string): Promise<Record<string, number>> {
+    this.logger.debug('Getting game counts per ability', { username });
+
+    // Query player_results with join to game_results to get game_slug
+    const { data: playerResults, error } = await this.db.supabaseAdmin
+      .from('player_results')
+      .select(
+        `
+        game_result_id,
+        game_results (
+          game_slug
+        )
+      `,
+      )
+      .eq('player_name', username);
+
+    if (error) {
+      this.logger.error('Error fetching player results for game counts', error);
+      throw error;
+    }
+
+    // Get missions and games to create the ability map
+    const missions = await this.missionService.getMissions();
+    const allGames = await this.gameService.getGames();
+    const gameToAbilityMap = this.createGameToAbilityMap(missions, allGames);
+
+    // Initialize counts
+    const counts: Record<string, number> = {
+      mentalFortitudeComposure: 0,
+      adaptabilityDecisionMaking: 0,
+      aimMechanicalSkill: 0,
+      gameSenseAwareness: 0,
+      teamworkCommunication: 0,
+      strategy: 0,
+    };
+
+    // Count games per ability using game_slug from the joined game_results
+    if (playerResults) {
+      for (const result of playerResults) {
+        // Handle the joined game_results structure (can be array or object)
+        const gameResult = Array.isArray(result.game_results)
+          ? result.game_results[0]
+          : result.game_results;
+        const gameSlug = gameResult?.game_slug;
+
+        if (gameSlug) {
+          const abilityInfo = gameToAbilityMap.get(gameSlug);
+          if (abilityInfo) {
+            counts[abilityInfo.slug] = (counts[abilityInfo.slug] || 0) + 1;
+          }
+        }
+      }
+    }
+
+    return counts;
+  }
 }
