@@ -21,7 +21,7 @@ import { ReservationForm } from './reservations/components/reservation-form/rese
 import { MyReservations } from './reservations/components/my-reservations/my-reservations';
 import { ReservationShare } from './reservations/components/reservation-share/reservation-share';
 import { LandingPageComponent } from './landing';
-import { ScratchCardComponent } from './profile';
+import { ScratchCardComponent, LolScorePageComponent } from './profile';
 import { FriendsPageComponent } from './friends';
 
 export const appRoutes: Route[] = [
@@ -46,6 +46,12 @@ export const appRoutes: Route[] = [
   {
     path: 'profile/me',
     component: ProfilePageComponent,
+    canActivate: [AuthGuard],
+  },
+
+  {
+    path: 'lol-score',
+    component: LolScorePageComponent,
     canActivate: [AuthGuard],
   },
 

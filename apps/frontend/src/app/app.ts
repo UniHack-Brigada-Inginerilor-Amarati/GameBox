@@ -32,6 +32,7 @@ export class App implements OnInit, OnDestroy {
     '/reservation/new',
     '/games',
     '/missions',
+    '/lol-score',
   ];
   
   readonly showNavMenu = computed(() => {

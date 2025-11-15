@@ -389,8 +389,24 @@ export class RiotService {
       this.logger.debug(`Fetching Valorant match history for PUUID: ${puuid}`);
 
       const matchHistoryResponse = await firstValueFrom(
-        this.httpService.get<{ History: Array<{ MatchID: string }> }>(matchHistoryUrl, { headers: this.getHeaders() })
+        this.httpService.get<{ History: Array<{ MatchID: string }> }>(matchHistoryUrl, { 
+          headers: this.getHeaders(),
+          validateStatus: (status) => status < 500, // Don't throw on 4xx/5xx, let us handle it
+        })
       );
+
+      // Check if the response indicates an error
+      if (matchHistoryResponse.status !== 200) {
+        this.logger.error(`Valorant API returned status ${matchHistoryResponse.status}`, {
+          status: matchHistoryResponse.status,
+          statusText: matchHistoryResponse.statusText,
+          data: matchHistoryResponse.data,
+          url: matchHistoryUrl,
+        });
+        throw new BadRequestException(
+          `Valorant API error: ${matchHistoryResponse.status} ${matchHistoryResponse.statusText || 'Service Unavailable'}`,
+        );
+      }
 
       const matches = matchHistoryResponse.data?.History;
       if (!matches || matches.length === 0) {
@@ -404,20 +420,64 @@ export class RiotService {
       this.logger.debug(`Fetching Valorant match details: ${lastMatchId}`);
 
       const matchResponse = await firstValueFrom(
-        this.httpService.get<ValorantMatch>(matchUrl, { headers: this.getHeaders() })
+        this.httpService.get<ValorantMatch>(matchUrl, { 
+          headers: this.getHeaders(),
+          validateStatus: (status) => status < 500, // Don't throw on 4xx/5xx, let us handle it
+        })
       );
+
+      // Check if the response indicates an error
+      if (matchResponse.status !== 200) {
+        this.logger.error(`Valorant API returned status ${matchResponse.status}`, {
+          status: matchResponse.status,
+          statusText: matchResponse.statusText,
+          data: matchResponse.data,
+          url: matchUrl,
+        });
+        throw new BadRequestException(
+          `Valorant API error: ${matchResponse.status} ${matchResponse.statusText || 'Service Unavailable'}`,
+        );
+      }
 
       return matchResponse.data;
     } catch (error: any) {
       if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
-      const status = error.response?.status;
+      const status = error.response?.status || error.status;
+      const statusText = error.response?.statusText || error.statusText;
+      const errorData = error.response?.data || error.data;
+      
+      this.logger.error(`Valorant API error: ${status} ${statusText}`, {
+        status,
+        statusText,
+        data: errorData,
+        message: error.message,
+        url: error.config?.url || error.url,
+        headers: error.config?.headers,
+      });
+
       if (status === 404) {
         throw new NotFoundException(`No Valorant matches found for ${riotUsername}`);
       }
-      this.logger.error(`Failed to fetch Valorant match: ${error.message}`, error.response?.data);
-      throw new BadRequestException(`Failed to fetch Valorant match: ${error.message}`);
+      if (status === 503 || status === 502 || status === 504) {
+        throw new BadRequestException(
+          `Valorant API is currently unavailable (${status}). This may be due to maintenance, rate limiting, or authentication issues. Please check your Riot API key has Valorant permissions enabled.`,
+        );
+      }
+      if (status === 403) {
+        throw new BadRequestException(
+          'Invalid Riot API key or insufficient permissions for Valorant API. Please ensure your API key has Valorant access enabled in the Riot Developer Portal.',
+        );
+      }
+      if (status === 401) {
+        throw new BadRequestException(
+          'Unauthorized access to Valorant API. The Valorant API may require different authentication than League of Legends.',
+        );
+      }
+      throw new BadRequestException(
+        `Failed to fetch Valorant match: ${status ? `${status} ${statusText || ''}` : error.message}. ${errorData ? JSON.stringify(errorData) : ''}`,
+      );
     }
   }
 }
