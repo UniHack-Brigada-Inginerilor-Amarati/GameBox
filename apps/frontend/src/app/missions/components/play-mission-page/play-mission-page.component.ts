@@ -175,8 +175,8 @@ export class PlayMissionPageComponent implements OnInit {
 
         this.sessionService.createSession(this.mission!.slug, profile.username).subscribe({
           next: (session) => {
-            const playerIds = this.selectedPlayers.map((player) => player.id);
-            this.sessionService.addSessionPlayers(session.session_id, playerIds).subscribe({
+            const playerNames = this.selectedPlayers.map((player) => player.username);
+            this.sessionService.addSessionPlayers(session.session_id, playerNames).subscribe({
               next: () => {
                 this.sessionService.startSession(session.session_id).subscribe({
                   next: (startedSession) => {
@@ -193,38 +193,78 @@ export class PlayMissionPageComponent implements OnInit {
                   },
                   error: (error) => {
                     console.error('Error starting session:', error);
-                    this.snackBar.open('Error starting session', 'Close', {
-                      duration: 3000,
-                    });
+                    this.handleError(error, 'Error starting session');
                     this.creatingSession = false;
                   },
                 });
               },
               error: (error) => {
                 console.error('Error adding players to session:', error);
-                this.snackBar.open('Error adding players to session', 'Close', {
-                  duration: 3000,
-                });
+                this.handleError(error, 'Error adding players to session');
                 this.creatingSession = false;
               },
             });
           },
           error: (error) => {
             console.error('Error creating session:', error);
-            this.snackBar.open('Error creating session', 'Close', {
-              duration: 3000,
-            });
+            this.handleError(error, 'Error creating session');
             this.creatingSession = false;
           },
         });
       },
       error: (error: unknown) => {
         console.error('Error getting current user:', error);
-        this.snackBar.open('Error getting user information', 'Close', {
-          duration: 3000,
-        });
+        this.handleError(error, 'Error getting user information');
         this.creatingSession = false;
       },
+    });
+  }
+
+  private handleError(error: any, defaultMessage: string): void {
+    if (error?.status === 401) {
+      // Authentication failed - check if user is truly not authenticated
+      this.authService.getCurrentUser().subscribe({
+        next: ({ user }) => {
+          let message: string;
+          if (!user) {
+            // User is not authenticated, redirect to home
+            message = 'Your session has expired. Please log in again.';
+            this.snackBar.open(message, 'Close', {
+              duration: 5000,
+            });
+            this.router.navigate(['/']);
+          } else {
+            // User is authenticated but token might be invalid/expired
+            message = 'Authentication failed. Please try refreshing the page.';
+            this.snackBar.open(message, 'Close', {
+              duration: 5000,
+            });
+          }
+        },
+        error: () => {
+          // Can't verify user, assume not authenticated
+          const message = 'Your session has expired. Please log in again.';
+          this.snackBar.open(message, 'Close', {
+            duration: 5000,
+          });
+          this.router.navigate(['/']);
+        },
+      });
+      return;
+    }
+
+    // Handle other error types
+    let message = defaultMessage;
+    if (error?.status === 403) {
+      message = 'You do not have permission to perform this action. Admin or moderator role required.';
+    } else if (error?.error?.message) {
+      message = error.error.message;
+    } else if (error?.message) {
+      message = error.message;
+    }
+
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
     });
   }
 

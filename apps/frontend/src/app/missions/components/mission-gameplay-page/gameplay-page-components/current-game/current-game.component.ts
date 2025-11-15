@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { Game, UserProfile, MissionSession, GameResult, PlayerGameResult } from '@gamebox/shared';
+import { Game, UserProfile, Session, PlayerGameResult } from '@gamebox/shared';
 import { SessionService } from '../../../../services/session.service';
 import { Router } from '@angular/router';
 
@@ -25,7 +25,7 @@ export class CurrentGameComponent {
   @Input({ required: true }) isLastGame!: boolean;
   @Input({ required: true }) missionCompleted!: boolean;
   @Input({ required: true }) gameOrder!: string[];
-  @Input({ required: true }) gameplayData!: { session: MissionSession; players: UserProfile[]; };
+  @Input({ required: true }) gameplayData!: { session: Session; players: UserProfile[]; };
   @Input({ required: true }) gameResults!: PlayerGameResult[];
 
   @Output() gameResultsUpdated = new EventEmitter<PlayerGameResult[]>();
@@ -53,44 +53,22 @@ export class CurrentGameComponent {
       return;
     }
 
-    this.sessionService
-      .createGameResults(
-        this.gameplayData.session.session_id,
-        this.currentGame?.slug || '',
-        this.gameplayData.players
-      )
-      .subscribe({
-        next: (savedResults: GameResult[]) => {
-          // After creating game results, reload them to get PlayerGameResult[]
-          // The parent component will handle reloading via gameResultsUpdated event
-          this.gameCompletedUpdate.emit(true);
-          this.loadingUpdate.emit(false);
-          
-          // Emit empty array to trigger parent reload
-          this.gameResultsUpdated.emit([]);
+    // Game results are already created when the session was created
+    // Player results are already created when players were added
+    // We just need to mark the game as completed and reload results
+    this.gameCompletedUpdate.emit(true);
+    this.loadingUpdate.emit(false);
+    
+    // Emit empty array to trigger parent reload of game results
+    this.gameResultsUpdated.emit([]);
 
-          this.snackBar.open(
-            `Game "${this.currentGame?.name || 'Unknown'}" completed!`,
-            'Close',
-            {
-              duration: 3000,
-            }
-          );
-        },
-        error: (error: unknown) => {
-          console.error('Error saving game results:', error);
-          this.gameCompletedUpdate.emit(true);
-          this.loadingUpdate.emit(false);
-
-          this.snackBar.open(
-            `Game "${this.currentGame?.name || 'Unknown'}" completed! (Error saving results)`,
-            'Close',
-            {
-              duration: 3000,
-            }
-          );
-        },
-      });
+    this.snackBar.open(
+      `Game "${this.currentGame?.name || 'Unknown'}" completed!`,
+      'Close',
+      {
+        duration: 3000,
+      }
+    );
   }
 
   onNextGame(): void {
@@ -113,6 +91,9 @@ export class CurrentGameComponent {
         next: () => {
           this.missionCompletedUpdate.emit(true);
           this.loadingUpdate.emit(false);
+
+          // Reload game results to get the final scores
+          this.gameResultsUpdated.emit([]);
 
           this.snackBar.open('Mission completed successfully!', 'Close', {
             duration: 5000,

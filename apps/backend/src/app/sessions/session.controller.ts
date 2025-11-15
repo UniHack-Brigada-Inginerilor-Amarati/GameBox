@@ -6,18 +6,12 @@ import {
   Body,
   UseGuards,
   Logger,
-  Delete,
   Patch,
 } from '@nestjs/common';
 import { SessionService } from './session.service';
-import {
-  UserProfileDTO,
-  MissionSession,
-  SessionPlayer,
-  GameResult,
-  PlayerGameResult,
-} from '@gamebox/shared';
+import { UserProfileDTO, Session, PlayerGameResult } from '@gamebox/shared';
 import { AdminGuard } from '../admin/admin.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { BadRequestException } from '@nestjs/common';
 
 @Controller('sessions')
@@ -27,22 +21,20 @@ export class SessionController {
 
   @Post()
   @UseGuards(AdminGuard)
-  async createSession(
-    @Body() body: { missionSlug: string; gameMaster: string },
-  ): Promise<MissionSession> {
+  async createSession(@Body() body: { missionSlug: string; gameMaster: string }): Promise<Session> {
     return this.sessionService.createSession(body.missionSlug, body.gameMaster);
   }
 
   @Get()
   @UseGuards(AdminGuard)
-  async getSessions(): Promise<MissionSession[]> {
+  async getSessions(): Promise<Session[]> {
     this.logger.debug('GET /sessions - Fetching all sessions');
     return this.sessionService.getSessions();
   }
 
   @Get(':id')
   @UseGuards(AdminGuard)
-  async getSession(@Param('id') id: string): Promise<MissionSession> {
+  async getSession(@Param('id') id: string): Promise<Session> {
     this.logger.debug('GET /sessions/:id - Fetching session by ID', { id });
     return this.sessionService.getSession(id);
   }
@@ -61,7 +53,7 @@ export class SessionController {
   async addSessionPlayers(
     @Param('id') id: string,
     @Body() body: { playerNames?: string[]; player_ids?: string[] },
-  ): Promise<SessionPlayer[]> {
+  ): Promise<PlayerGameResult[]> {
     this.logger.debug('POST /sessions/:id/players - Adding session players', {
       id,
       body,
@@ -76,22 +68,9 @@ export class SessionController {
     }
   }
 
-  @Delete(':id/players')
-  @UseGuards(AdminGuard)
-  async removeSessionPlayers(
-    @Param('id') id: string,
-    @Body() body: { playerNames: string[] },
-  ): Promise<void> {
-    this.logger.debug('DELETE /sessions/:id/players - Removing session players', {
-      id,
-      body,
-    });
-    return this.sessionService.removeSessionPlayers(id, body.playerNames);
-  }
-
   @Patch(':id/start')
   @UseGuards(AdminGuard)
-  async startSession(@Param('id') id: string): Promise<MissionSession> {
+  async startSession(@Param('id') id: string): Promise<Session> {
     this.logger.debug('PUT /sessions/:id - Updating session time', {
       id,
     });
@@ -100,7 +79,7 @@ export class SessionController {
 
   @Patch(':id/end')
   @UseGuards(AdminGuard)
-  async endSession(@Param('id') id: string): Promise<MissionSession> {
+  async endSession(@Param('id') id: string): Promise<Session> {
     this.logger.debug('PUT /sessions/:id - Updating session time', {
       id,
     });
@@ -108,23 +87,9 @@ export class SessionController {
   }
 
   @Get(':id/game-results')
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   async getGameResults(@Param('id') id: string): Promise<PlayerGameResult[]> {
     this.logger.debug('GET /sessions/:id - Fetching player game results', { id });
     return this.sessionService.getGameResults(id);
-  }
-
-  @Post(':id/game-results')
-  @UseGuards(AdminGuard)
-  async createGameResults(
-    @Param('id') id: string,
-    @Body()
-    body: {
-      gameSlug: string;
-      playerNames: string[];
-    },
-  ): Promise<GameResult[]> {
-    this.logger.debug('POST /sessions/:id/game-results - Creating game results', { id, body });
-    return this.sessionService.createGameResults(id, body.gameSlug, body.playerNames);
   }
 }

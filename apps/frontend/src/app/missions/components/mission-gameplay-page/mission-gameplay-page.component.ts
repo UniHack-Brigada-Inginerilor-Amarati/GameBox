@@ -6,7 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   Mission,
-  MissionSession,
+  Session,
   UserProfile,
   Game,
   GameResult,
@@ -19,7 +19,7 @@ import { CurrentGameComponent } from './gameplay-page-components/current-game/cu
 import { PlayersProgressComponent } from './gameplay-page-components/players-progress/players-progress.component';
 
 export interface GameplayData {
-  session: MissionSession;
+  session: Session;
   players: UserProfile[];
   mission: Mission;
 }
@@ -179,6 +179,14 @@ export class MissionGameplayPageComponent implements OnInit, OnDestroy {
       this.loadGameResults();
     } else {
       this.gameResults = results;
+    }
+  }
+
+  onMissionCompletedUpdate(completed: boolean): void {
+    this.missionCompleted = completed;
+    // Reload game results when mission is completed to get final scores
+    if (completed && this.gameplayData) {
+      this.loadGameResults();
     }
   }
 
