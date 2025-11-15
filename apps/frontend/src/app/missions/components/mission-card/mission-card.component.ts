@@ -1,10 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Mission } from '@gamebox/shared';
 import { environment } from '../../../../environments/environment';
+import { MissionService } from '../../services/mission.service';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-mission-card',
@@ -13,12 +15,16 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './mission-card.component.html',
   styleUrls: ['./mission-card.component.scss'],
 })
-export class MissionCardComponent {
+export class MissionCardComponent implements OnInit, OnDestroy {
   @Input() mission!: Mission;
   @Input() showDescription = true;
   @Input() showGames = false;
   @Input() showPlayButton = false;
   @Output() playMission = new EventEmitter<Mission>();
+
+  private missionService = inject(MissionService);
+  hasJoined = false;
+  isLoading = false;
 
   getMediaUrl(media: { url: string; alt?: string } | undefined): string {
     return media?.url || '';
@@ -33,9 +39,36 @@ export class MissionCardComponent {
     imageElement.alt = 'Image not available';
   }
 
+  ngOnInit(): void {
+    // Check if user has joined this mission from the mission data
+    if (this.mission) {
+      this.hasJoined = (this.mission as any).hasJoined || false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    // No subscription to clean up
+  }
+
   onPlayMission(event: Event): void {
     event.stopPropagation();
-    this.playMission.emit(this.mission);
+    
+    if (this.hasJoined || this.isLoading) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.missionService.playMission(this.mission.slug).subscribe({
+      next: () => {
+        this.hasJoined = true;
+        this.isLoading = false;
+        this.playMission.emit(this.mission);
+      },
+      error: (error) => {
+        console.error('Error playing mission:', error);
+        this.isLoading = false;
+      },
+    });
   }
 
   /**

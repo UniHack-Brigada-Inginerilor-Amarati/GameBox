@@ -116,15 +116,20 @@
   align-items: center !important;
   gap: 8px !important;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: linear-gradient(135deg, #6b8cfa 0%, #5a7cf0 100%) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 8px 24px rgba(135, 164, 250, 0.4) !important;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 20px rgba(135, 164, 250, 0.3) !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   mat-icon {
@@ -133,6 +138,43 @@
     width: 18px !important;
     height: 18px !important;
     color: #1a1a1a !important;
+  }
+}
+
+.playing-label {
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #ffffff;
+  }
+
+  span {
+    color: #ffffff;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
   }
 }
 

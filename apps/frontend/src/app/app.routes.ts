@@ -64,24 +64,25 @@ export const appRoutes: Route[] = [
   {
     path: 'missions',
     component: MissionDashboardComponent,
-    canActivate: [AuthGuard, AdminGuard],
+    canActivate: [AuthGuard],
   },
 
+  // Admin-only route for mission details
   {
     path: 'missions/:slug',
     component: MissionPageComponent,
     canActivate: [AuthGuard, AdminGuard],
   },
-  {
-    path: 'missions/:slug/play',
-    component: PlayMissionPageComponent,
-    canActivate: [AuthGuard, AdminGuard],
-  },
+  // {
+  //   path: 'missions/:slug/play',
+  //   component: PlayMissionPageComponent,
+  //   canActivate: [AuthGuard,AdminGuard],
+  // },
 
   {
     path: 'missions/:slug/play/:sessionId',
     component: MissionGameplayPageComponent,
-    canActivate: [AuthGuard, AdminGuard],
+    canActivate: [AuthGuard,AdminGuard],
   },
 
   {

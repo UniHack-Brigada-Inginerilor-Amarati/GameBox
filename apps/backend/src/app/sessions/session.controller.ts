@@ -7,6 +7,7 @@ import {
   UseGuards,
   Logger,
   Patch,
+  Request,
 } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { UserProfileDTO, Session, PlayerGameResult } from '@gamebox/shared';
@@ -23,6 +24,27 @@ export class SessionController {
   @UseGuards(AdminGuard)
   async createSession(@Body() body: { missionSlug: string; gameMaster: string }): Promise<Session> {
     return this.sessionService.createSession(body.missionSlug, body.gameMaster);
+  }
+
+  @Post('play-mission')
+  @UseGuards(AuthGuard)
+  async playMission(@Body() body: { missionSlug: string }, @Request() req: any): Promise<Session> {
+    this.logger.debug('POST /sessions/play-mission - Starting mission play', {
+      missionSlug: body.missionSlug,
+      userId: req.user?.id,
+    });
+    const username = req.user?.username;
+    if (!username) {
+      throw new BadRequestException('User information not found');
+    }
+    return this.sessionService.createSession(body.missionSlug, username);
+  }
+
+  @Get('mission/:slug/status')
+  @UseGuards(AuthGuard)
+  async getMissionPlayingStatus(@Param('slug') slug: string): Promise<{ isPlaying: boolean; activeSessions: number }> {
+    this.logger.debug('GET /sessions/mission/:slug/status - Checking mission playing status', { slug });
+    return this.sessionService.getMissionPlayingStatus(slug);
   }
 
   @Get()

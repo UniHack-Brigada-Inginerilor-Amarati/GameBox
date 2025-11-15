@@ -67,7 +67,40 @@ export class SessionService {
       mission_slug,
     });
 
-    // Step 2: Fetch mission to get all games
+    // Step 2: Create entry in missions_players table
+    // Insert new row - if it already exists (duplicate key), that's fine (idempotent)
+    const { error: missionPlayerError } = await this.db.supabaseAdmin
+      .schema('gamebox')
+      .from('missions_players')
+      .insert({
+        mission_slug,
+        player_id: gameMasterId,
+        score: null, // Score is empty initially
+      });
+
+    if (missionPlayerError) {
+      // Check if it's a duplicate key error (23505) - that's okay, entry already exists
+      if (missionPlayerError.code === '23505' || missionPlayerError.message?.includes('duplicate key')) {
+        this.logger.debug('Mission player entry already exists', {
+          mission_slug,
+          player_id: gameMasterId,
+        });
+      } else {
+        this.logger.warn('Failed to create mission player entry', {
+          error: missionPlayerError,
+          mission_slug,
+          player_id: gameMasterId,
+        });
+        // Don't fail the session creation if this fails
+      }
+    } else {
+      this.logger.debug('Mission player entry created', {
+        mission_slug,
+        player_id: gameMasterId,
+      });
+    }
+
+    // Step 3: Fetch mission to get all games
     const games = await this.missionService.getMissionGames(mission_slug);
 
     if (!games || games.length === 0) {
@@ -446,5 +479,31 @@ export class SessionService {
       player_name: result.player_name,
       total_score: result.score,
     }));
+  }
+
+  /**
+   * Get mission playing status - check if mission has active sessions
+   * Only considers sessions that are actually 'in_progress', not 'not_started'
+   */
+  async getMissionPlayingStatus(missionSlug: string): Promise<{ isPlaying: boolean; activeSessions: number }> {
+    this.logger.debug('Checking mission playing status', { missionSlug });
+    
+    const { data, error } = await this.db.supabaseAdmin
+      .from('sessions')
+      .select('session_id')
+      .eq('mission_slug', missionSlug)
+      .eq('progress', 'in_progress'); // Only check for actually in-progress sessions
+
+    if (error) {
+      this.logger.warn('Error checking mission playing status', error);
+      return { isPlaying: false, activeSessions: 0 };
+    }
+
+    const activeSessions = data?.length || 0;
+    const isPlaying = activeSessions > 0;
+
+    this.logger.debug('Mission playing status', { missionSlug, isPlaying, activeSessions });
+
+    return { isPlaying, activeSessions };
   }
 }

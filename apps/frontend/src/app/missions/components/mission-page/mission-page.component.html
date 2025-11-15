@@ -27,6 +27,93 @@
     </div>
 
 
+    <!-- Players Section -->
+    <div class="players-section">
+      <h2 class="section-title">Players</h2>
+      <p class="section-subtitle">Players who have joined this mission</p>
+      
+      @if (isLoadingPlayers) {
+      <div class="loading-players">
+        <div class="loading-spinner"></div>
+        <p>Loading players...</p>
+      </div>
+      } @else if (players.length === 0) {
+      <div class="no-players">
+        <mat-icon>people_outline</mat-icon>
+        <p>No players have joined this mission yet.</p>
+      </div>
+      } @else {
+      <mat-card class="players-card">
+        <table mat-table [dataSource]="players" class="players-table">
+          <!-- Player Column -->
+          <ng-container matColumnDef="player">
+            <th mat-header-cell *matHeaderCellDef>Player</th>
+            <td mat-cell *matCellDef="let player">
+              <div class="player-info">
+                @if (player.avatar_url) {
+                <img [src]="player.avatar_url" [alt]="player.username" class="player-avatar" />
+                } @else {
+                <div class="player-avatar-fallback">
+                  {{ player.username.charAt(0).toUpperCase() }}
+                </div>
+                }
+                <div class="player-details">
+                  <span class="player-username">{{ player.username }}</span>
+                  <span class="player-email">{{ player.email }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Score Column -->
+          <ng-container matColumnDef="score">
+            <th mat-header-cell *matHeaderCellDef>Score</th>
+            <td mat-cell *matCellDef="let player">
+              <mat-form-field appearance="outline" class="score-input">
+                <input
+                  matInput
+                  type="number"
+                  [value]="player.score ?? ''"
+                  (blur)="updateScore(player.player_id, parseInteger($any($event.target).value))"
+                  placeholder="Enter score"
+                  min="0"
+                  step="1"
+                />
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+          <!-- Joined Column -->
+          <ng-container matColumnDef="joined">
+            <th mat-header-cell *matHeaderCellDef>Joined</th>
+            <td mat-cell *matCellDef="let player">
+              <span class="joined-date">{{ formatDate(player.created_at) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let player">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="clearScore(player.player_id)"
+                matTooltip="Clear score"
+                class="clear-button"
+              >
+                <mat-icon>clear</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </mat-card>
+      }
+    </div>
+
     <!-- Games Grid -->
     <div class="games-section">
       <h2 class="games-title">Mission Games</h2>

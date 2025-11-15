@@ -1,4 +1,4 @@
-import { Module, Logger } from '@nestjs/common';
+import { Module, Logger, forwardRef } from '@nestjs/common';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { SupabaseModule } from '../supabase/supabase.module';
@@ -8,9 +8,9 @@ import { MissionModule } from '../missions/mission.module';
 import { GameModule } from '../games/game.module';
 
 @Module({
-  imports: [SupabaseModule, AuthModule, MissionModule, GameModule],
+  imports: [SupabaseModule, AuthModule, forwardRef(() => MissionModule), GameModule],
   controllers: [ProfileController],
   providers: [ProfileService, Logger, AbilityService],
-  exports: [ProfileService,AbilityService]
+  exports: [ProfileService, AbilityService],
 })
 export class ProfileModule {}
