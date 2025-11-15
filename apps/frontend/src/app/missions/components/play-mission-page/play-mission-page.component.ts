@@ -175,8 +175,8 @@ export class PlayMissionPageComponent implements OnInit {
 
         this.sessionService.createSession(this.mission!.slug, profile.username).subscribe({
           next: (session) => {
-            const playerIds = this.selectedPlayers.map((player) => player.id);
-            this.sessionService.addSessionPlayers(session.session_id, playerIds).subscribe({
+            const playerNames = this.selectedPlayers.map((player) => player.username);
+            this.sessionService.addSessionPlayers(session.session_id, playerNames).subscribe({
               next: () => {
                 this.sessionService.startSession(session.session_id).subscribe({
                   next: (startedSession) => {
