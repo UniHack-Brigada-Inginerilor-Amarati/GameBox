@@ -6,7 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   Mission,
-  MissionSession,
+  Session,
   UserProfile,
   Game,
   GameResult,
@@ -19,7 +19,7 @@ import { CurrentGameComponent } from './gameplay-page-components/current-game/cu
 import { PlayersProgressComponent } from './gameplay-page-components/players-progress/players-progress.component';
 
 export interface GameplayData {
-  session: MissionSession;
+  session: Session;
   players: UserProfile[];
   mission: Mission;
 }

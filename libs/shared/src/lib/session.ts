@@ -1,6 +1,6 @@
 export type Progress = 'not_started' | 'in_progress' | 'completed' | 'failed';
 
-export interface MissionSession {
+export interface Session {
   session_id: string;
   mission_slug: string;
   game_master: string;
@@ -15,8 +15,7 @@ export interface GameResult {
   game_result_id: string; // primary key
   game_slug: string;
   session_id: string;
-  difficulty: string;
-  game_result: any; // JSONB field for game-specific results
+  game_result?: any; // JSONB field for game-specific results (optional)
 }
 
 export interface PlayerGameResult {
