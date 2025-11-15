@@ -71,7 +71,7 @@ export interface Config {
     media: Media;
     games: Game;
     abilities: Ability;
-    events: Event;
+    tournaments: Tournament;
     missions: Mission;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -83,7 +83,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
     abilities: AbilitiesSelect<false> | AbilitiesSelect<true>;
-    events: EventsSelect<false> | EventsSelect<true>;
+    tournaments: TournamentsSelect<false> | TournamentsSelect<true>;
     missions: MissionsSelect<false> | MissionsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -205,7 +205,7 @@ export interface Game {
     [k: string]: unknown;
   };
   abilities?: (number | Ability)[] | null;
-  events?: (number | Event)[] | null;
+  tournaments?: (number | Tournament)[] | null;
   repoUrl: string;
   updatedAt: string;
   createdAt: string;
@@ -224,15 +224,41 @@ export interface Ability {
   createdAt: string;
 }
 /**
+ * Manage tournaments and competitive events
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events".
+ * via the `definition` "tournaments".
  */
-export interface Event {
+export interface Tournament {
   id: number;
+  /**
+   * URL-friendly identifier for this tournament (e.g., "summer-championship-2024")
+   */
   slug: string;
+  /**
+   * Give your tournament a descriptive name
+   */
   name: string;
+  /**
+   * Describe the tournament, rules, and prizes
+   */
   description: string;
-  type: string;
+  /**
+   * The date when the tournament will take place
+   */
+  date: string;
+  /**
+   * The time when the tournament will start (e.g., "14:30" or "2:30 PM")
+   */
+  time: string;
+  /**
+   * Select the game for this tournament
+   */
+  game: number | Game;
+  /**
+   * Maximum number of players that can participate in this tournament
+   */
+  maxPlayers: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -321,8 +347,8 @@ export interface PayloadLockedDocument {
         value: number | Ability;
       } | null)
     | ({
-        relationTo: 'events';
-        value: number | Event;
+        relationTo: 'tournaments';
+        value: number | Tournament;
       } | null)
     | ({
         relationTo: 'missions';
@@ -436,7 +462,7 @@ export interface GamesSelect<T extends boolean = true> {
       };
   guide?: T;
   abilities?: T;
-  events?: T;
+  tournaments?: T;
   repoUrl?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -455,13 +481,16 @@ export interface AbilitiesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events_select".
+ * via the `definition` "tournaments_select".
  */
-export interface EventsSelect<T extends boolean = true> {
+export interface TournamentsSelect<T extends boolean = true> {
   slug?: T;
   name?: T;
   description?: T;
-  type?: T;
+  date?: T;
+  time?: T;
+  game?: T;
+  maxPlayers?: T;
   updatedAt?: T;
   createdAt?: T;
 }

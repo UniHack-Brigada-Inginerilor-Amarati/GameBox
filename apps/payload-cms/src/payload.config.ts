@@ -11,7 +11,7 @@ import { Users } from './collections/Users';
 import { Media } from './collections/Media';
 import { Games } from './collections/Games';
 import { Abilities } from './collections/Abilities';
-import { Events } from './collections/Events';
+import { Tournaments } from './collections/Tournaments';
 import { Missions } from './collections/Missions';
 
 const filename = fileURLToPath(import.meta.url);
@@ -50,7 +50,7 @@ export default buildConfig({
   },
   cors: getCorsOrigins(),
   csrf: getCsrfOrigins(),
-  collections: [Users, Media, Games, Abilities, Events, Missions],
+  collections: [Users, Media, Games, Abilities, Tournaments, Missions],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -61,6 +61,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
     schemaName: process.env.PAYLOAD_SCHEMA || 'payload',
+    push: process.env.NODE_ENV === 'development',
   }),
   sharp,
   plugins: [
