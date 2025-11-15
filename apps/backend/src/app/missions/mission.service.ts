@@ -1,8 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PayloadService } from '../payload/payload.service';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ProfileService } from '../profile/profile.service';
-import { Game, Mission, UserProfileDTO, AbilityRank, ABILITY_RANK_MODIFIERS, RANK_THRESHOLDS } from '@gamebox/shared';
+import { LeagueScoreService } from '../profile/league-score.service';
+import { Game, Mission, UserProfileDTO, AbilityRank, ABILITY_RANK_MODIFIERS, RANK_THRESHOLDS, GameScore } from '@gamebox/shared';
 
 export interface MissionPlayer {
   player_id: string;
@@ -27,6 +28,7 @@ export class MissionService {
     private readonly payloadService: PayloadService,
     private readonly supabaseService: SupabaseService,
     private readonly profileService: ProfileService,
+    private readonly leagueScoreService: LeagueScoreService,
   ) {}
   private readonly logger = new Logger(MissionService.name);
 
@@ -484,6 +486,61 @@ export class MissionService {
       created_at: data.created_at,
       updated_at: data.updated_at,
     };
+  }
+
+  /**
+   * Calculate League of Legends score using Gemini AI and update player's ability scores
+   * @param slug - Mission slug
+   * @param playerId - Player ID
+   * @param region - Region for Riot API (default: 'europe')
+   * @returns Updated MissionPlayer with new ability scores
+   */
+  async calculateAndUpdateLeagueScore(
+    slug: string,
+    playerId: string,
+    region: string = 'europe',
+  ): Promise<MissionPlayer> {
+    this.logger.debug('Calculating and updating League score for player', {
+      slug,
+      playerId,
+      region,
+    });
+
+    // Verify the player is in this mission
+    const { data: missionPlayer } = await this.supabaseService.supabaseAdmin
+      .schema('gamebox')
+      .from('missions_players')
+      .select('player_id')
+      .eq('mission_slug', slug)
+      .eq('player_id', playerId)
+      .maybeSingle();
+
+    if (!missionPlayer) {
+      throw new NotFoundException(
+        `Player with ID '${playerId}' is not part of mission '${slug}'`,
+      );
+    }
+
+    // Calculate League score using Gemini AI
+    const gameScore: GameScore = await this.leagueScoreService.calculateScoreFromLastMatch(
+      playerId,
+      region,
+    );
+
+    // Map GameScore (camelCase) to mission player ability scores (snake_case)
+    const abilityScores = {
+      mental_fortitude_composure_score: gameScore.mentalFortitudeComposure ?? null,
+      adaptability_decision_making_score: gameScore.adaptabilityDecisionMaking ?? null,
+      aim_mechanical_skill_score: gameScore.aimMechanicalSkill ?? null,
+      game_sense_awareness_score: gameScore.gameSenseAwareness ?? null,
+      teamwork_communication_score: gameScore.teamworkCommunication ?? null,
+      strategy_score: gameScore.strategy ?? null,
+    };
+
+    this.logger.debug('Calculated League scores', { playerId, gameScore, abilityScores });
+
+    // Update player ability scores
+    return this.updatePlayerAbilityScores(slug, playerId, abilityScores);
   }
 
   /**

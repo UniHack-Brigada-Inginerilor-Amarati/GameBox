@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { Mission, AdminRoles } from '@gamebox/shared';
 import { MissionService, MissionPlayer } from '../../services/mission.service';
@@ -36,6 +37,7 @@ interface MissionWithPlayers {
     MatIconModule,
     MatCardModule,
     MatDialogModule,
+    MatTooltipModule,
     FormsModule,
     MissionCardComponent,
   ],
@@ -78,9 +80,11 @@ export class MissionDashboardComponent implements OnInit {
     this.profileService.getProfile().subscribe({
       next: (profile) => {
         this.isAdmin = AdminRoles.includes(profile.role);
+        console.log('Admin status checked:', { isAdmin: this.isAdmin, role: profile.role });
       },
-      error: () => {
+      error: (error) => {
         this.isAdmin = false;
+        console.error('Error checking admin status:', error);
       },
     });
   }
@@ -114,6 +118,21 @@ export class MissionDashboardComponent implements OnInit {
       players: [],
       loading: true,
     }));
+
+    // Debug: Log mission games
+    this.missions.forEach((mission) => {
+      console.log('Mission:', mission.name, {
+        games: {
+          mental: mission.games?.mentalFortitudeComposure?.slug || mission.games?.mentalFortitudeComposure?.name,
+          adaptability: mission.games?.adaptabilityDecisionMaking?.slug || mission.games?.adaptabilityDecisionMaking?.name,
+          aim: mission.games?.aimMechanicalSkill?.slug || mission.games?.aimMechanicalSkill?.name,
+          gameSense: mission.games?.gameSenseAwareness?.slug || mission.games?.gameSenseAwareness?.name,
+          teamwork: mission.games?.teamworkCommunication?.slug || mission.games?.teamworkCommunication?.name,
+          strategy: mission.games?.strategy?.slug || mission.games?.strategy?.name,
+        },
+        hasLoL: this.hasLeagueOfLegends(mission),
+      });
+    });
 
     // Load players for each mission
     this.missions.forEach((mission, index) => {
@@ -220,6 +239,109 @@ export class MissionDashboardComponent implements OnInit {
 
   trackByMissionSlug(index: number, mission: Mission): string {
     return mission.slug;
+  }
+
+  /**
+   * Check if a mission has League of Legends as one of its games
+   */
+  hasLeagueOfLegends(mission: Mission): boolean {
+    if (!mission?.games) {
+      return false;
+    }
+
+    // Check all game slots for League of Legends
+    // Check both slug and name to be more flexible
+    const lolIdentifiers = ['league-of-legends', 'league of legends', 'lol', 'league'];
+    const games = [
+      mission.games.mentalFortitudeComposure,
+      mission.games.adaptabilityDecisionMaking,
+      mission.games.aimMechanicalSkill,
+      mission.games.gameSenseAwareness,
+      mission.games.teamworkCommunication,
+      mission.games.strategy,
+    ].filter(Boolean); // Remove undefined values
+
+    const hasLoL = games.some((game) => {
+      if (!game) return false;
+      const slug = game.slug?.toLowerCase() || '';
+      const name = game.name?.toLowerCase() || '';
+      return lolIdentifiers.some((identifier) => 
+        slug.includes(identifier) || name.includes(identifier)
+      );
+    });
+
+    // Debug logging
+    if (hasLoL) {
+      console.log('League of Legends detected in mission:', mission.name, {
+        games: games.map(g => ({ slug: g?.slug, name: g?.name })),
+        isAdmin: this.isAdmin,
+      });
+    }
+
+    return hasLoL;
+  }
+
+  /**
+   * Calculate League score for a player using Gemini AI
+   */
+  calculateLeagueScore(missionSlug: string, playerId: string): void {
+    const missionWithPlayers = this.missionsWithPlayers.find(
+      (m) => m.mission.slug === missionSlug,
+    );
+
+    if (!missionWithPlayers) {
+      return;
+    }
+
+    const player = missionWithPlayers.players.find((p) => p.player_id === playerId);
+    if (!player) {
+      return;
+    }
+
+    const loadingKey = `${missionSlug}-${playerId}`;
+    this.isCalculatingLeagueScore.add(loadingKey);
+
+    // Show loading state
+    this.snackBar.open('Calculating League of Legends score with AI...', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+    });
+
+    this.missionService.calculateLeagueScoreForPlayer(missionSlug, playerId).subscribe({
+      next: (updatedPlayer) => {
+        // Update the player in the local array
+        const playerIndex = missionWithPlayers.players.findIndex(
+          (p) => p.player_id === playerId,
+        );
+        if (playerIndex !== -1) {
+          missionWithPlayers.players[playerIndex] = updatedPlayer;
+        }
+        this.isCalculatingLeagueScore.delete(loadingKey);
+        this.snackBar.open('League score calculated and updated successfully!', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      },
+      error: (error) => {
+        console.error('Error calculating League score:', error);
+        this.isCalculatingLeagueScore.delete(loadingKey);
+        const errorMessage =
+          error.error?.message || 'Failed to calculate League score. Make sure the player has a Riot username configured and has played a recent match.';
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      },
+    });
+  }
+
+  isCalculatingLeagueScore = new Set<string>();
+
+  isCalculatingLeagueScoreForPlayer(missionSlug: string, playerId: string): boolean {
+    return this.isCalculatingLeagueScore.has(`${missionSlug}-${playerId}`);
   }
 
   onPlayMission(mission: Mission): void {
