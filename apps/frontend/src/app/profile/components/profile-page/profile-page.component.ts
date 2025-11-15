@@ -74,11 +74,30 @@ export class ProfilePageComponent implements OnInit {
         this.editRiotUsername = profile.riot_username || '';
         this.editAvatarUrl = profile.avatar_url;
         this.isLoading.set(false);
+
+        // Trigger spy card recalculation in the background (non-blocking)
+        this.recalculateSpyCard(profile.username);
       },
       error: (err: unknown) => {
         this.error.set('Failed to load user profile');
         this.isLoading.set(false);
         console.error('Profile loading error:', err);
+      },
+    });
+  }
+
+  private recalculateSpyCard(username: string): void {
+    // Recalculate spy card silently in the background
+    // Don't show errors to user as this is a background operation
+    this.profileService.recalculateSpyCard(username).subscribe({
+      next: (result) => {
+        console.log('Spy card recalculated:', result);
+        // Optionally refresh ability scores to show updated data
+        // The ability radar chart will automatically update when ability scores change
+      },
+      error: (err) => {
+        // Silently log error, don't show to user
+        console.warn('Spy card recalculation failed (non-critical):', err);
       },
     });
   }

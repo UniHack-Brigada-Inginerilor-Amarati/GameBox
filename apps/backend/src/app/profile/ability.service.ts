@@ -234,7 +234,7 @@ export class AbilityService {
     }): AbilityScore => {
       const gameCount = data.scores.length;
       const averageScore = gameCount > 0 ? data.scores.reduce((a, b) => a + b, 0) / gameCount : 0;
-
+      
       // Normalize to 0-100 scale
       // Assume max possible score is 100 for normalization
       // If scores exceed 100, we'll cap at 100
@@ -317,12 +317,25 @@ export class AbilityService {
   async getAbilityScoresFromSpyCard(username: string): Promise<AbilityScores> {
     this.logger.debug('Getting ability scores from spy card', { username });
 
-    // Query spy_cards table
-    const { data: spyCard, error } = await this.db.supabaseAdmin
+    // Query spy_cards table - try gamebox schema first, then default schema
+    let { data: spyCard, error } = await this.db.supabaseAdmin
+      .schema('gamebox')
       .from('spy_cards')
       .select('*')
       .eq('username', username)
-      .single();
+      .maybeSingle();
+
+    // If not found in gamebox schema, try default schema
+    if (error || !spyCard) {
+      this.logger.debug('Spy card not found in gamebox schema, trying default schema', { username });
+      const result = await this.db.supabaseAdmin
+        .from('spy_cards')
+        .select('*')
+        .eq('username', username)
+        .maybeSingle();
+      spyCard = result.data;
+      error = result.error;
+    }
 
     if (error) {
       if (error.code === 'PGRST116') {

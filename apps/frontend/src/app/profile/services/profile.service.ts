@@ -38,4 +38,20 @@ export class ProfileService {
   getAbilityScores(): Observable<AbilityScores> {
     return this.httpService.get<AbilityScores>(`${this.backendUrl}/profiles/me/abilities`);
   }
+
+  recalculateSpyCard(username: string): Observable<{
+    success: boolean;
+    totalScore: number;
+    overallRank: number;
+    missionCount: number;
+    message: string;
+  }> {
+    return this.httpService.post<{
+      success: boolean;
+      totalScore: number;
+      overallRank: number;
+      missionCount: number;
+      message: string;
+    }>(`${this.backendUrl}/profiles/${username}/spy-card/recalculate`, {});
+  }
 }

@@ -176,14 +176,12 @@ export class MissionService {
 
     const oldScore = oldData?.score || null;
 
-    // Determine state: 'completed' if score is not null, otherwise 'playing'
-    const newState = integerScore !== null ? 'completed' : 'playing';
-
-    // Update the score and state in missions_players table
+    // Don't change state - only update score. State can only be set to 'completed' via completeMission endpoint
+    // Update only the score in missions_players table (keep existing state)
     const { data, error } = await this.supabaseService.supabaseAdmin
       .schema('gamebox')
       .from('missions_players')
-      .update({ score: integerScore, state: newState })
+      .update({ score: integerScore })
       .eq('mission_slug', slug)
       .eq('player_id', playerId)
       .select('player_id, score, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score, state, created_at, updated_at')
@@ -201,10 +199,7 @@ export class MissionService {
       throw new NotFoundException(`Player with ID '${playerId}' not found`);
     }
 
-    // Update spy card if score changed and is not null
-    if (integerScore !== null && integerScore !== oldScore) {
-      await this.updateSpyCardWithMissionScore(profile.username, integerScore, oldScore);
-    }
+    // Don't update spy card here - spy cards are only updated when mission is completed via completeMission endpoint
 
         return {
           player_id: data.player_id,
@@ -218,33 +213,506 @@ export class MissionService {
           game_sense_awareness_score: data.game_sense_awareness_score ?? null,
           teamwork_communication_score: data.teamwork_communication_score ?? null,
           strategy_score: data.strategy_score ?? null,
-          state: (data.state || newState) as 'playing' | 'completed',
+          state: (data.state || 'playing') as 'playing' | 'completed',
           created_at: data.created_at,
           updated_at: data.updated_at,
         };
   }
 
+  async completeMission(
+    slug: string,
+    playerScores: Array<{
+      playerId: string;
+      score: number | null;
+      mental_fortitude_composure_score?: number | null;
+      adaptability_decision_making_score?: number | null;
+      aim_mechanical_skill_score?: number | null;
+      game_sense_awareness_score?: number | null;
+      teamwork_communication_score?: number | null;
+      strategy_score?: number | null;
+    }>,
+  ): Promise<MissionPlayer[]> {
+    this.logger.debug('Completing mission', { slug, playerCount: playerScores.length });
+
+    const updatedPlayers: MissionPlayer[] = [];
+
+    // Process each player's scores
+    for (const playerScore of playerScores) {
+      const integerScore = playerScore.score !== null ? Math.floor(playerScore.score) : null;
+
+      // Prepare updates object
+      const updates: Record<string, any> = {
+        score: integerScore,
+        state: 'completed',
+      };
+
+      // Add ability scores if provided
+      if (playerScore.mental_fortitude_composure_score !== undefined) {
+        updates.mental_fortitude_composure_score = playerScore.mental_fortitude_composure_score !== null
+          ? Math.floor(playerScore.mental_fortitude_composure_score)
+          : null;
+      }
+      if (playerScore.adaptability_decision_making_score !== undefined) {
+        updates.adaptability_decision_making_score = playerScore.adaptability_decision_making_score !== null
+          ? Math.floor(playerScore.adaptability_decision_making_score)
+          : null;
+      }
+      if (playerScore.aim_mechanical_skill_score !== undefined) {
+        updates.aim_mechanical_skill_score = playerScore.aim_mechanical_skill_score !== null
+          ? Math.floor(playerScore.aim_mechanical_skill_score)
+          : null;
+      }
+      if (playerScore.game_sense_awareness_score !== undefined) {
+        updates.game_sense_awareness_score = playerScore.game_sense_awareness_score !== null
+          ? Math.floor(playerScore.game_sense_awareness_score)
+          : null;
+      }
+      if (playerScore.teamwork_communication_score !== undefined) {
+        updates.teamwork_communication_score = playerScore.teamwork_communication_score !== null
+          ? Math.floor(playerScore.teamwork_communication_score)
+          : null;
+      }
+      if (playerScore.strategy_score !== undefined) {
+        updates.strategy_score = playerScore.strategy_score !== null
+          ? Math.floor(playerScore.strategy_score)
+          : null;
+      }
+
+      // Get old scores before updating
+      const { data: oldData } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
+        .from('missions_players')
+        .select('score, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+        .eq('mission_slug', slug)
+        .eq('player_id', playerScore.playerId)
+        .maybeSingle();
+
+      // Update the player's scores and state
+      const { data, error } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
+        .from('missions_players')
+        .update(updates)
+        .eq('mission_slug', slug)
+        .eq('player_id', playerScore.playerId)
+        .select('player_id, score, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score, state, created_at, updated_at')
+        .single();
+
+      if (error) {
+        this.logger.error('Error updating player score in completeMission', {
+          slug,
+          playerId: playerScore.playerId,
+          error: error.message,
+        });
+        continue; // Skip this player but continue with others
+      }
+
+      // Get player profile
+      const profile = await this.profileService.getProfileById(playerScore.playerId);
+      if (!profile) {
+        this.logger.warn('Player profile not found', { playerId: playerScore.playerId });
+        continue;
+      }
+
+      // Update spy card if score changed
+      if (integerScore !== null) {
+        const oldScore = oldData?.score || null;
+        if (integerScore !== oldScore) {
+          await this.updateSpyCardWithMissionScore(
+            profile.username,
+            integerScore,
+            oldScore,
+            data,
+          );
+        }
+      }
+
+      // Update spy card with ability scores if they changed
+      if (
+        playerScore.mental_fortitude_composure_score !== undefined ||
+        playerScore.adaptability_decision_making_score !== undefined ||
+        playerScore.aim_mechanical_skill_score !== undefined ||
+        playerScore.game_sense_awareness_score !== undefined ||
+        playerScore.teamwork_communication_score !== undefined ||
+        playerScore.strategy_score !== undefined
+      ) {
+        const abilityScoreUpdates: Record<string, number | null> = {};
+        if (playerScore.mental_fortitude_composure_score !== undefined) {
+          abilityScoreUpdates.mental_fortitude_composure_score = updates.mental_fortitude_composure_score;
+        }
+        if (playerScore.adaptability_decision_making_score !== undefined) {
+          abilityScoreUpdates.adaptability_decision_making_score = updates.adaptability_decision_making_score;
+        }
+        if (playerScore.aim_mechanical_skill_score !== undefined) {
+          abilityScoreUpdates.aim_mechanical_skill_score = updates.aim_mechanical_skill_score;
+        }
+        if (playerScore.game_sense_awareness_score !== undefined) {
+          abilityScoreUpdates.game_sense_awareness_score = updates.game_sense_awareness_score;
+        }
+        if (playerScore.teamwork_communication_score !== undefined) {
+          abilityScoreUpdates.teamwork_communication_score = updates.teamwork_communication_score;
+        }
+        if (playerScore.strategy_score !== undefined) {
+          abilityScoreUpdates.strategy_score = updates.strategy_score;
+        }
+
+        await this.updateSpyCardWithAbilityScores(
+          profile.username,
+          abilityScoreUpdates,
+          oldData || {},
+        );
+      }
+
+      updatedPlayers.push({
+        player_id: data.player_id,
+        username: profile.username,
+        email: profile.email,
+        avatar_url: profile.avatar_url || null,
+        score: data.score,
+        mental_fortitude_composure_score: data.mental_fortitude_composure_score ?? null,
+        adaptability_decision_making_score: data.adaptability_decision_making_score ?? null,
+        aim_mechanical_skill_score: data.aim_mechanical_skill_score ?? null,
+        game_sense_awareness_score: data.game_sense_awareness_score ?? null,
+        teamwork_communication_score: data.teamwork_communication_score ?? null,
+        strategy_score: data.strategy_score ?? null,
+        state: 'completed' as 'playing' | 'completed',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      });
+    }
+
+    this.logger.debug('Mission completed', {
+      slug,
+      updatedPlayersCount: updatedPlayers.length,
+    });
+
+    return updatedPlayers;
+  }
+
+  async updatePlayerAbilityScores(
+    slug: string,
+    playerId: string,
+    abilityScores: {
+      mental_fortitude_composure_score?: number | null;
+      adaptability_decision_making_score?: number | null;
+      aim_mechanical_skill_score?: number | null;
+      game_sense_awareness_score?: number | null;
+      teamwork_communication_score?: number | null;
+      strategy_score?: number | null;
+    },
+  ): Promise<MissionPlayer> {
+    this.logger.debug('Updating player ability scores', { slug, playerId, abilityScores });
+
+    // Convert all scores to integers if provided
+    const updates: Record<string, number | null> = {};
+    if (abilityScores.mental_fortitude_composure_score !== undefined) {
+      updates.mental_fortitude_composure_score = abilityScores.mental_fortitude_composure_score !== null 
+        ? Math.floor(abilityScores.mental_fortitude_composure_score) 
+        : null;
+    }
+    if (abilityScores.adaptability_decision_making_score !== undefined) {
+      updates.adaptability_decision_making_score = abilityScores.adaptability_decision_making_score !== null 
+        ? Math.floor(abilityScores.adaptability_decision_making_score) 
+        : null;
+    }
+    if (abilityScores.aim_mechanical_skill_score !== undefined) {
+      updates.aim_mechanical_skill_score = abilityScores.aim_mechanical_skill_score !== null 
+        ? Math.floor(abilityScores.aim_mechanical_skill_score) 
+        : null;
+    }
+    if (abilityScores.game_sense_awareness_score !== undefined) {
+      updates.game_sense_awareness_score = abilityScores.game_sense_awareness_score !== null 
+        ? Math.floor(abilityScores.game_sense_awareness_score) 
+        : null;
+    }
+    if (abilityScores.teamwork_communication_score !== undefined) {
+      updates.teamwork_communication_score = abilityScores.teamwork_communication_score !== null 
+        ? Math.floor(abilityScores.teamwork_communication_score) 
+        : null;
+    }
+    if (abilityScores.strategy_score !== undefined) {
+      updates.strategy_score = abilityScores.strategy_score !== null 
+        ? Math.floor(abilityScores.strategy_score) 
+        : null;
+    }
+
+    // Get old ability scores before updating
+    const { data: oldData } = await this.supabaseService.supabaseAdmin
+      .schema('gamebox')
+      .from('missions_players')
+      .select('mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+      .eq('mission_slug', slug)
+      .eq('player_id', playerId)
+      .maybeSingle();
+
+    // Update the ability scores in missions_players table
+    const { data, error } = await this.supabaseService.supabaseAdmin
+      .schema('gamebox')
+      .from('missions_players')
+      .update(updates)
+      .eq('mission_slug', slug)
+      .eq('player_id', playerId)
+      .select('player_id, score, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score, state, created_at, updated_at')
+      .single();
+
+    if (error) {
+      this.logger.error('Error updating player ability scores', error);
+      this.supabaseService.handleSupabaseError('updatePlayerAbilityScores', error, { slug, playerId, abilityScores });
+      throw error;
+    }
+
+    // Get player profile to enrich the response
+    const profile = await this.profileService.getProfileById(playerId);
+    if (!profile) {
+      throw new NotFoundException(`Player with ID '${playerId}' not found`);
+    }
+
+    // Don't update spy card here - spy cards are only updated when mission is completed via completeMission endpoint
+
+    return {
+      player_id: data.player_id,
+      username: profile.username,
+      email: profile.email,
+      avatar_url: profile.avatar_url || null,
+      score: data.score,
+      mental_fortitude_composure_score: data.mental_fortitude_composure_score ?? null,
+      adaptability_decision_making_score: data.adaptability_decision_making_score ?? null,
+      aim_mechanical_skill_score: data.aim_mechanical_skill_score ?? null,
+      game_sense_awareness_score: data.game_sense_awareness_score ?? null,
+      teamwork_communication_score: data.teamwork_communication_score ?? null,
+      strategy_score: data.strategy_score ?? null,
+      state: (data.state || 'playing') as 'playing' | 'completed',
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+    };
+  }
+
+  /**
+   * Update spy card with ability scores from missions_players
+   */
+  private async updateSpyCardWithAbilityScores(
+    username: string,
+    newAbilityScores: Record<string, number | null>,
+    oldAbilityScores: Record<string, number | null>,
+  ): Promise<void> {
+    try {
+      this.logger.debug('Updating spy card with ability scores', { username, newAbilityScores });
+
+      // Get current spy card
+      let { data: spyCard, error: spyCardError } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
+        .from('spy_cards')
+        .select('total_score, overall_rank, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+        .eq('username', username)
+        .maybeSingle();
+
+      if (spyCardError || !spyCard) {
+        const result = await this.supabaseService.supabaseAdmin
+          .from('spy_cards')
+          .select('total_score, overall_rank, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+          .eq('username', username)
+          .maybeSingle();
+        spyCard = result.data;
+        spyCardError = result.error;
+      }
+
+      if (spyCardError || !spyCard) {
+        this.logger.warn('Spy card not found for user', { username });
+        return;
+      }
+
+      // Determine current overall rank
+      let currentRank: AbilityRank;
+      if (spyCard.overall_rank && spyCard.overall_rank >= 1 && spyCard.overall_rank <= 5) {
+        currentRank = spyCard.overall_rank as AbilityRank;
+      } else {
+        const totalScore = Number(spyCard.total_score) || 0;
+        if (totalScore >= RANK_THRESHOLDS[AbilityRank.S]) {
+          currentRank = AbilityRank.S;
+        } else if (totalScore >= RANK_THRESHOLDS[AbilityRank.A]) {
+          currentRank = AbilityRank.A;
+        } else if (totalScore >= RANK_THRESHOLDS[AbilityRank.B]) {
+          currentRank = AbilityRank.B;
+        } else if (totalScore >= RANK_THRESHOLDS[AbilityRank.C]) {
+          currentRank = AbilityRank.C;
+        } else {
+          currentRank = AbilityRank.D;
+        }
+      }
+
+      const rankModifier = ABILITY_RANK_MODIFIERS[currentRank];
+
+      // Calculate differences and update spy card ability scores
+      const abilityScoreUpdates: Record<string, number> = {};
+      const currentAbilityScores = {
+        mental_fortitude_composure_score: Number(spyCard.mental_fortitude_composure_score) || 0,
+        adaptability_decision_making_score: Number(spyCard.adaptability_decision_making_score) || 0,
+        aim_mechanical_skill_score: Number(spyCard.aim_mechanical_skill_score) || 0,
+        game_sense_awareness_score: Number(spyCard.game_sense_awareness_score) || 0,
+        teamwork_communication_score: Number(spyCard.teamwork_communication_score) || 0,
+        strategy_score: Number(spyCard.strategy_score) || 0,
+      };
+
+      // For each updated ability score, calculate the difference and apply rank modifier
+      if (newAbilityScores.mental_fortitude_composure_score !== undefined) {
+        const oldValue = oldAbilityScores.mental_fortitude_composure_score ?? 0;
+        const newValue = newAbilityScores.mental_fortitude_composure_score ?? 0;
+        const diff = newValue - oldValue;
+        const modifiedDiff = Math.round(diff * rankModifier);
+        abilityScoreUpdates.mental_fortitude_composure_score = currentAbilityScores.mental_fortitude_composure_score + modifiedDiff;
+      }
+      if (newAbilityScores.adaptability_decision_making_score !== undefined) {
+        const oldValue = oldAbilityScores.adaptability_decision_making_score ?? 0;
+        const newValue = newAbilityScores.adaptability_decision_making_score ?? 0;
+        const diff = newValue - oldValue;
+        const modifiedDiff = Math.round(diff * rankModifier);
+        abilityScoreUpdates.adaptability_decision_making_score = currentAbilityScores.adaptability_decision_making_score + modifiedDiff;
+      }
+      if (newAbilityScores.aim_mechanical_skill_score !== undefined) {
+        const oldValue = oldAbilityScores.aim_mechanical_skill_score ?? 0;
+        const newValue = newAbilityScores.aim_mechanical_skill_score ?? 0;
+        const diff = newValue - oldValue;
+        const modifiedDiff = Math.round(diff * rankModifier);
+        abilityScoreUpdates.aim_mechanical_skill_score = currentAbilityScores.aim_mechanical_skill_score + modifiedDiff;
+      }
+      if (newAbilityScores.game_sense_awareness_score !== undefined) {
+        const oldValue = oldAbilityScores.game_sense_awareness_score ?? 0;
+        const newValue = newAbilityScores.game_sense_awareness_score ?? 0;
+        const diff = newValue - oldValue;
+        const modifiedDiff = Math.round(diff * rankModifier);
+        abilityScoreUpdates.game_sense_awareness_score = currentAbilityScores.game_sense_awareness_score + modifiedDiff;
+      }
+      if (newAbilityScores.teamwork_communication_score !== undefined) {
+        const oldValue = oldAbilityScores.teamwork_communication_score ?? 0;
+        const newValue = newAbilityScores.teamwork_communication_score ?? 0;
+        const diff = newValue - oldValue;
+        const modifiedDiff = Math.round(diff * rankModifier);
+        abilityScoreUpdates.teamwork_communication_score = currentAbilityScores.teamwork_communication_score + modifiedDiff;
+      }
+      if (newAbilityScores.strategy_score !== undefined) {
+        const oldValue = oldAbilityScores.strategy_score ?? 0;
+        const newValue = newAbilityScores.strategy_score ?? 0;
+        const diff = newValue - oldValue;
+        const modifiedDiff = Math.round(diff * rankModifier);
+        abilityScoreUpdates.strategy_score = currentAbilityScores.strategy_score + modifiedDiff;
+      }
+
+      // Recalculate total score from all ability scores
+      // Sum up all updated ability scores, keeping existing ones that weren't updated
+      let newTotalScore = Number(spyCard.total_score) || 0;
+      for (const [key, newValue] of Object.entries(abilityScoreUpdates)) {
+        const oldValue = currentAbilityScores[key as keyof typeof currentAbilityScores] || 0;
+        newTotalScore = newTotalScore - oldValue + newValue;
+      }
+
+      // Recalculate overall rank
+      let newOverallRank: AbilityRank;
+      if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.S]) {
+        newOverallRank = AbilityRank.S;
+      } else if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.A]) {
+        newOverallRank = AbilityRank.A;
+      } else if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.B]) {
+        newOverallRank = AbilityRank.B;
+      } else if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.C]) {
+        newOverallRank = AbilityRank.C;
+      } else {
+        newOverallRank = AbilityRank.D;
+      }
+
+      // Update spy card
+      const updateData: Record<string, any> = {
+        total_score: newTotalScore,
+        overall_rank: newOverallRank,
+        ...abilityScoreUpdates,
+      };
+
+      let { error: updateError } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
+        .from('spy_cards')
+        .update(updateData)
+        .eq('username', username);
+
+      if (updateError) {
+        const result = await this.supabaseService.supabaseAdmin
+          .from('spy_cards')
+          .update(updateData)
+          .eq('username', username);
+        updateError = result.error;
+      }
+
+      if (updateError) {
+        this.logger.error('Error updating spy card with ability scores', {
+          username,
+          error: updateError.message,
+        });
+      } else {
+        this.logger.debug('Spy card updated with ability scores', {
+          username,
+          abilityScoreUpdates,
+          newTotalScore,
+          newOverallRank,
+        });
+      }
+    } catch (error) {
+      this.logger.error('Exception updating spy card with ability scores', {
+        username,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
   /**
    * Update spy card with mission score multiplied by rank modifier
+   * Also updates individual ability scores from mission player data
    */
   private async updateSpyCardWithMissionScore(
     username: string,
     newScore: number,
     oldScore: number | null,
+    missionPlayerData?: {
+      mental_fortitude_composure_score?: number | null;
+      adaptability_decision_making_score?: number | null;
+      aim_mechanical_skill_score?: number | null;
+      game_sense_awareness_score?: number | null;
+      teamwork_communication_score?: number | null;
+      strategy_score?: number | null;
+    },
   ): Promise<void> {
     try {
-      // Get current spy card
-      const { data: spyCard, error: spyCardError } = await this.supabaseService.supabaseAdmin
+      this.logger.debug('Fetching spy card for update', { username });
+      
+      // Get current spy card - try gamebox schema first, then default schema
+      let { data: spyCard, error: spyCardError } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
         .from('spy_cards')
-        .select('total_score, overall_rank')
+        .select('total_score, overall_rank, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
         .eq('username', username)
-        .single();
+        .maybeSingle();
+      
+      // If not found in gamebox schema, try default schema
+      if (spyCardError || !spyCard) {
+        this.logger.debug('Spy card not found in gamebox schema, trying default schema', { username });
+        const result = await this.supabaseService.supabaseAdmin
+          .from('spy_cards')
+          .select('total_score, overall_rank, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+          .eq('username', username)
+          .maybeSingle();
+        spyCard = result.data;
+        spyCardError = result.error;
+      }
 
       if (spyCardError) {
-        this.logger.warn('Spy card not found or error fetching', {
+        this.logger.error('Error fetching spy card', {
           username,
           error: spyCardError.message,
+          code: spyCardError.code,
+          details: spyCardError.details,
+          hint: spyCardError.hint,
         });
+        return; // Don't fail the mission score update if spy card doesn't exist
+      }
+
+      if (!spyCard) {
+        this.logger.warn('Spy card not found for user', { username });
         return; // Don't fail the mission score update if spy card doesn't exist
       }
 
@@ -293,33 +761,138 @@ export class MissionService {
         newOverallRank = AbilityRank.D;
       }
 
-      // Update spy card
-      const { error: updateError } = await this.supabaseService.supabaseAdmin
-        .from('spy_cards')
-        .update({
+      // Recalculate all ability scores from all missions (not just this one)
+      // This ensures ability scores are always in sync with missions_players table
+      const profile = await this.profileService.getProfileByUsername(username);
+      if (profile) {
+        const { data: allMissionScores } = await this.supabaseService.supabaseAdmin
+          .schema('gamebox')
+          .from('missions_players')
+          .select('mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+          .eq('player_id', profile.id)
+          .not('score', 'is', null);
+
+        // Sum up all ability scores from all missions
+        let mentalFortitudeComposureTotal = 0;
+        let adaptabilityDecisionMakingTotal = 0;
+        let aimMechanicalSkillTotal = 0;
+        let gameSenseAwarenessTotal = 0;
+        let teamworkCommunicationTotal = 0;
+        let strategyTotal = 0;
+
+        if (allMissionScores) {
+          for (const missionScore of allMissionScores) {
+            if (missionScore.mental_fortitude_composure_score !== null && missionScore.mental_fortitude_composure_score !== undefined) {
+              mentalFortitudeComposureTotal += Math.round(Number(missionScore.mental_fortitude_composure_score) * rankModifier);
+            }
+            if (missionScore.adaptability_decision_making_score !== null && missionScore.adaptability_decision_making_score !== undefined) {
+              adaptabilityDecisionMakingTotal += Math.round(Number(missionScore.adaptability_decision_making_score) * rankModifier);
+            }
+            if (missionScore.aim_mechanical_skill_score !== null && missionScore.aim_mechanical_skill_score !== undefined) {
+              aimMechanicalSkillTotal += Math.round(Number(missionScore.aim_mechanical_skill_score) * rankModifier);
+            }
+            if (missionScore.game_sense_awareness_score !== null && missionScore.game_sense_awareness_score !== undefined) {
+              gameSenseAwarenessTotal += Math.round(Number(missionScore.game_sense_awareness_score) * rankModifier);
+            }
+            if (missionScore.teamwork_communication_score !== null && missionScore.teamwork_communication_score !== undefined) {
+              teamworkCommunicationTotal += Math.round(Number(missionScore.teamwork_communication_score) * rankModifier);
+            }
+            if (missionScore.strategy_score !== null && missionScore.strategy_score !== undefined) {
+              strategyTotal += Math.round(Number(missionScore.strategy_score) * rankModifier);
+            }
+          }
+        }
+
+        // Update ability scores in spy card
+        const abilityScoreUpdates: Record<string, number> = {
+          mental_fortitude_composure_score: mentalFortitudeComposureTotal || Number(spyCard.mental_fortitude_composure_score) || 0,
+          adaptability_decision_making_score: adaptabilityDecisionMakingTotal || Number(spyCard.adaptability_decision_making_score) || 0,
+          aim_mechanical_skill_score: aimMechanicalSkillTotal || Number(spyCard.aim_mechanical_skill_score) || 0,
+          game_sense_awareness_score: gameSenseAwarenessTotal || Number(spyCard.game_sense_awareness_score) || 0,
+          teamwork_communication_score: teamworkCommunicationTotal || Number(spyCard.teamwork_communication_score) || 0,
+          strategy_score: strategyTotal || Number(spyCard.strategy_score) || 0,
+        };
+
+        // Update spy card - try gamebox schema first, then default schema
+        const updateData: Record<string, any> = {
           total_score: newTotalScore,
           overall_rank: newOverallRank,
-        })
-        .eq('username', username);
+          ...abilityScoreUpdates,
+        };
 
-      if (updateError) {
-        this.logger.error('Error updating spy card with mission score', {
-          username,
-          error: updateError.message,
-        });
-        // Don't throw - mission score update succeeded, spy card update is secondary
+        let { error: updateError } = await this.supabaseService.supabaseAdmin
+          .schema('gamebox')
+          .from('spy_cards')
+          .update(updateData)
+          .eq('username', username);
+
+        // If update failed, try default schema
+        if (updateError) {
+          this.logger.debug('Update failed in gamebox schema, trying default schema', {
+            username,
+            error: updateError.message,
+          });
+          const result = await this.supabaseService.supabaseAdmin
+            .from('spy_cards')
+            .update(updateData)
+            .eq('username', username);
+          updateError = result.error;
+        }
+
+        if (updateError) {
+          this.logger.error('Error updating spy card with mission score', {
+            username,
+            error: updateError.message,
+          });
+          // Don't throw - mission score update succeeded, spy card update is secondary
+        } else {
+          this.logger.debug('Spy card updated with mission score', {
+            username,
+            missionScore: newScore,
+            oldMissionScore: oldScore,
+            rankModifier,
+            modifiedScoreDifference,
+            oldTotalScore: currentTotalScore,
+            newTotalScore,
+            oldRank: currentRank,
+            newRank: newOverallRank,
+            abilityScoreUpdates,
+          });
+        }
       } else {
-        this.logger.debug('Spy card updated with mission score', {
-          username,
-          missionScore: newScore,
-          oldMissionScore: oldScore,
-          rankModifier,
-          modifiedScoreDifference,
-          oldTotalScore: currentTotalScore,
-          newTotalScore,
-          oldRank: currentRank,
-          newRank: newOverallRank,
-        });
+        // Fallback: update only total_score and overall_rank if profile not found
+        const updateData: Record<string, any> = {
+          total_score: newTotalScore,
+          overall_rank: newOverallRank,
+        };
+
+        let { error: updateError } = await this.supabaseService.supabaseAdmin
+          .schema('gamebox')
+          .from('spy_cards')
+          .update(updateData)
+          .eq('username', username);
+
+        if (updateError) {
+          const result = await this.supabaseService.supabaseAdmin
+            .from('spy_cards')
+            .update(updateData)
+            .eq('username', username);
+          updateError = result.error;
+        }
+
+        if (updateError) {
+          this.logger.error('Error updating spy card with mission score', {
+            username,
+            error: updateError.message,
+          });
+          // Don't throw - mission score update succeeded, spy card update is secondary
+        } else {
+          this.logger.debug('Spy card updated with mission score (fallback)', {
+            username,
+            newTotalScore,
+            newOverallRank,
+          });
+        }
       }
     } catch (error) {
       this.logger.error('Exception updating spy card with mission score', {
@@ -327,6 +900,197 @@ export class MissionService {
         error: error instanceof Error ? error.message : String(error),
       });
       // Don't throw - mission score update succeeded, spy card update is secondary
+    }
+  }
+
+  /**
+   * Recalculate spy card for a user based on all their mission scores
+   * This method sums up all mission scores (with rank modifiers) and updates the spy card
+   */
+  async recalculateSpyCardFromMissions(username: string): Promise<{
+    success: boolean;
+    totalScore: number;
+    overallRank: AbilityRank;
+    missionCount: number;
+    message: string;
+  }> {
+    this.logger.debug('Recalculating spy card from missions', { username });
+
+    try {
+      // Get user profile to get player ID
+      const profile = await this.profileService.getProfileByUsername(username);
+      if (!profile) {
+        throw new NotFoundException(`User with username '${username}' not found`);
+      }
+
+      // Get all mission scores for this user (including ability scores)
+      const { data: missionScores, error } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
+        .from('missions_players')
+        .select('score, mission_slug, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+        .eq('player_id', profile.id)
+        .not('score', 'is', null);
+
+      if (error) {
+        this.logger.error('Error fetching mission scores', { username, error: error.message });
+        throw error;
+      }
+
+      if (!missionScores || missionScores.length === 0) {
+        this.logger.warn('No mission scores found for user', { username });
+        return {
+          success: false,
+          totalScore: 0,
+          overallRank: AbilityRank.D,
+          missionCount: 0,
+          message: 'No mission scores found for this user',
+        };
+      }
+
+      // Get current spy card to determine rank for each mission score
+      let { data: spyCard, error: spyCardError } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
+        .from('spy_cards')
+        .select('total_score, overall_rank, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+        .eq('username', username)
+        .maybeSingle();
+
+      if (spyCardError || !spyCard) {
+        // Try default schema
+        const result = await this.supabaseService.supabaseAdmin
+          .from('spy_cards')
+          .select('total_score, overall_rank, mental_fortitude_composure_score, adaptability_decision_making_score, aim_mechanical_skill_score, game_sense_awareness_score, teamwork_communication_score, strategy_score')
+          .eq('username', username)
+          .maybeSingle();
+        spyCard = result.data;
+        spyCardError = result.error;
+      }
+
+      if (spyCardError || !spyCard) {
+        this.logger.warn('Spy card not found, creating new one', { username });
+        // Initialize with default values
+        spyCard = {
+          total_score: 0,
+          overall_rank: AbilityRank.D,
+          mental_fortitude_composure_score: 0,
+          adaptability_decision_making_score: 0,
+          aim_mechanical_skill_score: 0,
+          game_sense_awareness_score: 0,
+          teamwork_communication_score: 0,
+          strategy_score: 0,
+        };
+      }
+
+      // Calculate total score and individual ability scores from all missions
+      // For recalculation, we'll use the current rank for all missions
+      // (in practice, we'd need to track rank at time of each mission, but this is a simplification)
+      const currentRank = spyCard.overall_rank && spyCard.overall_rank >= 1 && spyCard.overall_rank <= 5
+        ? (spyCard.overall_rank as AbilityRank)
+        : AbilityRank.D;
+
+      const rankModifier = ABILITY_RANK_MODIFIERS[currentRank];
+      let totalMissionScore = 0;
+      
+      // Initialize ability score totals
+      let mentalFortitudeComposureTotal = 0;
+      let adaptabilityDecisionMakingTotal = 0;
+      let aimMechanicalSkillTotal = 0;
+      let gameSenseAwarenessTotal = 0;
+      let teamworkCommunicationTotal = 0;
+      let strategyTotal = 0;
+
+      for (const missionScore of missionScores) {
+        const score = Number(missionScore.score) || 0;
+        const modifiedScore = Math.round(score * rankModifier);
+        totalMissionScore += modifiedScore;
+
+        // Sum up individual ability scores (if they exist in missions_players)
+        if (missionScore.mental_fortitude_composure_score !== null && missionScore.mental_fortitude_composure_score !== undefined) {
+          mentalFortitudeComposureTotal += Math.round(Number(missionScore.mental_fortitude_composure_score) * rankModifier);
+        }
+        if (missionScore.adaptability_decision_making_score !== null && missionScore.adaptability_decision_making_score !== undefined) {
+          adaptabilityDecisionMakingTotal += Math.round(Number(missionScore.adaptability_decision_making_score) * rankModifier);
+        }
+        if (missionScore.aim_mechanical_skill_score !== null && missionScore.aim_mechanical_skill_score !== undefined) {
+          aimMechanicalSkillTotal += Math.round(Number(missionScore.aim_mechanical_skill_score) * rankModifier);
+        }
+        if (missionScore.game_sense_awareness_score !== null && missionScore.game_sense_awareness_score !== undefined) {
+          gameSenseAwarenessTotal += Math.round(Number(missionScore.game_sense_awareness_score) * rankModifier);
+        }
+        if (missionScore.teamwork_communication_score !== null && missionScore.teamwork_communication_score !== undefined) {
+          teamworkCommunicationTotal += Math.round(Number(missionScore.teamwork_communication_score) * rankModifier);
+        }
+        if (missionScore.strategy_score !== null && missionScore.strategy_score !== undefined) {
+          strategyTotal += Math.round(Number(missionScore.strategy_score) * rankModifier);
+        }
+      }
+
+      // Update spy card with new total
+      const newTotalScore = totalMissionScore;
+      let newOverallRank: AbilityRank;
+      if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.S]) {
+        newOverallRank = AbilityRank.S;
+      } else if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.A]) {
+        newOverallRank = AbilityRank.A;
+      } else if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.B]) {
+        newOverallRank = AbilityRank.B;
+      } else if (newTotalScore >= RANK_THRESHOLDS[AbilityRank.C]) {
+        newOverallRank = AbilityRank.C;
+      } else {
+        newOverallRank = AbilityRank.D;
+      }
+
+      // Update spy card with total score and individual ability scores
+      const updateData: Record<string, any> = {
+        total_score: newTotalScore,
+        overall_rank: newOverallRank,
+        mental_fortitude_composure_score: mentalFortitudeComposureTotal || spyCard.mental_fortitude_composure_score || 0,
+        adaptability_decision_making_score: adaptabilityDecisionMakingTotal || spyCard.adaptability_decision_making_score || 0,
+        aim_mechanical_skill_score: aimMechanicalSkillTotal || spyCard.aim_mechanical_skill_score || 0,
+        game_sense_awareness_score: gameSenseAwarenessTotal || spyCard.game_sense_awareness_score || 0,
+        teamwork_communication_score: teamworkCommunicationTotal || spyCard.teamwork_communication_score || 0,
+        strategy_score: strategyTotal || spyCard.strategy_score || 0,
+      };
+
+      let { error: updateError } = await this.supabaseService.supabaseAdmin
+        .schema('gamebox')
+        .from('spy_cards')
+        .update(updateData)
+        .eq('username', username);
+
+      if (updateError) {
+        const result = await this.supabaseService.supabaseAdmin
+          .from('spy_cards')
+          .update(updateData)
+          .eq('username', username);
+        updateError = result.error;
+      }
+
+      if (updateError) {
+        this.logger.error('Error updating spy card', { username, error: updateError.message });
+        throw updateError;
+      }
+
+      this.logger.debug('Spy card recalculated successfully', {
+        username,
+        totalScore: newTotalScore,
+        overallRank: newOverallRank,
+        missionCount: missionScores.length,
+      });
+
+      return {
+        success: true,
+        totalScore: newTotalScore,
+        overallRank: newOverallRank,
+        missionCount: missionScores.length,
+        message: `Spy card recalculated from ${missionScores.length} mission(s)`,
+      };
+    } catch (error) {
+      this.logger.error('Exception recalculating spy card', {
+        username,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
     }
   }
 

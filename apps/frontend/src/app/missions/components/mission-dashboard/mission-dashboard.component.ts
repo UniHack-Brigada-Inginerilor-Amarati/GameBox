@@ -8,11 +8,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { Mission, AdminRoles } from '@gamebox/shared';
 import { MissionService, MissionPlayer } from '../../services/mission.service';
 import { MissionCardComponent } from '../mission-card/mission-card.component';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { ConfirmCompleteMissionDialogComponent } from './confirm-complete-mission-dialog.component';
 
 interface MissionWithPlayers {
   mission: Mission;
@@ -33,6 +35,7 @@ interface MissionWithPlayers {
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    MatDialogModule,
     FormsModule,
     MissionCardComponent,
   ],
@@ -63,6 +66,8 @@ export class MissionDashboardComponent implements OnInit {
   private snackBar: MatSnackBar = inject(MatSnackBar);
   private router: Router = inject(Router);
   private profileService: ProfileService = inject(ProfileService);
+  private dialog: MatDialog = inject(MatDialog);
+  private completingMissions = new Set<string>();
 
   ngOnInit(): void {
     this.checkAdminStatus();
@@ -153,39 +158,56 @@ export class MissionDashboardComponent implements OnInit {
       score = integerScore;
     }
 
-    this.missionService.updatePlayerScore(missionSlug, playerId, score).subscribe({
-      next: (updatedPlayer) => {
-        // Update the player in the local array
-        const missionWithPlayers = this.missionsWithPlayers.find(
-          (m) => m.mission.slug === missionSlug,
-        );
-        if (missionWithPlayers) {
-          const playerIndex = missionWithPlayers.players.findIndex(
-            (p) => p.player_id === playerId,
-          );
-          if (playerIndex !== -1) {
-            missionWithPlayers.players[playerIndex] = updatedPlayer;
-          }
-        }
-        this.snackBar.open('Score updated successfully', 'Close', {
-          duration: 2000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-      },
-      error: (error) => {
-        console.error('Error updating score:', error);
-        this.snackBar.open('Failed to update score', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-      },
-    });
+    // Only update local state - don't save to database until "Complete Mission" is pressed
+    const missionWithPlayers = this.missionsWithPlayers.find(
+      (m) => m.mission.slug === missionSlug,
+    );
+    if (missionWithPlayers) {
+      const playerIndex = missionWithPlayers.players.findIndex(
+        (p) => p.player_id === playerId,
+      );
+      if (playerIndex !== -1) {
+        missionWithPlayers.players[playerIndex].score = score;
+      }
+    }
   }
 
   clearScore(missionSlug: string, playerId: string): void {
     this.updateScore(missionSlug, playerId, null);
+  }
+
+  updateAbilityScore(
+    missionSlug: string,
+    playerId: string,
+    abilityName: 'mental_fortitude_composure_score' | 'adaptability_decision_making_score' | 'aim_mechanical_skill_score' | 'game_sense_awareness_score' | 'teamwork_communication_score' | 'strategy_score',
+    score: number | null,
+  ): void {
+    // Validate score if provided - must be a non-negative integer
+    if (score !== null) {
+      const integerScore = Math.floor(score);
+      if (isNaN(integerScore) || integerScore < 0 || integerScore !== score) {
+        this.snackBar.open('Score must be a non-negative integer', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+        return;
+      }
+      score = integerScore;
+    }
+
+    // Only update local state - don't save to database until "Complete Mission" is pressed
+    const missionWithPlayers = this.missionsWithPlayers.find(
+      (m) => m.mission.slug === missionSlug,
+    );
+    if (missionWithPlayers) {
+      const playerIndex = missionWithPlayers.players.findIndex(
+        (p) => p.player_id === playerId,
+      );
+      if (playerIndex !== -1) {
+        missionWithPlayers.players[playerIndex][abilityName] = score;
+      }
+    }
   }
 
   parseInteger(value: string): number | null {
@@ -203,5 +225,74 @@ export class MissionDashboardComponent implements OnInit {
   onPlayMission(mission: Mission): void {
     // Reload missions to update the hasJoined status after playing
     this.loadMissions();
+  }
+
+  isMissionCompleted(players: MissionPlayer[]): boolean {
+    if (players.length === 0) return false;
+    return players.every((player) => player.state === 'completed');
+  }
+
+  isCompletingMission(missionSlug: string): boolean {
+    return this.completingMissions.has(missionSlug);
+  }
+
+  completeMission(missionSlug: string, players: MissionPlayer[]): void {
+    // Show confirmation dialog
+    const dialogRef = this.dialog.open(ConfirmCompleteMissionDialogComponent, {
+      width: '400px',
+      data: {
+        missionName: this.missions.find((m) => m.slug === missionSlug)?.name || 'this mission',
+        playerCount: players.length,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      // Collect all current scores from the players array
+      const playerScores = players.map((player) => ({
+        playerId: player.player_id,
+        score: player.score,
+        mental_fortitude_composure_score: player.mental_fortitude_composure_score,
+        adaptability_decision_making_score: player.adaptability_decision_making_score,
+        aim_mechanical_skill_score: player.aim_mechanical_skill_score,
+        game_sense_awareness_score: player.game_sense_awareness_score,
+        teamwork_communication_score: player.teamwork_communication_score,
+        strategy_score: player.strategy_score,
+      }));
+
+      this.completingMissions.add(missionSlug);
+
+      this.missionService.completeMission(missionSlug, playerScores).subscribe({
+        next: (updatedPlayers) => {
+          // Update the players in the local array
+          const missionWithPlayers = this.missionsWithPlayers.find(
+            (m) => m.mission.slug === missionSlug,
+          );
+          if (missionWithPlayers) {
+            missionWithPlayers.players = updatedPlayers;
+          }
+
+          this.completingMissions.delete(missionSlug);
+
+          this.snackBar.open('Mission completed successfully!', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        },
+        error: (error) => {
+          console.error('Error completing mission:', error);
+          this.completingMissions.delete(missionSlug);
+          this.snackBar.open('Failed to complete mission', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        },
+      });
+    });
   }
 }

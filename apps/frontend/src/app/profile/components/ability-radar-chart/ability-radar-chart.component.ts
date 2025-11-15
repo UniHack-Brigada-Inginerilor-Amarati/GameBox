@@ -125,7 +125,7 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
 
     abilities.forEach((ability, index) => {
       const angle = index * angleStep - Math.PI / 2;
-      const distance = (radius * ability.score) / 100;
+      const distance = (radius * ability.score) / 1000;
       const x = centerX + distance * Math.cos(angle);
       const y = centerY + distance * Math.sin(angle);
 
@@ -144,7 +144,7 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
     ctx.fillStyle = '#3f51b5';
     abilities.forEach((ability, index) => {
       const angle = index * angleStep - Math.PI / 2;
-      const distance = (radius * ability.score) / 100;
+      const distance = (radius * ability.score) / 1000;
       const x = centerX + distance * Math.cos(angle);
       const y = centerY + distance * Math.sin(angle);
 
@@ -186,7 +186,7 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit {
       });
 
       // Draw score
-      const scoreDistance = (radius * ability.score) / 100;
+      const scoreDistance = (radius * ability.score) / 1000;
       const scoreX = centerX + scoreDistance * Math.cos(angle);
       const scoreY = centerY + scoreDistance * Math.sin(angle);
       ctx.fillStyle = '#3f51b5';

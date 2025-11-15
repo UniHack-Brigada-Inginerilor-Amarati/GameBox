@@ -393,6 +393,44 @@
   padding: 16px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .mission-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mission-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .completed-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #4caf50;
+    color: white;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .complete-mission-button {
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
 }
 
 .mission-header .mission-name {

@@ -11,12 +11,14 @@ import {
   UploadedFile,
   Logger,
   Query,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../admin/admin.guard';
 import { AbilityService } from './ability.service';
+import { MissionService } from '../missions/mission.service';
 import { UserProfile, UserProfileDTO, AbilityScores } from '@gamebox/shared';
 
 @Controller('profiles')
@@ -24,6 +26,7 @@ export class ProfileController {
   constructor(
     private readonly profileService: ProfileService,
     private readonly abilityService: AbilityService,
+    private readonly missionService: MissionService,
   ) {}
   private readonly logger = new Logger(ProfileController.name);
 
@@ -136,18 +139,66 @@ export class ProfileController {
   @Get('me/abilities')
   @UseGuards(AuthGuard)
   async getCurrentUserAbilities(@Request() req: any): Promise<AbilityScores> {
-    this.logger.debug('GET /profiles/me/abilities - Fetching ability scores', {
+    this.logger.debug('GET /profiles/me/abilities - Fetching ability scores from spy card', {
       username: req.user.username,
     });
-    return this.abilityService.calculateAbilityScores(req.user.username);
+    try {
+      // Try to get from spy card first
+      return await this.abilityService.getAbilityScoresFromSpyCard(req.user.username);
+    } catch (err) {
+      // Fallback to calculating from game results if spy card doesn't exist
+      this.logger.debug('Spy card not found, falling back to calculated scores', {
+        username: req.user.username,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return this.abilityService.calculateAbilityScores(req.user.username);
+    }
   }
 
   @Get(':username/abilities')
   @UseGuards(AuthGuard)
   async getUserAbilities(@Param('username') username: string): Promise<AbilityScores> {
-    this.logger.debug('GET /profiles/:username/abilities - Fetching ability scores', {
+    this.logger.debug('GET /profiles/:username/abilities - Fetching ability scores from spy card', {
       username,
     });
-    return this.abilityService.calculateAbilityScores(username);
+    try {
+      // Try to get from spy card first
+      return await this.abilityService.getAbilityScoresFromSpyCard(username);
+    } catch (err) {
+      // Fallback to calculating from game results if spy card doesn't exist
+      this.logger.debug('Spy card not found, falling back to calculated scores', {
+        username,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return this.abilityService.calculateAbilityScores(username);
+    }
+  }
+
+  @Post(':username/spy-card/recalculate')
+  @UseGuards(AuthGuard)
+  async recalculateSpyCard(
+    @Param('username') username: string,
+    @Request() req: any,
+  ): Promise<{
+    success: boolean;
+    totalScore: number;
+    overallRank: number;
+    missionCount: number;
+    message: string;
+  }> {
+    this.logger.debug('POST /profiles/:username/spy-card/recalculate - Recalculating spy card', {
+      username,
+      requesterUsername: req.user?.username,
+    });
+
+    // Allow users to recalculate their own spy card, or admins to recalculate any user's spy card
+    const isAdmin = req.user?.role === 'admin' || req.user?.role === 'moderator';
+    const isOwnProfile = req.user?.username === username;
+
+    if (!isAdmin && !isOwnProfile) {
+      throw new ForbiddenException('You can only recalculate your own spy card');
+    }
+
+    return this.missionService.recalculateSpyCardFromMissions(username);
   }
 }

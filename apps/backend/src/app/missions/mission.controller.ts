@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Logger, UseGuards, Request, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Param, Logger, UseGuards, Request, Patch, Body, Post } from '@nestjs/common';
 import { MissionService } from './mission.service';
 import { Mission } from '@gamebox/shared';
 import { AdminGuard } from '../admin/admin.guard';
@@ -59,6 +59,52 @@ export class MissionController {
       score: body.score,
     });
     return this.missionsService.updatePlayerScore(slug, playerId, body.score);
+  }
+
+  @Patch(':slug/players/:playerId/ability-scores')
+  @UseGuards(AdminGuard)
+  async updatePlayerAbilityScores(
+    @Param('slug') slug: string,
+    @Param('playerId') playerId: string,
+    @Body() body: {
+      mental_fortitude_composure_score?: number | null;
+      adaptability_decision_making_score?: number | null;
+      aim_mechanical_skill_score?: number | null;
+      game_sense_awareness_score?: number | null;
+      teamwork_communication_score?: number | null;
+      strategy_score?: number | null;
+    },
+  ) {
+    this.logger.debug('PATCH /missions/:slug/players/:playerId/ability-scores - Updating player ability scores', {
+      slug,
+      playerId,
+      abilityScores: body,
+    });
+    return this.missionsService.updatePlayerAbilityScores(slug, playerId, body);
+  }
+
+  @Post(':slug/complete')
+  @UseGuards(AdminGuard)
+  async completeMission(
+    @Param('slug') slug: string,
+    @Body() body: {
+      playerScores: Array<{
+        playerId: string;
+        score: number | null;
+        mental_fortitude_composure_score?: number | null;
+        adaptability_decision_making_score?: number | null;
+        aim_mechanical_skill_score?: number | null;
+        game_sense_awareness_score?: number | null;
+        teamwork_communication_score?: number | null;
+        strategy_score?: number | null;
+      }>;
+    },
+  ) {
+    this.logger.debug('POST /missions/:slug/complete - Completing mission', {
+      slug,
+      playerCount: body.playerScores.length,
+    });
+    return this.missionsService.completeMission(slug, body.playerScores);
   }
 
   @Get(':slug')

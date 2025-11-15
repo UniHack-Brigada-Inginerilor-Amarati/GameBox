@@ -46,6 +46,43 @@ export class MissionService {
       { score } as unknown as MissionPlayer,
     );
   }
+
+  updatePlayerAbilityScores(
+    slug: string,
+    playerId: string,
+    abilityScores: {
+      mental_fortitude_composure_score?: number | null;
+      adaptability_decision_making_score?: number | null;
+      aim_mechanical_skill_score?: number | null;
+      game_sense_awareness_score?: number | null;
+      teamwork_communication_score?: number | null;
+      strategy_score?: number | null;
+    },
+  ): Observable<MissionPlayer> {
+    return this.http.patch<MissionPlayer>(
+      `${this.apiUrl}/missions/${slug}/players/${playerId}/ability-scores`,
+      abilityScores as unknown as MissionPlayer,
+    );
+  }
+
+  completeMission(
+    slug: string,
+    playerScores: Array<{
+      playerId: string;
+      score: number | null;
+      mental_fortitude_composure_score?: number | null;
+      adaptability_decision_making_score?: number | null;
+      aim_mechanical_skill_score?: number | null;
+      game_sense_awareness_score?: number | null;
+      teamwork_communication_score?: number | null;
+      strategy_score?: number | null;
+    }>,
+  ): Observable<MissionPlayer[]> {
+    return this.http.post<MissionPlayer[]>(
+      `${this.apiUrl}/missions/${slug}/complete`,
+      { playerScores },
+    );
+  }
 }
 
 export interface MissionPlayer {

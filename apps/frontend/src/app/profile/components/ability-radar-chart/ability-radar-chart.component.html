@@ -31,10 +31,6 @@
           <div class="stat-label">Overall Score</div>
           <div class="stat-value">{{ abilityScores()?.overall?.averageScore | number : '1.0-1' }}</div>
         </div>
-        <div class="stat-item">
-          <div class="stat-label">Total Games</div>
-          <div class="stat-value">{{ abilityScores()?.overall?.totalGames }}</div>
-        </div>
       </div>
   
       <div class="abilities-list">
@@ -42,12 +38,11 @@
         <div class="ability-item">
           <div class="ability-info">
             <div class="ability-name">{{ ability.abilityName }}</div>
-            <div class="ability-meta">{{ ability.gameCount }} game{{ ability.gameCount !== 1 ? 's' : '' }}</div>
           </div>
           <div class="ability-score">
             <div class="score-value">{{ ability.score | number : '1.0-1' }}</div>
             <div class="score-bar">
-              <div class="score-bar-fill" [style.width.%]="ability.score"></div>
+              <div class="score-bar-fill" [style.width.%]="ability.score / 10"></div>
             </div>
           </div>
         </div>

@@ -184,6 +184,57 @@ export class MissionPageComponent implements OnInit {
     this.updateScore(playerId, null);
   }
 
+  updateAbilityScore(
+    playerId: string,
+    abilityName: 'mental_fortitude_composure_score' | 'adaptability_decision_making_score' | 'aim_mechanical_skill_score' | 'game_sense_awareness_score' | 'teamwork_communication_score' | 'strategy_score',
+    score: number | null,
+  ): void {
+    if (!this.missionSlug) {
+      return;
+    }
+
+    // Validate score if provided - must be a non-negative integer
+    if (score !== null) {
+      const integerScore = Math.floor(score);
+      if (isNaN(integerScore) || integerScore < 0 || integerScore !== score) {
+        this.snackBar.open('Score must be a non-negative integer', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+        return;
+      }
+      score = integerScore;
+    }
+
+    const abilityScores = {
+      [abilityName]: score,
+    };
+
+    this.missionService.updatePlayerAbilityScores(this.missionSlug, playerId, abilityScores).subscribe({
+      next: (updatedPlayer) => {
+        // Update the player in the local array
+        const playerIndex = this.players.findIndex((p) => p.player_id === playerId);
+        if (playerIndex !== -1) {
+          this.players[playerIndex] = updatedPlayer;
+        }
+        this.snackBar.open('Ability score updated successfully', 'Close', {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      },
+      error: (error) => {
+        console.error('Error updating ability score:', error);
+        this.snackBar.open('Failed to update ability score', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      },
+    });
+  }
+
   parseInteger(value: string): number | null {
     if (!value || value.trim() === '') {
       return null;
