@@ -11,9 +11,11 @@ export class GeminiService {
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY;
     const modelName = process.env.GEMINI_MODEL || 'gemini-pro';
-    
+
     if (!apiKey) {
-      this.logger.warn('GEMINI_API_KEY not found in environment variables. AI analysis will not be available.');
+      this.logger.warn(
+        'GEMINI_API_KEY not found in environment variables. AI analysis will not be available.',
+      );
       this.genAI = null;
       this.model = null;
       return;
@@ -32,12 +34,14 @@ export class GeminiService {
 
   async analyzeGameResult(gameResult: any): Promise<GameScore> {
     if (!this.model) {
-      throw new BadRequestException('Gemini AI is not configured. Please set GEMINI_API_KEY environment variable.');
+      throw new BadRequestException(
+        'Gemini AI is not configured. Please set GEMINI_API_KEY environment variable.',
+      );
     }
 
     try {
       const prompt = this.buildAnalysisPrompt(gameResult);
-      
+
       this.logger.debug('Sending game result to Gemini AI for analysis');
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
@@ -51,36 +55,39 @@ export class GeminiService {
       this.logger.log('Successfully analyzed game result with Gemini AI');
       return gameScore;
     } catch (error) {
-      this.logger.error(`Failed to analyze game result with Gemini AI: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to analyze game result with Gemini AI: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException(`AI analysis failed: ${error.message}`);
     }
   }
 
   private buildAnalysisPrompt(gameResult: any): string {
     const gameResultJson = JSON.stringify(gameResult, null, 2);
-    
+
     return `You are analyzing a video game match result to evaluate a player's performance across 6 ability categories.
 
 Game Result Data:
 ${gameResultJson}
 
-Please analyze the player's performance and assign a score (0-100) for each of the following 6 abilities:
+Please analyze the player's performance and assign a score for each of the following 6 abilities. Scores can range from negative values (for poor performance) to positive values (for good performance), with a typical range of -100 to 100:
 
-1. **mentalFortitudeComposure**: How well the player handled pressure, maintained focus, and stayed composed during difficult situations
-2. **adaptabilityDecisionMaking**: How well the player adapted to changing situations and made good decisions
-3. **aimMechanicalSkill**: The player's mechanical skill, accuracy, and technical execution
-4. **gameSenseAwareness**: The player's understanding of game mechanics, map awareness, and situational awareness
-5. **teamworkCommunication**: How well the player worked with teammates, communicated, and coordinated
-6. **strategy**: The player's strategic thinking, planning, and tactical execution
+1. **mentalFortitudeComposure**: How well the player handled pressure, maintained focus, and stayed composed during difficult situations. Negative scores indicate poor composure, tilting, or giving up.
+2. **adaptabilityDecisionMaking**: How well the player adapted to changing situations and made good decisions. Negative scores indicate poor decision-making, inability to adapt, or consistently bad choices.
+3. **aimMechanicalSkill**: The player's mechanical skill, accuracy, and technical execution. Negative scores indicate poor mechanical performance, missed shots, or technical errors.
+4. **gameSenseAwareness**: The player's understanding of game mechanics, map awareness, and situational awareness. Negative scores indicate poor game sense, lack of awareness, or critical mistakes.
+5. **teamworkCommunication**: How well the player worked with teammates, communicated, and coordinated. Negative scores indicate toxic behavior, lack of communication, or actively harming team coordination.
+6. **strategy**: The player's strategic thinking, planning, and tactical execution. Negative scores indicate poor strategic decisions, lack of planning, or counterproductive tactics.
 
 Return your response as a valid JSON object with the following structure:
 {
-  "mentalFortitudeComposure": <number 0-100>,
-  "adaptabilityDecisionMaking": <number 0-100>,
-  "aimMechanicalSkill": <number 0-100>,
-  "gameSenseAwareness": <number 0-100>,
-  "teamworkCommunication": <number 0-100>,
-  "strategy": <number 0-100>
+  "mentalFortitudeComposure": <number, typically -100 to 100>,
+  "adaptabilityDecisionMaking": <number, typically -100 to 100>,
+  "aimMechanicalSkill": <number, typically -100 to 100>,
+  "gameSenseAwareness": <number, typically -100 to 100>,
+  "teamworkCommunication": <number, typically -100 to 100>,
+  "strategy": <number, typically -100 to 100>
 }
 
 Only return the JSON object, no additional text or explanation.`;
@@ -91,9 +98,9 @@ Only return the JSON object, no additional text or explanation.`;
       // Try to extract JSON from the response (in case there's extra text)
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       const jsonText = jsonMatch ? jsonMatch[0] : text;
-      
+
       const parsed = JSON.parse(jsonText);
-      
+
       return {
         mentalFortitudeComposure: this.normalizeScore(parsed.mentalFortitudeComposure),
         adaptabilityDecisionMaking: this.normalizeScore(parsed.adaptabilityDecisionMaking),
@@ -116,9 +123,9 @@ Only return the JSON object, no additional text or explanation.`;
       }
       score = parsed;
     }
-    
-    // Clamp score between 0 and 100
-    return Math.max(0, Math.min(100, Math.round(score)));
+
+    // Clamp score between -100 and 100 to allow negative points
+    return Math.max(-100, Math.min(100, Math.round(score)));
   }
 
   private validateGameScore(gameScore: GameScore): void {
@@ -135,11 +142,16 @@ Only return the JSON object, no additional text or explanation.`;
       if (gameScore[field] === undefined || gameScore[field] === null) {
         throw new BadRequestException(`AI response missing required field: ${field}`);
       }
-      
-      if (typeof gameScore[field] !== 'number' || gameScore[field] < 0 || gameScore[field] > 100) {
-        throw new BadRequestException(`AI response has invalid score for ${field}: ${gameScore[field]}`);
+
+      if (
+        typeof gameScore[field] !== 'number' ||
+        gameScore[field] < -100 ||
+        gameScore[field] > 100
+      ) {
+        throw new BadRequestException(
+          `AI response has invalid score for ${field}: ${gameScore[field]}. Score must be between -100 and 100.`,
+        );
       }
     }
   }
 }
-
