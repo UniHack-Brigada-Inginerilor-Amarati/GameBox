@@ -50,6 +50,7 @@ export class ProfilePageComponent implements OnInit {
   readonly usernameError = signal<string | null>(null);
 
   editUsername = '';
+  editRiotUsername = '';
   editAvatarUrl = '';
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -70,6 +71,7 @@ export class ProfilePageComponent implements OnInit {
       next: (profile: UserProfileDTO) => {
         this.user.set(profile);
         this.editUsername = profile.username;
+        this.editRiotUsername = profile.riot_username || '';
         this.editAvatarUrl = profile.avatar_url;
         this.isLoading.set(false);
       },
@@ -93,6 +95,7 @@ export class ProfilePageComponent implements OnInit {
     const currentUser = this.user();
     if (currentUser) {
       this.editUsername = currentUser.username;
+      this.editRiotUsername = currentUser.riot_username || '';
       this.editAvatarUrl = currentUser.avatar_url;
     }
     this.clearSelectedFile();
@@ -141,6 +144,7 @@ export class ProfilePageComponent implements OnInit {
     // Try to update via service
     const updates = {
       username: this.editUsername,
+      riot_username: this.editRiotUsername || null,
       avatar_url: this.editAvatarUrl,
     };
 
@@ -150,6 +154,7 @@ export class ProfilePageComponent implements OnInit {
         if (updatedProfile) {
           this.user.set(updatedProfile as UserProfileDTO);
           this.editUsername = (updatedProfile as UserProfileDTO).username;
+          this.editRiotUsername = (updatedProfile as UserProfileDTO).riot_username || '';
           this.editAvatarUrl = (updatedProfile as UserProfileDTO).avatar_url;
         }
         this.isEditing.set(false);

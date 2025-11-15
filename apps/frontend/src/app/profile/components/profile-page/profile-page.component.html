@@ -79,6 +79,25 @@
             </div>
           </div>
 
+          <!-- Riot Username Edit Section -->
+          <div class="edit-section">
+            <div class="edit-header">
+              <mat-icon>sports_esports</mat-icon>
+              <span>Riot Username</span>
+            </div>
+            <div class="edit-content">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Riot Username</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="editRiotUsername"
+                  placeholder="Enter your Riot Games username"
+                />
+                <mat-hint>Your Riot Games username (optional)</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+
           <!-- Avatar Upload Section -->
           <div class="edit-section">
             <div class="edit-header">
@@ -193,6 +212,16 @@
               <span>{{ user()?.email }}</span>
             </div>
           </div>
+
+          @if (user()?.riot_username) {
+          <div class="info-row">
+            <mat-icon>sports_esports</mat-icon>
+            <div class="info-content">
+              <div class="info-label">Riot Username</div>
+              <span>{{ user()?.riot_username }}</span>
+            </div>
+          </div>
+          }
 
           <div class="info-row">
             <mat-icon>calendar_today</mat-icon>

@@ -7,6 +7,7 @@ export interface UserProfile {
   avatar_url: string;
   role: Role;
   created_at: Date;
+  riot_username?: string | null;
 }
 
 export interface UserProfileDTO {
@@ -15,4 +16,5 @@ export interface UserProfileDTO {
   avatar_url: string;
   role: Role;
   created_at: Date;
+  riot_username?: string | null;
 }

@@ -297,6 +297,7 @@ export class ProfileService {
       avatar_url: user.avatar_url,
       role: user.role,
       created_at: user.created_at,
+      riot_username: user.riot_username,
     };
   }
 }
