@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PayloadService } from '../payload/payload.service';
-import { Game } from '@gamebox/shared';
+import { Game, GameAbility } from '@gamebox/shared';
 
 @Injectable()
 export class GameService {
@@ -53,6 +53,48 @@ export class GameService {
 
         return mediaItem;
       });
+    }
+
+    // Transform abilities to ensure they have the correct format with scores
+    // The afterRead hook in Payload should have already transformed the score fields to abilities array
+    // But we ensure the format is correct and handle icon URLs
+    if (game.abilities && Array.isArray(game.abilities)) {
+      game.abilities = game.abilities.map((item: any): GameAbility => {
+        if (item && typeof item === 'object' && item.slug && item.score !== undefined) {
+          // Process icon URL if needed
+          let iconUrl = '';
+          if (item.icon) {
+            if (typeof item.icon === 'object' && item.icon.url) {
+              iconUrl = item.icon.url;
+            } else if (typeof item.icon === 'string') {
+              iconUrl = item.icon;
+            }
+            // Ensure full URL if relative
+            if (iconUrl && !iconUrl.startsWith('http')) {
+              iconUrl = `${payloadUrl}${iconUrl}`;
+            }
+          }
+
+          return {
+            slug: item.slug,
+            name: item.name || '',
+            description: item.description || '',
+            icon: iconUrl ? {
+              url: iconUrl,
+              filename: item.icon?.filename,
+            } : undefined,
+            score: Math.max(0, Math.min(100, item.score || 0)),
+            id: item.id?.toString(),
+          };
+        }
+        // Return a minimal valid GameAbility if format is unexpected
+        return {
+          slug: item?.slug || '',
+          name: item?.name || '',
+          description: item?.description || '',
+          score: 0,
+        };
+      }).filter((ability: GameAbility) => ability.slug !== '');
     }
 
     return game;
