@@ -11,6 +11,7 @@ import {
 import { SessionService } from './session.service';
 import { UserProfileDTO, Session, PlayerGameResult } from '@gamebox/shared';
 import { AdminGuard } from '../admin/admin.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { BadRequestException } from '@nestjs/common';
 
 @Controller('sessions')
@@ -86,7 +87,7 @@ export class SessionController {
   }
 
   @Get(':id/game-results')
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   async getGameResults(@Param('id') id: string): Promise<PlayerGameResult[]> {
     this.logger.debug('GET /sessions/:id - Fetching player game results', { id });
     return this.sessionService.getGameResults(id);
