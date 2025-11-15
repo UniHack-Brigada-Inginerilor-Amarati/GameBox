@@ -75,6 +75,7 @@
     "@angular/platform-server": "~20.0.0",
     "@angular/router": "~20.0.0",
     "@angular/ssr": "~20.0.0",
+    "@google/generative-ai": "^0.24.1",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",

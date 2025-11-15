@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Body, Param, HttpStatus, HttpCode, Logger } from '@nestjs/common';
 import { PlayerResultService } from './player-result.service';
 import { PlayerRanks } from './score-calculation.service';
-import { PlayerGameResult } from '@gamebox/shared';
+import { PlayerGameResult, GameScore } from '@gamebox/shared';
 
 export class CreatePlayerResultRequestDto {
   gameResultId: string;
@@ -81,6 +81,12 @@ export class PlayerResultController {
     return this.playerResultService.updatePlayerResult(id, dto.score);
   }
 
+  @Post(':id/analyze-ai')
+  @HttpCode(HttpStatus.OK)
+  async analyzeWithAI(@Param('id') id: string): Promise<GameScore> {
+    this.logger.log(`Analyzing player result ${id} with AI`);
+    return this.playerResultService.analyzeWithAI(id);
+  }
 
   @Get('health')
   async healthCheck() {
