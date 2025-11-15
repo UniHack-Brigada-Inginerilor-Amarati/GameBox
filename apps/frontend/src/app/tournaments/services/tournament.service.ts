@@ -34,5 +34,11 @@ export class TournamentService {
   leaveTournament(tournamentId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/tournaments/${tournamentId}/leave`);
   }
+
+  checkIfJoined(tournamentId: number): Observable<{ isRegistered: boolean }> {
+    return this.http.get<{ isRegistered: boolean }>(
+      `${this.apiUrl}/tournaments/check-registration/${tournamentId}`,
+    );
+  }
 }
 

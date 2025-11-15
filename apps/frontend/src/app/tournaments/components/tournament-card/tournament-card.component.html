@@ -44,6 +44,14 @@
     <p class="tournament-description">{{ tournament.description }}</p>
     }
 
+    <!-- Already Joined Label -->
+    @if (isRegistered) {
+    <div class="already-joined-label">
+      <mat-icon>check_circle</mat-icon>
+      <span>Already Joined</span>
+    </div>
+    }
+
     <!-- Player Count & Availability -->
     <div class="tournament-availability">
       <div class="availability-info">

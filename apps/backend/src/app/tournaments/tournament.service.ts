@@ -114,10 +114,17 @@ export class TournamentService {
   async leaveTournament(tournamentId: number, userId: string): Promise<void> {
     this.logger.debug('Leaving tournament', { tournamentId, userId });
 
+    // Check if user is registered
+    const isRegistered = await this.isUserRegistered(tournamentId, userId);
+    if (!isRegistered) {
+      throw new BadRequestException('You are not registered for this tournament');
+    }
+
+    // Delete the registration record
     const { error } = await this.supabaseService.supabaseAdmin
       .schema('gamebox')
       .from('tournament_registrations')
-      .update({ status: 'cancelled' })
+      .delete()
       .eq('tournament_id', tournamentId)
       .eq('player_id', userId)
       .eq('status', 'registered');
