@@ -38,7 +38,7 @@ export const appRoutes: Route[] = [
   },
 
   {
-    path: 'scratch-card',
+    path: 'games',
     component: ScratchCardComponent,
     canActivate: [AuthGuard],
   },
@@ -58,12 +58,6 @@ export const appRoutes: Route[] = [
   {
     path: 'friends',
     component: FriendsPageComponent,
-    canActivate: [AuthGuard],
-  },
-
-  {
-    path: 'scratch-card',
-    component: ScratchCardComponent,
     canActivate: [AuthGuard],
   },
 

@@ -27,10 +27,9 @@ export class App implements OnInit, OnDestroy {
   private readonly validRoutes = [
     '/profile/me',
     '/friends',
-    '/scratch-card',
+    '/games',
     '/my-reservations',
     '/reservation/new',
-    '/games',
     '/missions',
     '/lol-score',
   ];
