@@ -32,7 +32,7 @@ export class GeminiService {
     }
   }
 
-  async analyzeGameResult(gameResult: any): Promise<GameScore> {
+  async analyzeGameResult(gameResult: any, missionDescription?: string): Promise<GameScore> {
     if (!this.model) {
       throw new BadRequestException(
         'Gemini AI is not configured. Please set GEMINI_API_KEY environment variable.',
@@ -40,9 +40,11 @@ export class GeminiService {
     }
 
     try {
-      const prompt = this.buildAnalysisPrompt(gameResult);
+      const prompt = this.buildAnalysisPrompt(gameResult, missionDescription);
 
-      this.logger.debug('Sending game result to Gemini AI for analysis');
+      this.logger.debug('Sending game result to Gemini AI for analysis', {
+        hasMissionDescription: !!missionDescription,
+      });
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
@@ -63,13 +65,40 @@ export class GeminiService {
     }
   }
 
-  private buildAnalysisPrompt(gameResult: any): string {
+  private buildAnalysisPrompt(gameResult: any, missionDescription?: string): string {
     const gameResultJson = JSON.stringify(gameResult, null, 2);
+
+    let missionContext = '';
+    if (missionDescription && missionDescription.trim()) {
+      missionContext = `
+
+MISSION CONTEXT:
+The player is attempting to complete a mission with the following description:
+"${missionDescription.trim()}"
+
+IMPORTANT SCORING CONSIDERATIONS:
+1. If the mission description is a simple instruction like "play a game" or "complete a match", evaluate the performance normally without penalty.
+
+2. If the mission description contains specific CHALLENGES or OBJECTIVES (e.g., "die less than 4 times", "get at least 10 kills", "achieve more than 150 CS", "don't feed", "get an S rank", etc.), you MUST:
+   - First analyze the player's performance as you normally would
+   - Then check if they met the specific mission requirements
+   - If they FAILED to meet the requirements, apply a MODERATE penalty to all scores (reduce by 10-20%, but keep scores reasonable - don't be too harsh)
+   - If they MET the requirements, maintain or slightly boost scores
+   - The penalty should be proportional: minor failures = smaller penalty (5-10%), major failures = larger penalty (15-20%)
+   - Do NOT reduce scores to extremely negative values unless the performance was genuinely very poor
+   - Always consider the context: if they failed the challenge but played well overall, the penalty should be lighter
+
+3. Examples:
+   - Mission: "Die less than 4 times" + Player died 5 times = Apply 10-15% reduction to scores
+   - Mission: "Get at least 10 kills" + Player got 8 kills = Apply 8-12% reduction to scores
+   - Mission: "Play a game" + Any performance = No penalty, evaluate normally
+   - Mission: "Get an S rank" + Player got B rank = Apply 12-18% reduction depending on how close they were`;
+    }
 
     return `You are analyzing a video game match result to evaluate a player's performance across 6 ability categories.
 
 Game Result Data:
-${gameResultJson}
+${gameResultJson}${missionContext}
 
 Please analyze the player's performance and assign a score for each of the following 6 abilities. Scores can range from negative values (for poor performance) to positive values (for good performance), with a typical range of -100 to 100:
 
@@ -79,6 +108,8 @@ Please analyze the player's performance and assign a score for each of the follo
 4. **gameSenseAwareness**: The player's understanding of game mechanics, map awareness, and situational awareness. Negative scores indicate poor game sense, lack of awareness, or critical mistakes.
 5. **teamworkCommunication**: How well the player worked with teammates, communicated, and coordinated. Negative scores indicate toxic behavior, lack of communication, or actively harming team coordination.
 6. **strategy**: The player's strategic thinking, planning, and tactical execution. Negative scores indicate poor strategic decisions, lack of planning, or counterproductive tactics.
+
+${missionDescription && missionDescription.trim() ? 'Remember to adjust scores based on whether the player met the mission requirements as described above.' : ''}
 
 Return your response as a valid JSON object with the following structure:
 {
