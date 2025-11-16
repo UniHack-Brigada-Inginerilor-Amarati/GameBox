@@ -1,4 +1,16 @@
-import { Component, Input, OnInit, AfterViewInit, OnChanges, SimpleChanges, ViewChild, ElementRef, signal, inject, effect } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  ElementRef,
+  signal,
+  inject,
+  effect,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -69,13 +81,18 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit, OnChan
   loadAbilityScores(): void {
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     // Clear previous data and canvas
     this.abilityScores.set(null);
     if (this.canvasRef?.nativeElement) {
       const ctx = this.canvasRef.nativeElement.getContext('2d');
       if (ctx) {
-        ctx.clearRect(0, 0, this.canvasRef.nativeElement.width, this.canvasRef.nativeElement.height);
+        ctx.clearRect(
+          0,
+          0,
+          this.canvasRef.nativeElement.width,
+          this.canvasRef.nativeElement.height,
+        );
       }
     }
 
@@ -103,8 +120,10 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit, OnChan
     if (!ctx) return;
 
     const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2 + 20;
-    const radius = Math.min(centerX, centerY) - 40;
+    // Center vertically but leave more space for top and bottom labels
+    const labelPadding = 50; // Space needed for labels at top and bottom
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY - labelPadding) - 20;
     const numAbilities = 6;
     const angleStep = (2 * Math.PI) / numAbilities;
 
