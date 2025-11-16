@@ -225,7 +225,9 @@ export class ProfileController {
 
   @Get('me/game-recommendations')
   @UseGuards(AuthGuard)
-  async getGameRecommendations(@Request() req: any): Promise<Game[]> {
+  async getGameRecommendations(
+    @Request() req: any,
+  ): Promise<Array<Game & { recommendationReason: string }>> {
     this.logger.debug('GET /profiles/me/game-recommendations - Getting AI game recommendations', {
       username: req.user.username,
     });
