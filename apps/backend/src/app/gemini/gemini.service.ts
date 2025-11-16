@@ -186,7 +186,10 @@ Only return the JSON object, no additional text or explanation.`;
     }
   }
 
-  async recommendGames(abilityScores: AbilityScores, availableGames: Game[]): Promise<Game[]> {
+  async recommendGames(
+    abilityScores: AbilityScores,
+    availableGames: Game[],
+  ): Promise<Array<Game & { recommendationReason: string }>> {
     if (!this.model) {
       throw new BadRequestException(
         'Gemini AI is not configured. Please set GEMINI_API_KEY environment variable.',
@@ -203,8 +206,8 @@ Only return the JSON object, no additional text or explanation.`;
 
       this.logger.debug(`Received AI response: ${text}`);
 
-      const recommendedGameSlugs = this.parseRecommendationResponse(text);
-      const recommendedGames = this.matchGamesBySlugs(recommendedGameSlugs, availableGames);
+      const recommendations = this.parseRecommendationResponse(text);
+      const recommendedGames = this.matchGamesWithReasoning(recommendations, availableGames);
 
       this.logger.log(`Successfully generated ${recommendedGames.length} game recommendations`);
       return recommendedGames;
@@ -257,13 +260,28 @@ Each game has ability scores that indicate which abilities it tests. Match the p
 2. Allow them to showcase their stronger abilities
 3. Provide a balanced gaming experience
 
-Return your response as a valid JSON array with exactly 3 game slugs (in order of recommendation, best first):
-["game-slug-1", "game-slug-2", "game-slug-3"]
+Return your response as a valid JSON array with exactly 3 recommendation objects (in order of recommendation, best first). Each object should contain the game slug and a clear, personalized explanation (2-4 sentences) of why this game is recommended for the player based on their ability scores:
+[
+  {
+    "slug": "game-slug-1",
+    "reasoning": "Clear explanation of why this game is recommended based on the player's specific ability scores and strengths/weaknesses."
+  },
+  {
+    "slug": "game-slug-2",
+    "reasoning": "Clear explanation of why this game is recommended based on the player's specific ability scores and strengths/weaknesses."
+  },
+  {
+    "slug": "game-slug-3",
+    "reasoning": "Clear explanation of why this game is recommended based on the player's specific ability scores and strengths/weaknesses."
+  }
+]
 
 Only return the JSON array, no additional text or explanation.`;
   }
 
-  private parseRecommendationResponse(text: string): string[] {
+  private parseRecommendationResponse(
+    text: string,
+  ): Array<{ slug: string; reasoning: string }> {
     try {
       // Try to extract JSON array from the response (in case there's extra text)
       const jsonMatch = text.match(/\[[\s\S]*\]/);
@@ -275,29 +293,54 @@ Only return the JSON array, no additional text or explanation.`;
         throw new Error('Response is not an array');
       }
 
-      // Ensure we have exactly 3 recommendations
-      const slugs = parsed.slice(0, 3).filter((slug) => typeof slug === 'string');
-      
-      if (slugs.length < 3) {
-        this.logger.warn(`AI returned only ${slugs.length} recommendations, expected 3`);
+      // Parse recommendations with reasoning
+      const recommendations: Array<{ slug: string; reasoning: string }> = [];
+
+      for (const item of parsed.slice(0, 3)) {
+        if (typeof item === 'string') {
+          // Fallback: if the response is just slugs (old format), use empty reasoning
+          recommendations.push({ slug: item, reasoning: '' });
+        } else if (typeof item === 'object' && item !== null) {
+          const slug = item.slug || item.gameSlug || '';
+          const reasoning = item.reasoning || item.reason || item.explanation || '';
+
+          if (slug && typeof slug === 'string') {
+            recommendations.push({
+              slug,
+              reasoning: reasoning || `This game matches your ability profile.`,
+            });
+          }
+        }
       }
 
-      return slugs;
+      if (recommendations.length < 3) {
+        this.logger.warn(
+          `AI returned only ${recommendations.length} recommendations, expected 3`,
+        );
+      }
+
+      return recommendations;
     } catch (error) {
       this.logger.error(`Failed to parse AI recommendation response: ${error.message}`);
       throw new BadRequestException(`Invalid AI response format: ${error.message}`);
     }
   }
 
-  private matchGamesBySlugs(slugs: string[], availableGames: Game[]): Game[] {
-    const recommendedGames: Game[] = [];
-    
-    for (const slug of slugs) {
-      const game = availableGames.find((g) => g.slug === slug);
+  private matchGamesWithReasoning(
+    recommendations: Array<{ slug: string; reasoning: string }>,
+    availableGames: Game[],
+  ): Array<Game & { recommendationReason: string }> {
+    const recommendedGames: Array<Game & { recommendationReason: string }> = [];
+
+    for (const rec of recommendations) {
+      const game = availableGames.find((g) => g.slug === rec.slug);
       if (game) {
-        recommendedGames.push(game);
+        recommendedGames.push({
+          ...game,
+          recommendationReason: rec.reasoning || `This game matches your ability profile.`,
+        });
       } else {
-        this.logger.warn(`Game with slug '${slug}' not found in available games`);
+        this.logger.warn(`Game with slug '${rec.slug}' not found in available games`);
       }
     }
 

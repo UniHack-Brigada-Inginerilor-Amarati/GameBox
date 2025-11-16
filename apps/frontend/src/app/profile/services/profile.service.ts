@@ -65,7 +65,9 @@ export class ProfileService {
     }>(`${this.backendUrl}/profiles/${username}/spy-card/recalculate`, {});
   }
 
-  getGameRecommendations(): Observable<Game[]> {
-    return this.httpService.get<Game[]>(`${this.backendUrl}/profiles/me/game-recommendations`);
+  getGameRecommendations(): Observable<Array<Game & { recommendationReason: string }>> {
+    return this.httpService.get<Array<Game & { recommendationReason: string }>>(
+      `${this.backendUrl}/profiles/me/game-recommendations`,
+    );
   }
 }

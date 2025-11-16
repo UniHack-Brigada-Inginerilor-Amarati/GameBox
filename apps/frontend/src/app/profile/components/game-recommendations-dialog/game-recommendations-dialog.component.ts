@@ -62,7 +62,11 @@ import { ProfileService } from '../../services/profile.service';
               </div>
               <mat-card-content>
                 <h3 class="game-name">{{ game.name }}</h3>
-                <p class="game-description">{{ game.description }}</p>
+                @if (game.recommendationReason) {
+                  <p class="game-recommendation-reason">{{ game.recommendationReason }}</p>
+                } @else {
+                  <p class="game-description">{{ game.description }}</p>
+                }
                 @if (game.abilities && game.abilities.length > 0) {
                   <div class="game-abilities">
                     <span class="abilities-label">Tests:</span>
@@ -218,11 +222,21 @@ import { ProfileService } from '../../services/profile.service';
         color: #333;
       }
 
-      .game-description {
+      .game-description,
+      .game-recommendation-reason {
         color: #666;
         font-size: 0.9rem;
         line-height: 1.5;
         margin-bottom: 12px;
+      }
+
+      .game-recommendation-reason {
+        font-style: italic;
+        color: #556;
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 3px solid #667eea;
       }
 
       .game-abilities {
@@ -271,7 +285,7 @@ import { ProfileService } from '../../services/profile.service';
   ],
 })
 export class GameRecommendationsDialogComponent implements OnInit {
-  readonly recommendedGames = signal<Game[]>([]);
+  readonly recommendedGames = signal<Array<Game & { recommendationReason?: string }>>([]);
   readonly isLoading = signal(true);
   readonly error = signal<string | null>(null);
 
