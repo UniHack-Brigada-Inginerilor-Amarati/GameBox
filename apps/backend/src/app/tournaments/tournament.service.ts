@@ -193,14 +193,19 @@ export class TournamentService {
   }
 
   private processTournamentMedia(tournament: Tournament): Tournament {
+    const payloadUrl = this.getPayloadUrl();
+
+    // Process tournament media if needed
+    if (tournament.media?.url && !tournament.media.url.startsWith('http')) {
+      tournament.media.url = `${payloadUrl}${tournament.media.url}`;
+    }
+
     // Process game media if needed
     if (tournament.game?.picture && !tournament.game.picture.startsWith('http')) {
-      const payloadUrl = this.getPayloadUrl();
       tournament.game.picture = `${payloadUrl}${tournament.game.picture}`;
     }
 
     if (tournament.game?.thumbnail && !tournament.game.thumbnail.startsWith('http')) {
-      const payloadUrl = this.getPayloadUrl();
       tournament.game.thumbnail = `${payloadUrl}${tournament.game.thumbnail}`;
     }
 

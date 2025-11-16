@@ -5,6 +5,10 @@ export interface Tournament {
   slug: string;
   name: string;
   description: string;
+  media?: {
+    url: string;
+    alt?: string;
+  };
   date: string; // ISO date string
   time: string; // ISO time string
   game: Game;

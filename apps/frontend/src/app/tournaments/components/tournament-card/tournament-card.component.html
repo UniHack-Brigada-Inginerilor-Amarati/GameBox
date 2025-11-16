@@ -1,17 +1,19 @@
 <div class="tournament-card">
-  <!-- Tournament Game Image -->
-  @if (tournament.game) {
+  <!-- Tournament Media or Game Image -->
+  @if (tournament.media || tournament.game) {
   <div class="tournament-media">
     <img
       [src]="gameImageUrl"
-      [alt]="tournament.game.name || 'Tournament game'"
+      [alt]="tournament.media?.alt || tournament.name || tournament.game?.name || 'Tournament'"
       class="media-image"
       (error)="onImageError($event)"
     />
+    @if (tournament.game) {
     <div class="game-badge">
       <mat-icon>sports_esports</mat-icon>
       <span>{{ tournament.game.name }}</span>
     </div>
+    }
   </div>
   }
 

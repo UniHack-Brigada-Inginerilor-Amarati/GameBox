@@ -59,7 +59,17 @@ export class TournamentCardComponent {
     return this.tournament.time || '';
   }
 
+  getTournamentMediaUrl(): string {
+    return this.tournament.media?.url || '';
+  }
+
   get gameImageUrl(): string {
+    // Prioritize tournament media over game image
+    if (this.tournament.media?.url) {
+      return this.tournament.media.url;
+    }
+
+    // Fall back to game image
     if (this.tournament.game?.picture) {
       const picture = this.tournament.game.picture;
       if (typeof picture === 'string') {
@@ -69,6 +79,8 @@ export class TournamentCardComponent {
         return `${environment.backendUrl}${picture}`;
       }
     }
+
+    // Final fallback
     return environment.missionFallbackImage || '';
   }
 
