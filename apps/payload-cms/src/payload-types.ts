@@ -266,6 +266,7 @@ export interface Tournament {
    * Describe the tournament, rules, and prizes
    */
   description: string;
+  media?: (number | null) | Media;
   /**
    * The date when the tournament will take place
    */
@@ -515,6 +516,7 @@ export interface TournamentsSelect<T extends boolean = true> {
   slug?: T;
   name?: T;
   description?: T;
+  media?: T;
   date?: T;
   time?: T;
   game?: T;

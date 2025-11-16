@@ -1,17 +1,17 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 export const Tournaments: CollectionConfig = {
   slug: 'tournaments',
   access: {
     read: () => true,
     create: ({ req: { user } }) => {
-      return Boolean(user);
+      return Boolean(user)
     },
     update: ({ req: { user } }) => {
-      return Boolean(user);
+      return Boolean(user)
     },
     delete: ({ req: { user } }) => {
-      return Boolean(user);
+      return Boolean(user)
     },
   },
   admin: {
@@ -26,7 +26,8 @@ export const Tournaments: CollectionConfig = {
       unique: true,
       label: 'Tournament Slug',
       admin: {
-        description: 'URL-friendly identifier for this tournament (e.g., "summer-championship-2024")',
+        description:
+          'URL-friendly identifier for this tournament (e.g., "summer-championship-2024")',
         position: 'sidebar',
       },
     },
@@ -47,6 +48,13 @@ export const Tournaments: CollectionConfig = {
       admin: {
         description: 'Describe the tournament, rules, and prizes',
       },
+    },
+    {
+      name: 'media',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+      label: 'Tournament Media (Image/Video)',
     },
     {
       name: 'date',
@@ -91,5 +99,4 @@ export const Tournaments: CollectionConfig = {
       defaultValue: 10,
     },
   ],
-};
-
+}
