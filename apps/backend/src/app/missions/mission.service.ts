@@ -3,7 +3,7 @@ import { PayloadService } from '../payload/payload.service';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ProfileService } from '../profile/profile.service';
 import { LeagueScoreService } from '../profile/league-score.service';
-import { Game, Mission, UserProfileDTO, AbilityRank, ABILITY_RANK_MODIFIERS, RANK_THRESHOLDS, GameScore } from '@gamebox/shared';
+import { Game, Mission, UserProfileDTO, AbilityRank, ABILITY_RANK_MODIFIERS, RANK_THRESHOLDS, GameScore, RichTextUtils } from '@gamebox/shared';
 
 export interface MissionPlayer {
   player_id: string;
@@ -521,10 +521,20 @@ export class MissionService {
       );
     }
 
-    // Calculate League score using Gemini AI
+    // Get mission details including description
+    const mission = await this.getMission(slug);
+    const missionDescription = this.extractMissionDescription(mission);
+
+    this.logger.debug('Mission description extracted', {
+      slug,
+      description: missionDescription,
+    });
+
+    // Calculate League score using Gemini AI with mission context
     const gameScore: GameScore = await this.leagueScoreService.calculateScoreFromLastMatch(
       playerId,
       region,
+      missionDescription,
     );
 
     // Map GameScore (camelCase) to mission player ability scores (snake_case)
@@ -541,6 +551,19 @@ export class MissionService {
 
     // Update player ability scores
     return this.updatePlayerAbilityScores(slug, playerId, abilityScores);
+  }
+
+  /**
+   * Extract mission description from mission object
+   * Handles both plain string and rich text description formats
+   */
+  private extractMissionDescription(mission: Mission): string {
+    if (!mission.description) {
+      return '';
+    }
+
+    // Use RichTextUtils to extract text from description (handles both string and rich text)
+    return RichTextUtils.getDescriptionText(mission.description);
   }
 
   /**

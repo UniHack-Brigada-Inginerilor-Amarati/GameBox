@@ -23,11 +23,13 @@ export class LeagueScoreService {
    * Calculate a user's score from their last League of Legends match using Gemini AI
    * @param userId - The user's ID
    * @param region - Optional region parameter (default: 'europe')
+   * @param missionDescription - Optional mission description to consider in scoring
    * @returns GameScore with 6 ability categories
    */
   async calculateScoreFromLastMatch(
     userId: string,
     region: string = 'europe',
+    missionDescription?: string,
   ): Promise<GameScore> {
     this.logger.debug('Calculating score from last League match', { userId, region });
 
@@ -91,12 +93,16 @@ export class LeagueScoreService {
       player: playerParticipant,
     };
 
-    // Use Gemini to analyze the match and calculate scores
-    const gameScore = await this.geminiService.analyzeGameResult(gameResult);
+    // Use Gemini to analyze the match and calculate scores with mission context
+    const gameScore = await this.geminiService.analyzeGameResult(
+      gameResult,
+      missionDescription,
+    );
 
     this.logger.log('Successfully calculated League match score', {
       userId,
       matchId: match.metadata.matchId,
+      hasMissionDescription: !!missionDescription,
     });
 
     return gameScore;
