@@ -16,10 +16,17 @@
     <div class="mission-header">
       <h2 class="mission-name">{{ mission.name }}</h2>
       @if (hasJoined) {
+      @if (playerState === 'completed') {
+      <div class="completed-label">
+        <mat-icon>check_circle</mat-icon>
+        <span>Mission Completed</span>
+      </div>
+      } @else {
       <div class="playing-label">
         <mat-icon>play_circle</mat-icon>
         <span>Mission Is Playing</span>
       </div>
+      }
       } @else if (showPlayButton) {
       <button
         mat-raised-button

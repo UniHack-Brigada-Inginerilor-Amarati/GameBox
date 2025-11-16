@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { interval, Subscription } from 'rxjs';
   templateUrl: './mission-card.component.html',
   styleUrls: ['./mission-card.component.scss'],
 })
-export class MissionCardComponent implements OnInit, OnDestroy {
+export class MissionCardComponent implements OnInit, OnDestroy, OnChanges {
   @Input() mission!: Mission;
   @Input() showDescription = true;
   @Input() showGames = false;
@@ -25,6 +25,7 @@ export class MissionCardComponent implements OnInit, OnDestroy {
   private missionService = inject(MissionService);
   hasJoined = false;
   isLoading = false;
+  playerState: 'playing' | 'completed' = 'playing';
 
   getMediaUrl(media: { url: string; alt?: string } | undefined): string {
     return media?.url || '';
@@ -40,9 +41,20 @@ export class MissionCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.updateMissionStatus();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['mission'] && !changes['mission'].firstChange) {
+      this.updateMissionStatus();
+    }
+  }
+
+  private updateMissionStatus(): void {
     // Check if user has joined this mission from the mission data
     if (this.mission) {
       this.hasJoined = (this.mission as any).hasJoined || false;
+      this.playerState = (this.mission as any).playerState || 'playing';
     }
   }
 

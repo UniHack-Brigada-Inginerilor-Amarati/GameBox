@@ -148,6 +148,34 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
+  background: linear-gradient(135deg, #87a4fa 0%, #6b8cfa 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(135, 164, 250, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #ffffff;
+  }
+
+  span {
+    color: #ffffff;
+  }
+}
+
+.completed-label {
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   border-radius: 12px;
@@ -155,7 +183,6 @@
   font-size: 14px;
   letter-spacing: 0.3px;
   box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-  animation: pulse 2s ease-in-out infinite;
 
   mat-icon {
     font-size: 18px;

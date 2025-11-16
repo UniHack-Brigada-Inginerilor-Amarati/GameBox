@@ -56,7 +56,7 @@ export class MissionService {
     const { data, error } = await this.supabaseService.supabaseAdmin
       .schema('gamebox')
       .from('missions_players')
-      .select('player_id, score')
+      .select('player_id, score, state')
       .eq('mission_slug', mission.slug)
       .eq('player_id', userId)
       .maybeSingle();
@@ -69,6 +69,9 @@ export class MissionService {
     // Add player status to mission object
     (mission as any).hasJoined = !!data;
     (mission as any).playerScore = data?.score || null;
+    // Determine state: 'completed' if score is not null, otherwise use state from database or default to 'playing'
+    const playerState = data?.score !== null ? 'completed' : (data?.state || 'playing');
+    (mission as any).playerState = playerState;
 
     return mission;
   }
