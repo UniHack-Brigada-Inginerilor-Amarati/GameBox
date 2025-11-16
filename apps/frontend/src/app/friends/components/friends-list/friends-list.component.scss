@@ -64,9 +64,6 @@
   }
 
   mat-card-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 1.25rem 1.5rem !important;
   }
 }
@@ -89,19 +86,32 @@
 }
 
 .friend-details {
+  min-width: 0; // Allows text truncation to work
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
   h3 {
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     font-size: 1.15rem;
     color: #ffffff;
     font-weight: 600;
     line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .email {
-    margin: 0 0 0.25rem 0;
+    margin: 0;
     font-size: 0.95rem;
     color: #bbb;
     line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
   }
 
   .date {
@@ -115,6 +125,7 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  margin: 0.25rem 0;
 }
 
 button[mat-icon-button] {

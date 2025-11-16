@@ -31,6 +31,7 @@ export class App implements OnInit, OnDestroy {
     '/my-reservations',
     '/reservation/new',
     '/missions',
+    '/tournaments',
     '/lol-score',
   ];
   
