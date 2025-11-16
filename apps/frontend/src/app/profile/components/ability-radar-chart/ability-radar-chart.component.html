@@ -1,55 +1,55 @@
 <mat-card class="ability-chart-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>radar</mat-icon>
-        Ability Radar Chart
-      </mat-card-title>
-    </mat-card-header>
-  
-    <mat-card-content>
-      @if (isLoading()) {
-      <div class="loading-container">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Loading ability scores...</p>
-      </div>
-      } @else if (error()) {
-      <div class="error-container">
-        <mat-icon>error_outline</mat-icon>
-        <p>{{ error() }}</p>
-        <button mat-button color="primary" (click)="loadAbilityScores()">
-          <mat-icon>refresh</mat-icon>
-          Retry
-        </button>
-      </div>
-      } @else if (abilityScores()) {
-      <div class="chart-container">
-        <canvas #radarChart width="500" height="500"></canvas>
-      </div>
-  
-      <div class="stats-container">
-        <div class="stat-item">
-          <div class="stat-label">Overall Score</div>
-          <div class="stat-value">{{ abilityScores()?.overall?.averageScore | number : '1.0-1' }}</div>
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>radar</mat-icon>
+      Ability Radar Chart
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading ability scores...</p>
+    </div>
+    } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-button color="primary" (click)="loadAbilityScores()">
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+    } @else if (abilityScores()) {
+    <div class="chart-container">
+      <canvas #radarChart width="700" height="550"></canvas>
+    </div>
+
+    <div class="stats-container">
+      <div class="stat-item">
+        <div class="stat-label">Overall Score</div>
+        <div class="stat-value">
+          {{ abilityScores()?.overall?.averageScore | number : '1.0-1' }}
         </div>
       </div>
-  
-      <div class="abilities-list">
-        @for (ability of getAbilitiesArray(); track ability.abilitySlug) {
-        <div class="ability-item">
-          <div class="ability-info">
-            <div class="ability-name">{{ ability.abilityName }}</div>
-          </div>
-          <div class="ability-score">
-            <div class="score-value">{{ ability.score | number : '1.0-1' }}</div>
-            <div class="score-bar">
-              <div class="score-bar-fill" [style.width.%]="ability.score / 10"></div>
-            </div>
+    </div>
+
+    <div class="abilities-list">
+      @for (ability of getAbilitiesArray(); track ability.abilitySlug) {
+      <div class="ability-item">
+        <div class="ability-info">
+          <div class="ability-name">{{ ability.abilityName }}</div>
+        </div>
+        <div class="ability-score">
+          <div class="score-value">{{ ability.score | number : '1.0-1' }}</div>
+          <div class="score-bar">
+            <div class="score-bar-fill" [style.width.%]="ability.score / 10"></div>
           </div>
         </div>
-        }
       </div>
       }
-    </mat-card-content>
-  </mat-card>
-  
-  
+    </div>
+    }
+  </mat-card-content>
+</mat-card>
