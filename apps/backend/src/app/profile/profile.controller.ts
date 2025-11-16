@@ -18,9 +18,11 @@ import { ProfileService } from './profile.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../admin/admin.guard';
 import { AbilityService } from './ability.service';
-import { UserProfile, UserProfileDTO, AbilityScores,GameScore } from '@gamebox/shared';
+import { UserProfile, UserProfileDTO, AbilityScores, GameScore, Game } from '@gamebox/shared';
 import { LeagueScoreService } from './league-score.service';
 import { MissionService } from '../missions/mission.service';
+import { GeminiService } from '../gemini/gemini.service';
+import { GameService } from '../games/game.service';
 @Controller('profiles')
 export class ProfileController {
   constructor(
@@ -28,6 +30,8 @@ export class ProfileController {
     private readonly abilityService: AbilityService,
     private readonly missionService: MissionService,
     private readonly leagueScoreService: LeagueScoreService,
+    private readonly geminiService: GeminiService,
+    private readonly gameService: GameService,
   ) {}
   private readonly logger = new Logger(ProfileController.name);
 
@@ -217,5 +221,42 @@ export class ProfileController {
       req.user.id,
       region || 'europe',
     );
+  }
+
+  @Get('me/game-recommendations')
+  @UseGuards(AuthGuard)
+  async getGameRecommendations(@Request() req: any): Promise<Game[]> {
+    this.logger.debug('GET /profiles/me/game-recommendations - Getting AI game recommendations', {
+      username: req.user.username,
+    });
+
+    // Get user's ability scores
+    let abilityScores: AbilityScores;
+    try {
+      abilityScores = await this.abilityService.getAbilityScoresFromSpyCard(req.user.username);
+    } catch {
+      // Fallback to calculated scores if spy card doesn't exist
+      this.logger.debug('Spy card not found, using calculated scores', {
+        username: req.user.username,
+      });
+      abilityScores = await this.abilityService.calculateAbilityScores(req.user.username);
+    }
+
+    // Get all available games
+    const availableGames = await this.gameService.getGames();
+
+    // Get AI recommendations
+    const recommendedGames = await this.geminiService.recommendGames(
+      abilityScores,
+      availableGames,
+    );
+
+    this.logger.debug('Game recommendations generated', {
+      username: req.user.username,
+      recommendedCount: recommendedGames.length,
+      gameSlugs: recommendedGames.map((g) => g.slug),
+    });
+
+    return recommendedGames;
   }
 }

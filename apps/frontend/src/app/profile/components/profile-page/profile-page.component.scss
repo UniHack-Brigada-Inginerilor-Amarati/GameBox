@@ -824,3 +824,44 @@ mat-icon,
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 }
+
+// Recommendations Section
+.recommendations-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(135, 164, 250, 0.05);
+  border: 1px solid rgba(135, 164, 250, 0.2);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.recommendations-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+
+  mat-icon {
+    margin-right: 0.5rem;
+    color: white !important;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.recommendations-hint {
+  margin-top: 0.75rem;
+  color: #999;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}

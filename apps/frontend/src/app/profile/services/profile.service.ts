@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserProfileDTO, GameScore, AbilityScores } from '@gamebox/shared';
+import { UserProfileDTO, GameScore, AbilityScores, Game } from '@gamebox/shared';
 import { HttpService } from '../../shared/services/http.service';
 import { environment } from '../../../environments/environment';
 
@@ -63,5 +63,9 @@ export class ProfileService {
       missionCount: number;
       message: string;
     }>(`${this.backendUrl}/profiles/${username}/spy-card/recalculate`, {});
+  }
+
+  getGameRecommendations(): Observable<Game[]> {
+    return this.httpService.get<Game[]>(`${this.backendUrl}/profiles/me/game-recommendations`);
   }
 }

@@ -8,10 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AbilityRadarChartComponent } from '../ability-radar-chart/ability-radar-chart.component';
 import { AuthService, LogoutComponent } from '../../../auth';
 import { ProfileService } from '../../services/profile.service';
 import { UserProfileDTO } from '@gamebox/shared';
+import { GameRecommendationsDialogComponent } from '../game-recommendations-dialog/game-recommendations-dialog.component';
 import {
   ValidationService,
   usernameErrorMessages,
@@ -28,6 +30,7 @@ import {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatDialogModule,
     FormsModule,
     LogoutComponent,
     AbilityRadarChartComponent,
@@ -39,6 +42,7 @@ export class ProfilePageComponent implements OnInit {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   @ViewChild('fileInput', { static: false }) fileInputRef!: ElementRef<HTMLInputElement>;
 
@@ -357,6 +361,14 @@ export class ProfilePageComponent implements OnInit {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
+    });
+  }
+
+  openGameRecommendations(): void {
+    this.dialog.open(GameRecommendationsDialogComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
     });
   }
 }
