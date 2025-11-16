@@ -23,26 +23,26 @@
               <div class="friend-details">
                 <h3>{{ friend.username }}</h3>
                 <p class="email">{{ friend.email }}</p>
+                <div class="friend-actions">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="viewFriendSpyCard(friend); $event.stopPropagation()"
+                    matTooltip="View spy card"
+                  >
+                    <mat-icon>radar</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="removeFriend(friend.friend_id, friend.username); $event.stopPropagation()"
+                    matTooltip="Remove friend"
+                  >
+                    <mat-icon>person_remove</mat-icon>
+                  </button>
+                </div>
                 <p class="date">Friends since {{ friend.created_at | date : 'mediumDate' }}</p>
               </div>
-            </div>
-            <div class="friend-actions">
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="viewFriendSpyCard(friend); $event.stopPropagation()"
-                matTooltip="View spy card"
-              >
-                <mat-icon>radar</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="removeFriend(friend.friend_id, friend.username); $event.stopPropagation()"
-                matTooltip="Remove friend"
-              >
-                <mat-icon>person_remove</mat-icon>
-              </button>
             </div>
           </mat-card-content>
         </mat-card>
