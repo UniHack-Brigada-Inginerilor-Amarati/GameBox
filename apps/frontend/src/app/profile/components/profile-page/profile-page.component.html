@@ -8,273 +8,288 @@
     </mat-card-header>
 
     <mat-card-content>
-      @if (isLoading()) {
-      <div class="loading-state">
-        <div class="loading-skeleton">
-          <div class="skeleton-avatar"></div>
-          <div class="skeleton-content">
-            <div class="skeleton-line"></div>
-            <div class="skeleton-line"></div>
-            <div class="skeleton-line"></div>
-          </div>
-        </div>
-      </div>
-      } @else if (user()) {
-      <div class="profile-info">
-        <!-- Avatar Section -->
-        <div class="avatar-section">
-          <img
-            [src]="user()?.avatar_url"
-            [alt]="user()?.username"
-            class="avatar-image"
-            (error)="onImageError()"
-          />
-          @if (!isEditing()) {
-          <button
-            mat-fab
-            color="primary"
-            class="edit-profile-btn"
-            (click)="startEditing()"
-            matTooltip="Edit Profile"
-            aria-label="Edit Profile"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          }
-        </div>
-
-        <!-- Debug info (remove in production) -->
-        <div style="font-size: 12px; color: #666; margin-top: 10px"></div>
-
-        @if (isEditing()) {
-        <!-- Edit Form -->
-        <div class="edit-form">
-          <!-- Error Alert -->
-          @if (error()) {
-          <div class="error-alert">
-            <mat-icon>error</mat-icon>
-            <span>{{ error() }}</span>
-          </div>
-          }
-
-          <!-- Username Edit Section -->
-          <div class="edit-section">
-            <div class="edit-header">
-              <mat-icon>person</mat-icon>
-              <span>Edit Username</span>
-            </div>
-            <div class="edit-content">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Username</mat-label>
-                <input
-                  matInput
-                  [(ngModel)]="editUsername"
-                  (ngModelChange)="onUsernameChange()"
-                  placeholder="Enter your username"
-                />
-                @if (usernameError()) {
-                <mat-error>{{ usernameError() }}</mat-error>
-                }
-              </mat-form-field>
+      <div class="profile-layout">
+        <!-- Left Column: Profile Data and Buttons -->
+        <div class="profile-left-column">
+          @if (isLoading()) {
+          <div class="loading-state">
+            <div class="loading-skeleton">
+              <div class="skeleton-avatar"></div>
+              <div class="skeleton-content">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+              </div>
             </div>
           </div>
-
-          <!-- Riot Username Edit Section -->
-          <div class="edit-section">
-            <div class="edit-header">
-              <mat-icon>sports_esports</mat-icon>
-              <span>Riot Username</span>
-            </div>
-            <div class="edit-content">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Riot Username</mat-label>
-                <input
-                  matInput
-                  [(ngModel)]="editRiotUsername"
-                  placeholder="Enter your Riot Games username"
-                />
-                <mat-hint>Your Riot Games username (optional)</mat-hint>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <!-- Avatar Upload Section -->
-          <div class="edit-section">
-            <div class="edit-header">
-              <mat-icon>photo_camera</mat-icon>
-              <span>Change Avatar</span>
-            </div>
-
-            <div class="edit-content">
-              @if (!selectedFile) {
-              <div
-                class="upload-area"
-                (click)="triggerFileInput()"
-                (keydown.enter)="triggerFileInput()"
-                (keydown.space)="triggerFileInput()"
-                tabindex="0"
-                role="button"
-                aria-label="Select avatar image"
+          } @else if (user()) {
+          <div class="profile-info">
+            <!-- Avatar Section -->
+            <div class="avatar-section">
+              <img
+                [src]="user()?.avatar_url"
+                [alt]="user()?.username"
+                class="avatar-image"
+                (error)="onImageError()"
+              />
+              @if (!isEditing()) {
+              <button
+                mat-fab
+                color="primary"
+                class="edit-profile-btn"
+                (click)="startEditing()"
+                matTooltip="Edit Profile"
+                aria-label="Edit Profile"
               >
-                <mat-icon>add_photo_alternate</mat-icon>
-                <p>Click to select an image</p>
-                <span class="upload-hint">JPG, PNG, WEBP, GIF up to 5MB</span>
-              </div>
-              } @else {
-              <!-- File Preview -->
-              <div class="file-preview">
-                <div class="preview-image">
-                  <img [src]="previewUrl" [alt]="selectedFile.name" />
-                </div>
-                <div class="file-details">
-                  <div class="file-name">{{ selectedFile.name }}</div>
-                  <div class="file-size">{{ formatFileSize(selectedFile.size) }}</div>
-                </div>
-                <div class="file-actions">
-                  <button mat-icon-button (click)="clearSelectedFile()" class="clear-btn">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    (click)="uploadAvatar()"
-                    [disabled]="isSaving()"
-                    class="upload-btn"
-                  >
-                    <mat-icon>cloud_upload</mat-icon>
-                    {{ isSaving() ? 'Uploading...' : 'Upload Avatar' }}
-                  </button>
-                </div>
-              </div>
+                <mat-icon>edit</mat-icon>
+              </button>
               }
             </div>
 
-            <input
-              #fileInput
-              type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              style="display: none"
-            />
-          </div>
+            <!-- Debug info (remove in production) -->
+            <div style="font-size: 12px; color: #666; margin-top: 10px"></div>
 
-          <!-- Avatar URL Section -->
-          <div class="edit-section">
-            <div class="edit-header">
-              <mat-icon>link</mat-icon>
-              <span>Avatar URL</span>
-            </div>
-            <div class="edit-content">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Avatar URL</mat-label>
-                <input matInput [(ngModel)]="editAvatarUrl" placeholder="Enter avatar URL" />
+            @if (isEditing()) {
+            <!-- Edit Form -->
+            <div class="edit-form">
+              <!-- Error Alert -->
+              @if (error()) {
+              <div class="error-alert">
+                <mat-icon>error</mat-icon>
+                <span>{{ error() }}</span>
+              </div>
+              }
+
+              <!-- Username Edit Section -->
+              <div class="edit-section">
+                <div class="edit-header">
+                  <mat-icon>person</mat-icon>
+                  <span>Edit Username</span>
+                </div>
+                <div class="edit-content">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Username</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="editUsername"
+                      (ngModelChange)="onUsernameChange()"
+                      placeholder="Enter your username"
+                    />
+                    @if (usernameError()) {
+                    <mat-error>{{ usernameError() }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Riot Username Edit Section -->
+              <div class="edit-section">
+                <div class="edit-header">
+                  <mat-icon>sports_esports</mat-icon>
+                  <span>Riot Username</span>
+                </div>
+                <div class="edit-content">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Riot Username</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="editRiotUsername"
+                      placeholder="Enter your Riot Games username"
+                    />
+                    <mat-hint>Your Riot Games username (optional)</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Avatar Upload Section -->
+              <div class="edit-section">
+                <div class="edit-header">
+                  <mat-icon>photo_camera</mat-icon>
+                  <span>Change Avatar</span>
+                </div>
+
+                <div class="edit-content">
+                  @if (!selectedFile) {
+                  <div
+                    class="upload-area"
+                    (click)="triggerFileInput()"
+                    (keydown.enter)="triggerFileInput()"
+                    (keydown.space)="triggerFileInput()"
+                    tabindex="0"
+                    role="button"
+                    aria-label="Select avatar image"
+                  >
+                    <mat-icon>add_photo_alternate</mat-icon>
+                    <p>Click to select an image</p>
+                    <span class="upload-hint">JPG, PNG, WEBP, GIF up to 5MB</span>
+                  </div>
+                  } @else {
+                  <!-- File Preview -->
+                  <div class="file-preview">
+                    <div class="preview-image">
+                      <img [src]="previewUrl" [alt]="selectedFile.name" />
+                    </div>
+                    <div class="file-details">
+                      <div class="file-name">{{ selectedFile.name }}</div>
+                      <div class="file-size">{{ formatFileSize(selectedFile.size) }}</div>
+                    </div>
+                    <div class="file-actions">
+                      <button mat-icon-button (click)="clearSelectedFile()" class="clear-btn">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                      <button
+                        mat-raised-button
+                        color="primary"
+                        (click)="uploadAvatar()"
+                        [disabled]="isSaving()"
+                        class="upload-btn"
+                      >
+                        <mat-icon>cloud_upload</mat-icon>
+                        {{ isSaving() ? 'Uploading...' : 'Upload Avatar' }}
+                      </button>
+                    </div>
+                  </div>
+                  }
+                </div>
+
+                <input
+                  #fileInput
+                  type="file"
+                  accept="image/*"
+                  (change)="onFileSelected($event)"
+                  style="display: none"
+                />
+              </div>
+
+              <!-- Avatar URL Section -->
+              <div class="edit-section">
+                <div class="edit-header">
+                  <mat-icon>link</mat-icon>
+                  <span>Avatar URL</span>
+                </div>
+                <div class="edit-content">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Avatar URL</mat-label>
+                    <input matInput [(ngModel)]="editAvatarUrl" placeholder="Enter avatar URL" />
+                    <button
+                      mat-icon-button
+                      matSuffix
+                      (click)="generateAvatar()"
+                      [disabled]="isSaving()"
+                    >
+                      <mat-icon>refresh</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
                 <button
-                  mat-icon-button
-                  matSuffix
-                  (click)="generateAvatar()"
+                  mat-raised-button
+                  color="primary"
+                  (click)="saveProfile()"
                   [disabled]="isSaving()"
                 >
-                  <mat-icon>refresh</mat-icon>
+                  <mat-icon>save</mat-icon>
+                  {{ isSaving() ? 'Saving...' : 'Save Changes' }}
                 </button>
-              </mat-form-field>
+                <button mat-button (click)="cancelEditing()" [disabled]="isSaving()">Cancel</button>
+              </div>
             </div>
-          </div>
+            } @else {
+            <!-- Display Info -->
+            <div class="info-section">
+              <div class="info-row">
+                <mat-icon>person</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">Username</div>
+                  <span>{{ user()?.username }}</span>
+                </div>
+              </div>
 
-          <!-- Form Actions -->
-          <div class="form-actions">
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="saveProfile()"
-              [disabled]="isSaving()"
-            >
-              <mat-icon>save</mat-icon>
-              {{ isSaving() ? 'Saving...' : 'Save Changes' }}
-            </button>
-            <button mat-button (click)="cancelEditing()" [disabled]="isSaving()">Cancel</button>
-          </div>
-        </div>
-        } @else {
-        <!-- Display Info -->
-        <div class="info-section">
-          <div class="info-row">
-            <mat-icon>person</mat-icon>
-            <div class="info-content">
-              <div class="info-label">Username</div>
-              <span>{{ user()?.username }}</span>
-            </div>
-          </div>
+              <div class="info-row">
+                <mat-icon>email</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">Email Address</div>
+                  <span>{{ user()?.email }}</span>
+                </div>
+              </div>
 
-          <div class="info-row">
-            <mat-icon>email</mat-icon>
-            <div class="info-content">
-              <div class="info-label">Email Address</div>
-              <span>{{ user()?.email }}</span>
-            </div>
-          </div>
+              @if (user()?.riot_username) {
+              <div class="info-row">
+                <mat-icon>sports_esports</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">Riot Username</div>
+                  <span>{{ user()?.riot_username }}</span>
+                </div>
+              </div>
+              }
 
-          @if (user()?.riot_username) {
-          <div class="info-row">
-            <mat-icon>sports_esports</mat-icon>
-            <div class="info-content">
-              <div class="info-label">Riot Username</div>
-              <span>{{ user()?.riot_username }}</span>
+              <div class="info-row">
+                <mat-icon>calendar_today</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">Member Since</div>
+                  <span>{{ user()?.created_at | date : 'mediumDate' }}</span>
+                </div>
+              </div>
             </div>
+            }
+          </div>
+          } @else {
+          <div class="no-data-state">
+            <mat-icon>person_off</mat-icon>
+            <p>No profile data available</p>
           </div>
           }
 
-          <div class="info-row">
-            <mat-icon>calendar_today</mat-icon>
-            <div class="info-content">
-              <div class="info-label">Member Since</div>
-              <span>{{ user()?.created_at | date : 'mediumDate' }}</span>
+          <!-- AI Game Recommendations Button -->
+          <div class="recommendations-section">
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="openGameRecommendations()"
+              class="recommendations-btn"
+            >
+              <mat-icon>auto_awesome</mat-icon>
+              Get AI Game Recommendations
+            </button>
+            <p class="recommendations-hint">
+              Get personalized game recommendations based on your spy card scores
+            </p>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="navigation-section">
+            <h3>Quick Actions</h3>
+            <div class="nav-buttons">
+              <button mat-raised-button routerLink="/dashboard" class="nav-btn">
+                <mat-icon>dashboard</mat-icon>
+                Dashboard
+              </button>
+              <button mat-raised-button routerLink="/reservation/new" class="nav-btn">
+                <mat-icon>add</mat-icon>
+                Make Reservation
+              </button>
+              <button mat-raised-button routerLink="/tournaments" class="nav-btn">
+                <mat-icon>emoji_events</mat-icon>
+                Tournaments
+              </button>
             </div>
           </div>
+
+          <!-- Logout Button -->
+          <app-logout></app-logout>
+
+          <!-- Go back to landing page button -->
+          <div class="landing-button-container"></div>
         </div>
-        }
-      </div>
-      } @else {
-      <div class="no-data-state">
-        <mat-icon>person_off</mat-icon>
-        <p>No profile data available</p>
-      </div>
-      }
-       <!-- Ability Radar Chart -->
-       <app-ability-radar-chart></app-ability-radar-chart>
-       
-       <!-- AI Game Recommendations Button -->
-       <div class="recommendations-section">
-         <button mat-raised-button color="accent" (click)="openGameRecommendations()" class="recommendations-btn">
-           <mat-icon>auto_awesome</mat-icon>
-           Get AI Game Recommendations
-         </button>
-         <p class="recommendations-hint">Get personalized game recommendations based on your spy card scores</p>
-       </div>
-       
-      <!-- Navigation Buttons -->
-      <div class="navigation-section">
-        <h3>Quick Actions</h3>
-        <div class="nav-buttons">
-          <button mat-raised-button routerLink="/dashboard" class="nav-btn">
-            <mat-icon>dashboard</mat-icon>
-            Dashboard
-          </button>
-          <button mat-raised-button routerLink="/reservation/new" class="nav-btn">
-            <mat-icon>add</mat-icon>
-            Make Reservation
-          </button>
-          <button mat-raised-button routerLink="/tournaments" class="nav-btn">
-            <mat-icon>emoji_events</mat-icon>
-            Tournaments
-          </button>
+
+        <!-- Right Column: Radar Chart -->
+        <div class="profile-right-column">
+          <app-ability-radar-chart></app-ability-radar-chart>
         </div>
       </div>
-
-      <!-- Logout Button -->
-      <app-logout></app-logout>
-
-      <!-- Go back to landing page button -->
-      <div class="landing-button-container"></div>
     </mat-card-content>
   </mat-card>
 </div>

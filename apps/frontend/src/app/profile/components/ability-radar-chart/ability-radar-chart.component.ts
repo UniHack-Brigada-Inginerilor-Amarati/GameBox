@@ -103,7 +103,7 @@ export class AbilityRadarChartComponent implements OnInit, AfterViewInit, OnChan
     if (!ctx) return;
 
     const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
+    const centerY = canvas.height / 2 + 20;
     const radius = Math.min(centerX, centerY) - 40;
     const numAbilities = 6;
     const angleStep = (2 * Math.PI) / numAbilities;
